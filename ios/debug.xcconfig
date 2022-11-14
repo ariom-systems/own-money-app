@@ -1,0 +1,11 @@
+//
+//  debug.xcconfig
+//  OwnMoney
+//
+//  Created by Adam Trickett on 1/11/2022.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+#include "Pods/Target Support Files/Pods-OwnMoney/Pods-OwnMoney.debug.xcconfig"
+#include "env.development.xcconfig"

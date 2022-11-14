@@ -1,0 +1,20 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "com.ownmoney",
+  "variantName": "release",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 1204567,
+      "versionName": "1.2.0-beta.4567",
+      "outputFile": "app-release.apk"
+    }
+  ],
+  "elementType": "File"
+}

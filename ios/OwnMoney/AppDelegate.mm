@@ -3,7 +3,7 @@
 #import <React/RCTBridge.h>
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
-
+#import <React/RCTLinkingManager.h> //added 14/06/2022
 #import <React/RCTAppSetupUtils.h>
 
 #if RCT_NEW_ARCH_ENABLED
@@ -43,14 +43,14 @@ static NSString *const kRNConcurrentRoot = @"concurrentRoot";
   bridge.surfacePresenter = _bridgeAdapter.surfacePresenter;
 #endif
 
-  NSDictionary *initProps = [self prepareInitialProps];
-  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"OwnMoney", initProps);
+  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"OwnMoney", nil);
 
-  if (@available(iOS 13.0, *)) {
-    rootView.backgroundColor = [UIColor systemBackgroundColor];
-  } else {
-    rootView.backgroundColor = [UIColor whiteColor];
-  }
+  //if (@available(iOS 13.0, *)) {
+  rootView.backgroundColor = [UIColor colorWithRed:0.54510 green:0.41569 blue:0.15294 alpha:1.0];
+    //rootView.backgroundColor = [UIColor systemBackgroundColor];
+  //} else {
+    //rootView.backgroundColor = [UIColor whiteColor];
+  //}
 
   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
   UIViewController *rootViewController = [UIViewController new];

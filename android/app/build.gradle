@@ -1,4 +1,13 @@
+project.ext.envConfigFiles = [
+    debug: ".env.development",
+    release: ".env.production"
+]
+
 apply plugin: "com.android.application"
+
+apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"
+
+apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 
 import com.android.build.OutputFile
 import org.apache.tools.ant.taskdefs.condition.Os
@@ -110,7 +119,7 @@ def enableProguardInReleaseBuilds = false
  * give correct results when using with locales other than en-US.  Note that
  * this variant is about 6MiB larger per architecture than default.
  */
-def jscFlavor = 'org.webkit:android-jsc:+'
+def jscFlavor = 'org.webkit:android-jsc-intl:+'
 
 /**
  * Whether to enable the Hermes VM.
@@ -129,6 +138,7 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
+
 android {
     ndkVersion rootProject.ext.ndkVersion
 
@@ -138,8 +148,9 @@ android {
         applicationId "com.ownmoney"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
+        multiDexEnabled true
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
 
         if (isNewArchitectureEnabled()) {
@@ -211,17 +222,17 @@ android {
         }
     }
     signingConfigs {
-        debug {
-            storeFile file('debug.keystore')
-            storePassword 'android'
-            keyAlias 'androiddebugkey'
-            keyPassword 'android'
+        release {
+            File keyfile = file('ariom.keystore')
+            if(keyfile) {
+                storeFile keyfile
+                storePassword ARIOM_STORE_PASSWORD
+                keyAlias ARIOM_KEY_ALIAS
+                keyPassword ARIOM_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://reactnative.dev/docs/signed-apk-android.
@@ -253,8 +264,12 @@ dependencies {
 
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation project(':react-native-config')
 
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+
+    implementation project(':react-native-vector-icons')
+    debugImplementation project(':react-native-vector-icons')
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
         exclude group:'com.facebook.fbjni'
@@ -310,4 +325,16 @@ def isNewArchitectureEnabled() {
     // - Invoke gradle with `-newArchEnabled=true`
     // - Set an environment variable `ORG_GRADLE_PROJECT_newArchEnabled=true`
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
+
+private Integer generateVersionCode() {
+    return (project.env.get("MAJOR_VERSION").toInteger() * 1000000) + (project.env.get("MINOR_VERSION").toInteger() * 100000) + (project.env.get("PATCH_VERSION").toInteger() * 10000) + project.env.get("BUILD_NUMBER").toInteger()
+}
+
+private String generateVersionName() {
+    String versionName = "${project.env.get("MAJOR_VERSION")}.${project.env.get("MINOR_VERSION")}.${project.env.get("PATCH_VERSION")}"
+    if(project.env.get("STAGE") != null && !project.env.get("STAGE").isEmpty() && project.env.get("STAGE") != 'release') {
+        versionName = versionName + "-" + project.env.get("STAGE") + "." + project.env.get("BUILD_NUMBER")
+    }
+    return versionName
 }

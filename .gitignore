@@ -1,6 +1,7 @@
 # OSX
 #
 .DS_Store
+.AppleDouble
 
 # Xcode
 #
@@ -62,3 +63,4 @@ buck-out/
 # Ruby / CocoaPods
 /ios/Pods/
 /vendor/bundle/
+

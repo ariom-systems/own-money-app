@@ -1,0 +1,141 @@
+diff --git a/node_modules/@haskkor/react-native-pincode/dist/index.js b/node_modules/@haskkor/react-native-pincode/dist/index.js
+index 5a74812..71060df 100644
+--- a/node_modules/@haskkor/react-native-pincode/dist/index.js
++++ b/node_modules/@haskkor/react-native-pincode/dist/index.js
+@@ -5,7 +5,7 @@ const PinCode_1 = require("./src/PinCode");
+ const PinCodeChoose_1 = require("./src/PinCodeChoose");
+ const PinCodeEnter_1 = require("./src/PinCodeEnter");
+ const utils_1 = require("./src/utils");
+-const async_storage_1 = require("@react-native-community/async-storage");
++const async_storage_1 = require("@react-native-async-storage/async-storage");
+ const React = require("react");
+ const react_native_1 = require("react-native");
+ const disableLockScreenDefault = false;
+diff --git a/node_modules/@haskkor/react-native-pincode/dist/src/ApplicationLocked.js b/node_modules/@haskkor/react-native-pincode/dist/src/ApplicationLocked.js
+index 6609743..4c06872 100644
+--- a/node_modules/@haskkor/react-native-pincode/dist/src/ApplicationLocked.js
++++ b/node_modules/@haskkor/react-native-pincode/dist/src/ApplicationLocked.js
+@@ -4,12 +4,12 @@ const colors_1 = require("./design/colors");
+ const grid_1 = require("./design/grid");
+ const delay_1 = require("./delay");
+ const utils_1 = require("./utils");
+-const async_storage_1 = require("@react-native-community/async-storage");
++const async_storage_1 = require("@react-native-async-storage/async-storage");
+ const d3_ease_1 = require("d3-ease");
+ const React = require("react");
+ const Animate_1 = require("react-move/Animate");
+ const react_native_1 = require("react-native");
+-const MaterialIcons_1 = require("react-native-vector-icons/MaterialIcons");
++const Ionicons_1 = require("react-native-vector-icons/Ionicons");
+ class ApplicationLocked extends React.PureComponent {
+     constructor(props) {
+         super(props);
+@@ -43,7 +43,7 @@ class ApplicationLocked extends React.PureComponent {
+         this.renderIcon = () => {
+             return (React.createElement(react_native_1.View, { style: [styles.viewIcon, this.props.styleViewIcon] }, this.props.lockedIconComponent ?
+                 this.props.lockedIconComponent :
+-                React.createElement(MaterialIcons_1.default, { name: this.props.nameIcon, size: this.props.sizeIcon, color: this.props.colorIcon })));
++                React.createElement(Ionicons_1.default, { name: this.props.nameIcon, size: this.props.sizeIcon, color: this.props.colorIcon })));
+         };
+         this.renderErrorLocked = () => {
+             const minutes = Math.floor(this.state.timeDiff / 1000 / 60);
+diff --git a/node_modules/@haskkor/react-native-pincode/dist/src/PinCode.js b/node_modules/@haskkor/react-native-pincode/dist/src/PinCode.js
+index 385e261..89e1506 100644
+--- a/node_modules/@haskkor/react-native-pincode/dist/src/PinCode.js
++++ b/node_modules/@haskkor/react-native-pincode/dist/src/PinCode.js
+@@ -9,7 +9,7 @@ const React = require("react");
+ const Animate_1 = require("react-move/Animate");
+ const react_native_1 = require("react-native");
+ const react_native_easy_grid_1 = require("react-native-easy-grid");
+-const MaterialIcons_1 = require("react-native-vector-icons/MaterialIcons");
++const Ionicons_1 = require("react-native-vector-icons/Ionicons");
+ var PinStatus;
+ (function (PinStatus) {
+     PinStatus["choose"] = "choose";
+@@ -225,7 +225,7 @@ class PinCode extends React.PureComponent {
+                     this.props.customBackSpaceIcon({ colorDelete: this.state.colorDelete, opacity })
+                     :
+                         React.createElement(React.Fragment, null,
+-                            !this.props.iconButtonDeleteDisabled && (React.createElement(MaterialIcons_1.default, { name: this.props.styleDeleteButtonIcon, size: this.props.styleDeleteButtonSize, color: this.state.colorDelete, style: { opacity: opacity } })),
++                            !this.props.iconButtonDeleteDisabled && (React.createElement(Ionicons_1.default, { name: this.props.styleDeleteButtonIcon, size: this.props.styleDeleteButtonSize, color: this.state.colorDelete, style: { opacity: opacity } })),
+                             React.createElement(react_native_1.Text, { style: [
+                                     styles.textDeleteButton,
+                                     this.props.styleDeleteButtonText,
+diff --git a/node_modules/@haskkor/react-native-pincode/dist/src/PinCodeEnter.js b/node_modules/@haskkor/react-native-pincode/dist/src/PinCodeEnter.js
+index 23baa84..7e901e6 100644
+--- a/node_modules/@haskkor/react-native-pincode/dist/src/PinCodeEnter.js
++++ b/node_modules/@haskkor/react-native-pincode/dist/src/PinCodeEnter.js
+@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
+ const delay_1 = require("./delay");
+ const PinCode_1 = require("./PinCode");
+ const utils_1 = require("./utils");
+-const async_storage_1 = require("@react-native-community/async-storage");
++const async_storage_1 = require("@react-native-async-storage/async-storage");
+ const React = require("react");
+ const react_native_1 = require("react-native");
+ const Keychain = require("react-native-keychain");
+diff --git a/node_modules/@haskkor/react-native-pincode/dist/src/utils.js b/node_modules/@haskkor/react-native-pincode/dist/src/utils.js
+index c509f91..24b0adf 100644
+--- a/node_modules/@haskkor/react-native-pincode/dist/src/utils.js
++++ b/node_modules/@haskkor/react-native-pincode/dist/src/utils.js
+@@ -1,7 +1,7 @@
+ "use strict";
+ Object.defineProperty(exports, "__esModule", { value: true });
+ const react_native_1 = require("react-native");
+-const async_storage_1 = require("@react-native-community/async-storage");
++const async_storage_1 = require("@react-native-async-storage/async-storage");
+ const Keychain = require("react-native-keychain");
+ var PinResultStatus;
+ (function (PinResultStatus) {
+diff --git a/node_modules/@haskkor/react-native-pincode/index.tsx b/node_modules/@haskkor/react-native-pincode/index.tsx
+index 51828f8..12b170e 100644
+--- a/node_modules/@haskkor/react-native-pincode/index.tsx
++++ b/node_modules/@haskkor/react-native-pincode/index.tsx
+@@ -4,7 +4,7 @@ import PinCodeChoose from "./src/PinCodeChoose";
+ import PinCodeEnter from "./src/PinCodeEnter";
+ import { hasPinCode, deletePinCode, resetInternalStates, PinResultStatus } from "./src/utils";
+ 
+-import AsyncStorage from '@react-native-community/async-storage'
++import AsyncStorage from '@react-native-async-storage/async-storage'
+ import * as React from "react";
+ import { View, StyleSheet, StyleProp, ViewStyle, TextStyle } from "react-native";
+ 
+diff --git a/node_modules/@haskkor/react-native-pincode/src/ApplicationLocked.tsx b/node_modules/@haskkor/react-native-pincode/src/ApplicationLocked.tsx
+index a2179ff..e7dd632 100644
+--- a/node_modules/@haskkor/react-native-pincode/src/ApplicationLocked.tsx
++++ b/node_modules/@haskkor/react-native-pincode/src/ApplicationLocked.tsx
+@@ -14,7 +14,7 @@ import {
+   Text,
+   Platform
+ } from "react-native";
+-import Icon from "react-native-vector-icons/MaterialIcons";
++import Icon from "react-native-vector-icons/Ionicons";
+ 
+ export type IProps = {
+   buttonComponent?: any
+diff --git a/node_modules/@haskkor/react-native-pincode/src/PinCode.tsx b/node_modules/@haskkor/react-native-pincode/src/PinCode.tsx
+index 369581d..c05238b 100644
+--- a/node_modules/@haskkor/react-native-pincode/src/PinCode.tsx
++++ b/node_modules/@haskkor/react-native-pincode/src/PinCode.tsx
+@@ -18,7 +18,7 @@ import {
+   ViewStyle
+ } from "react-native";
+ import { Col, Row, Grid } from "react-native-easy-grid";
+-import Icon from "react-native-vector-icons/MaterialIcons";
++import Icon from "react-native-vector-icons/Ionicons";
+ 
+ /**
+  * Pin Code Component
+diff --git a/node_modules/@haskkor/react-native-pincode/src/PinCodeEnter.tsx b/node_modules/@haskkor/react-native-pincode/src/PinCodeEnter.tsx
+index aeb98ed..08370fb 100644
+--- a/node_modules/@haskkor/react-native-pincode/src/PinCodeEnter.tsx
++++ b/node_modules/@haskkor/react-native-pincode/src/PinCodeEnter.tsx
+@@ -103,7 +103,7 @@ class PinCodeEnter extends React.PureComponent<IProps, IState> {
+   keyChainResult: string | undefined = undefined
+ 
+   static defaultProps = {
+-    passcodeFallback: true,
++    passcodeFallback: false,
+     styleContainer: null
+   }
+ 
