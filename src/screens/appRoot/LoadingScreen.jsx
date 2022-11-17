@@ -24,10 +24,21 @@ const LoadingScreen = () => {
 		console.log('--statring preflight check--')
 		console.log('authenticated:', auth.token !== 'undefined' ? 'yes' : 'no')
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
+
 		const verifyLoggedIn = new Promise((resolve, reject) => {
 			api.get(Config.BASEURL + '/checktoken')
-				.then(response => { response.data.result == 'success' ? resolve() : reject(response.data.result) })
+				.then(response => {
+					if(response.data.result == 'success') {
+						resolve()
+					} else {
+						reject(response)
+					}
+				})
+				.catch(error => {
+					console.log(error)
+				})
 		})
+
 		const loadGlobals = new Promise((resolve, reject) => {
 			api.get(buildDataPath('globals', null, 'branch'))
 				.then(response => {					
@@ -35,24 +46,36 @@ const LoadingScreen = () => {
 					dataDispatch({ type: 'LOAD_GLOBALS', payload: { data: response.data[0] } });
 					resolve('✅ Loaded Globals')
 				})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => { 
+					console.error(error)
+					reject('🚫 ' + error)
+				})
 		})
+
 		const loadUser = new Promise((resolve, reject) => {
 			api.get(buildDataPath('users', auth.uid, 'view'))
 				.then(response => {
 					dataDispatch({ type: 'LOAD_USER', payload: { data: response.data } })
 					resolve('✅ Loaded User Data')
 			 	})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => {
+					console.error(error)
+					reject('🚫 ' + error)
+				})
 		})
+
 		const loadMetadata = new Promise((resolve, reject) => {
 			api.get(buildDataPath('meta', auth.uid, 'view', { endpoint: 'users' }))
 				.then(response => {
 					dataDispatch({ type: 'LOAD_USER_META', payload: { data: response.data } })
 					resolve('✅ Loaded User Metadata Data')
 			 	})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => {
+					console.error(error)
+					reject('🚫 ' + error)
+				})
 		})
+
 		const loadBeneficiaries = new Promise((resolve, reject) => {
 			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, ["id", "id_users", "firstname", "lastname", "status"])))
 				.then(response => {
@@ -66,8 +89,12 @@ const LoadingScreen = () => {
 					dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
 					resolve('✅ Loaded Beneficiaries')
 				})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => {
+					console.error(error)
+					reject('🚫 ' + error)
+				})
 		})
+
 		const loadTransactions = new Promise((resolve, reject) => {
 			const today = new Date(Date.parse(new Date())).getTime() / 1000
 			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))		
@@ -102,7 +129,7 @@ const LoadingScreen = () => {
 						console.log('--preflight check complete--')
 					})
 					.catch(error => {
-						console.log(error)
+						console.error('verifyLoggedIn then:', error)
 						handleLogout('server-error')
 					})
 			})
@@ -110,6 +137,7 @@ const LoadingScreen = () => {
 				navigation.navigate('AppTabs')
 			})
 			.catch(error => {
+				console.error('verifyLoggedIn catch:',error)
 				handleLogout('session-expired')
 			})
 
@@ -161,7 +189,7 @@ const LoadingScreen = () => {
 	}, [data.userMeta])
 
 	const handleLogout = async (reason) => {
-		const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+		const reset = await keychainReset("com.ariom.ownmoney.token") //shutup vscode, await DOES do something here
 		if(reset === true) {
 			authDispatch({ type: 'SET_STATUS', payload: { data: reason }})
 			authDispatch({ type: 'LOGOUT'})

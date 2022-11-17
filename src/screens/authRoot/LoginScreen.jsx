@@ -6,7 +6,8 @@ import { Button, Center, Factory, FormControl, HStack, Image, Input, KeyboardAvo
 	Pressable, ScrollView, StatusBar, Text, VStack } from 'native-base'
 import { getNotice } from '../../data/handlers/Status'
 import { AuthContext } from '../../data/Context'
-import { keychainSave, parseToken } from '../../data/Actions'
+import { keychainSave, keychainReset, parseToken } from '../../data/Actions'
+import { deleteUserPinCode } from '@haskkor/react-native-pincode'
 import { ErrorMessage } from '../../components/common/Forms'
 import { Notice } from '../../components/common/Notice'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
@@ -37,11 +38,12 @@ const LoginScreen = ({ navigation }) => {
 		let login = new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
 			api.post(Config.BASEURL + '/authenticate', {
-				email: data.email,
+				email: data.email, 
 				pass: data.password
 			})
 			.then(response => {
 				if(response.ok == true) {	
+					//console.log('response.data', response.data)
 					if(response.data.hasOwnProperty("auth")) {
 						const jwt_data = parseToken(response.data.auth.token)
 						const authObj = {
@@ -63,7 +65,9 @@ const LoginScreen = ({ navigation }) => {
 		.then(result => {
 			async function setPin(result) {
 				const pinPromise = new Promise((resolve, reject) => {
-					resolve(keychainSave('token', data.email, result.token))
+					//save the keychain record with the app bundle identifier to 
+					//avoid conflict with other potential apps that might just use the work "token".
+					resolve(keychainSave("com.ariom.ownmoney.token", data.email, result.token))
 				})
 				let pinResult = await pinPromise
 			}
@@ -193,23 +197,23 @@ const LoginScreen = ({ navigation }) => {
 								<HStack>
 									<LanguageToggle />
 								</HStack>
-								{/* <HStack w={"100%"} space={"3"}>
-									<Button
+								<HStack w={"100%"} space={"3"}>
+									{/* <Button
 										flexGrow={"1"}
 										variant={"outline"}
 										onPress={() => {
 											console.log('clearing token')
-											keychainReset("token")
-										}}>Clear Keychain</Button>
-									<Button
+											keychainReset("com.ariom.ownmoney.token")
+										}}>Clear Keychain</Button> */}
+									{/* <Button
 										flexGrow={"1"}
 										variant={"outline"}
 										onPress={() => {
 											console.log('clearing pin')
-											deleteUserPinCode("com.acaregroup.OwnMoney")
+											deleteUserPinCode("com.ariom.ownmoney")
 											keychainReset("pin")
-										}}>Clear PIN Code</Button>
-								</HStack> */}
+										}}>Clear PIN Code</Button> */}
+								</HStack>
 							</VStack>
 						</VStack>
 					</KeyboardAvoidingView>

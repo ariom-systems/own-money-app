@@ -38,18 +38,18 @@ export const authReducer = (state, action) => {
                 loading: false
             }
         break
-        case 'SET_PIN': 
-            return {
-                ...state,
-                pin: action.payload.data
-            }
-        break
-        case 'RESET_PIN':
-            return {
-                ...state,
-                pin: null
-            }
-        break
+        // case 'SET_PIN': 
+        //     return {
+        //         ...state,
+        //         pin: action.payload.data
+        //     }
+        // break
+        // case 'RESET_PIN':
+        //     return {
+        //         ...state,
+        //         pin: null
+        //     }
+        // break
         case 'SET_LANG':
             return {
                 ...state,

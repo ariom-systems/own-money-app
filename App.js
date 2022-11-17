@@ -86,7 +86,7 @@ const AppNavigator = ({navigation}) => {
         if(auth.token === null) {
             //no? lets check the Keychain/Keystore
             const getKeychainCredentials = async () => {
-                const keychainResponse = await keychainLoad('token')
+                const keychainResponse = await keychainLoad("com.ariom.ownmoney.token")
                 //does the Keychain/Keystore have something (not undefined) for us?
                 if(keychainResponse !== undefined) {
                     //is there a "password"? (it actually should be a serialised string with token, uid, and expiry). needs pin as well
@@ -121,7 +121,7 @@ const AppNavigator = ({navigation}) => {
 
     async function checkTokenExpiry(timestamp) {
         if(timestamp <= 0) {
-            const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+            const reset = await keychainReset("com.ariom.ownmoney.token") //shutup vscode, await DOES do something here
             if(reset === true) {
                 authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }})
                 authDispatch({ type: 'LOGOUT'})

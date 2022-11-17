@@ -33,6 +33,10 @@ export const Notice = (props) => {
 
 function renderNotice(props, wrapProps, showClose, authDispatch) {
 
+	React.useEffect(() => {
+		setTimeout(handleClose, 8000);
+	},[])
+
 	const handleClose = () => {
 		authDispatch({ type: 'CLEAR_STATUS' })
 	}

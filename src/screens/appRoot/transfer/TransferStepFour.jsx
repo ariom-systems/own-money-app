@@ -64,52 +64,52 @@ export default TransferStepFour = () => {
 					labels={labels} />
 				<VStack my={"5%"} borderColor={"primary.600"} borderWidth={"1"} rounded={"lg"} overflow={"hidden"}>
 					<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-						<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
+						<Heading size={"sm"}>{ language.transferStepFour.headerFrom }</Heading>
 					</Box>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataSenderLabel }</Text>
 						<Text fontSize={"md"}>{ summary.get().sender }</Text>
 					</HStack>
 					<Divider />
 					<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-						<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
+						<Heading size={"sm"}>{ language.transferStepFour.headerTo }</Heading>
 					</Box>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataReceiverLabel }</Text>
 						<Text fontSize={"md"}>{ summary.get().receiver }</Text>
 					</HStack>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataAccountNumberLabel }</Text>
 						<Text fontSize={"md"}>{ summary.get().accountnumber }</Text>
 					</HStack>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataBankNameLabel }</Text>
 						<Text fontSize={"md"}>{ summary.get().branchname }</Text>
 					</HStack>
 					<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-						<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
+						<Heading size={"sm"}>{ language.transferStepFour.headerAmounts }</Heading>
 					</Box>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataAmountToSendLabel}</Text>
 						<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ${ summary.get().transfer_amount }</Text>
 					</HStack>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataReceivableAmountLabel }</Text>
 						<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ฿{ summary.get().received_amount }</Text>
 					</HStack>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataFeesLabel }</Text>
 						<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ${ summary.get().fee_AUD }</Text>
 					</HStack>
 					<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-						<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
+						<Heading size={"sm"}>{ language.transferStepFour.headerTotals }</Heading>
 					</Box>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataTotalToPayLabel }</Text>
 						<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } { formatCurrency(summary.get().total_to_pay, "en-AU", "AUD").full }</Text>
 					</HStack>
 					<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
+						<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.listDataReceivableAmountLabel }</Text>
 						<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ฿{ summary.get().received_amount }</Text>
 					</HStack>
 				</VStack>

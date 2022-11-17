@@ -50,7 +50,7 @@ const PinCodeScreen = ({ navigation }) => {
 
 	React.useEffect(() => {
 		const checkKeychainForPin = async () => {
-			const result = await hasUserSetPinCode('com.acaregroup.OwnMoney')
+			const result = await hasUserSetPinCode("com.ariom.ownmoney." + auth.uid)
 			if(typeof result !== 'undefined') {
 				if (result === true) {
 					setHasPin(true)
@@ -71,13 +71,15 @@ const PinCodeScreen = ({ navigation }) => {
 
 	const handlePinSet = async (pin) => {
 		//use our own keychain entry. don't have time to figure out how to use the one in react-native-pincode
-		const saveResponse = await keychainSave('pin', auth.email, pin)
-		authDispatch({ type: 'SET_PIN', payload: { pin: pin } })
+		//modify the keychain identifier slightly to include the user id. This means that multiple users can use the same
+		//phone and app and each have their own pin number instead of just one global pin.
+		const saveResponse = await keychainSave("com.ariom.ownmoney." + auth.uid + "." + "pin", auth.email, pin)
+		// authDispatch({ type: 'SET_PIN', payload: { pin: pin } })
 		navigation.navigate('Loading')
 	}
 
 	const handleEnterPin = async (pin) => {
-		authDispatch({ type: 'SET_PIN', payload: { data: pin } })
+		// authDispatch({ type: 'SET_PIN', payload: { data: pin } })
 		navigation.navigate('Loading')
 	}
 
@@ -86,10 +88,10 @@ const PinCodeScreen = ({ navigation }) => {
 	}
 
 	const handleResetPinAction = async () => {
-		await keychainReset('pin')
-		await keychainReset('token')
-		await deleteUserPinCode('com.acaregroup.OwnMoney')
-		authDispatch({ type: 'RESET_PIN' })
+		await keychainReset("com.ariom.ownmoney." + auth.uid + "." + "pin") //this apps pin keychain key name
+		await keychainReset("com.ariom.ownmoney.token")
+		await deleteUserPinCode("com.ariom.ownmoney." + auth.uid) //@haskkor/react-native-pincode keychain key name
+		// authDispatch({ type: 'RESET_PIN' })
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' }})
 		authDispatch({ type: 'LOGOUT' })
 	}
@@ -113,7 +115,7 @@ const PinCodeScreen = ({ navigation }) => {
 	}
 
 	const handleLogout = async () => {
-		const reset = await keychainReset('token')
+		const reset = await keychainReset("com.ariom.ownmoney.token")
 		if (reset === true) {
 			authDispatch({ type: 'LOGOUT' })
 		}
@@ -154,7 +156,7 @@ const PinCodeScreen = ({ navigation }) => {
 				delayBetweenAttempts={500}
 				callbackErrorTouchId={handleTouchError}
 				passcodeFallback={false}
-				pinCodeKeychainName={"com.acaregroup.OwnMoney"}
+				pinCodeKeychainName={"com.ariom.ownmoney." + auth.uid}
 				finishProcess={(pin) => hasPin ? handleEnterPin(pin) : handlePinSet(pin)}
 				disableLockScreen={true}
 				//Styles

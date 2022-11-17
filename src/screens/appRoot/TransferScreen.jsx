@@ -7,7 +7,6 @@ import TransferStepOne from './transfer/TransferStepOne'
 import TransferStepTwo from './transfer/TransferStepTwo'
 import TransferStepThree from './transfer/TransferStepThree'
 import TransferStepFour from './transfer/TransferStepFour'
-import { background } from 'native-base/lib/typescript/theme/styled-system'
 
 const Stack = createNativeStackNavigator()
 

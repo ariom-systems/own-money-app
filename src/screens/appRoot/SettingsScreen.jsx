@@ -29,7 +29,7 @@ function SettingsScreen({navigation}) {
 	}, [language, auth])
 
 	const handleLogout = async () => {	
-		const reset = await keychainReset('token')
+		const reset = await keychainReset("com.ariom.ownmoney.token")
 		if(reset === true) {
 			navigation.navigate('LogoutScreen')
 		}
@@ -45,7 +45,7 @@ function SettingsScreen({navigation}) {
 
 	useEffect(() => {
 		const checkKeychainForPin = async () => {
-			const result = await hasUserSetPinCode("com.acaregroup.OwnMoney")
+			const result = await hasUserSetPinCode("com.ariom.ownmoney.pin")
 			if(result === true) {
 				setHasPin(true)
 			}

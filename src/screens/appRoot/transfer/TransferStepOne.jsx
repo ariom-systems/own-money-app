@@ -16,6 +16,7 @@ import { useAspect } from '../../../data/Hooks'
 import { ErrorMessage } from '../../../components/common/Forms'
 import { useNavigation } from '@react-navigation/native'
 
+
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
@@ -115,7 +116,7 @@ const TransferStepOneInner = () => {
 			setValue('aud', formatCurrency(tmpAUD, "en-AU", "AUD").value, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
 			setValue('thb', formatCurrency(tmpTHB, "th-TH", "THB").value, { shouldDirty: true, shouldTouch: true, shouldValidate: true })
 		}
-	}, [])
+	}, [transfer.stepOne.aud, transfer.stepOne.thb])
 
 	React.useEffect(() => {
 		if(getValues("aud") != "") {
@@ -213,6 +214,12 @@ const TransferStepOneInner = () => {
 				}
 			})
 		}
+	}
+
+	const handleCancel = () => {
+		transferDispatch({ type: 'RESTART' })
+
+		navigation.navigate('TransferStepOne')
 	}
 
 	return (
@@ -390,6 +397,7 @@ const TransferStepOneInner = () => {
 				</Box>
 
 				<HStack space={"4"} w={"100%"} justifyContent={"center"}>
+					<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
 					<Button
 						isDisabled={(
 							formState.errors.aud ||
@@ -400,7 +408,7 @@ const TransferStepOneInner = () => {
 						) ? true : false }
 						_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}
 						alignSelf={"center"}
-						w={"50%"}
+						w={"40%"}
 						onPress={handleSubmit(onSubmit, onError)} >
 						<Text fontSize={"lg"} color={"#FFFFFF"}>{ language.transferStepOne.buttonNext }</Text>
 					</Button>

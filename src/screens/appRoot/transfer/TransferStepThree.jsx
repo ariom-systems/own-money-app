@@ -89,8 +89,11 @@ const TransferStepThreeInner = () => {
 		api.post(buildDataPath('transactions', auth.uid, 'add'), JSON.stringify(submitted))
 		.then(response => {
 			if(response.ok == true) {
+				console.log("API call to 'transactions': ok")
 				if(response.data == true) {
+					console.log("API call to 'transactions': data == true")
 					const returnPayload = JSON.stringify({"daily_limit" : data.userMeta.daily_limit})
+					// console.log('returnPayload', returnPayload)
 					api.put(buildDataPath('meta', auth.uid, 'edit', { endpoint: 'users' }), returnPayload)
 					.then(response => {
 						if (response.ok == true && response.data == true) {
@@ -107,6 +110,7 @@ const TransferStepThreeInner = () => {
 						}
 					})
 				} else {
+					console.log("API call to 'transactions': data != true")
 					scrollRef.current.scrollTo({x:0, y:0, animated: false})
 					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
 					console.log('🚫',response)
