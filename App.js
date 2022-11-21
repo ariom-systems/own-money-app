@@ -4,9 +4,10 @@ import React from 'react'
 import { ActivityIndicator, useColorScheme, LogBox, Image, ImageBackground } from 'react-native'
 
 //Navigation
-import { NavigationContainer } from '@react-navigation/native'
+import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { useFlipper } from '@react-navigation/devtools'
 
 //Screens - splash
 import SplashScreen from './src/screens/SplashScreen';
@@ -32,11 +33,17 @@ import { NativeBaseProvider, extendTheme } from 'native-base'
 
 //Other
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
-import { getRemainingLoginTime, initialCheckConnection, keychainLoad, keychainReset, parseToken } from './src/data/Actions'
+import { getRemainingLoginTime, initialCheckConnection, keychainLoad, keychainReset, parseToken, checkConnectionInitial } from './src/data/Actions'
 import { useInterval } from './src/data/Hooks';
 import { optionsDashboard, optionsBeneficiaries, optionsTransfer, optionsTransactions, optionsProfile } from './src/components/dashboard/TabOptions'
 import LogoutScreen from './src/screens/appRoot/LogoutScreen';
+import NetInfo from '@react-native-community/netinfo'
 
+//Recoil
+import { RecoilRoot } from 'recoil'
+import RecoilFlipperClient from 'react-recoil-flipper-client'
+
+//Lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('./src/i18n/en-AU.json')
 const thStrings = require('./src/i18n/th-TH.json')
@@ -50,22 +57,27 @@ const AppStack = createNativeStackNavigator()
 
 export default function App() {
 	return (
-        <NativeBaseProvider theme={NativeBaseTheme}>
-            <AuthProvider>
-                <DataProvider>
-                    <TransferProvider>
-                        <RootNavigator />
-                    </TransferProvider>
-                </DataProvider>
-            </AuthProvider>
-        </NativeBaseProvider>
+        <RecoilRoot>
+            <RecoilFlipperClient />
+            <NativeBaseProvider theme={NativeBaseTheme}>
+                <AuthProvider>
+                    <DataProvider>
+                        <TransferProvider>
+                            <RootNavigator />
+                        </TransferProvider>
+                    </DataProvider>
+                </AuthProvider>
+            </NativeBaseProvider>
+        </RecoilRoot>
 	)
 }
 
 //Root navigation container. To separate Splash screen from the rest of the app.
 const RootNavigator = ({navigation}) => {
+    const navigationRef = useNavigationContainerRef()
+    useFlipper(navigationRef)
     return (
-        <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />}>
+        <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
             <RootStack.Navigator>
                 <RootStack.Screen options={{ headerShown: false }} name="Splash" component={ SplashScreen } />
                 <RootStack.Screen options={{ headerShown: false }} name="AppNavigator" component={ AppNavigator } />
@@ -80,7 +92,14 @@ const AppNavigator = ({navigation}) => {
     const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
     React.useEffect(() => {
+        NetInfo.fetch().then(state => {
+            return state.isInternetReachable
+        })
+
+
+
         //check if we can connect to the API first
+        checkConnectionInitial()
         initialCheckConnection(authDispatch)
         // begin authentication run: is token present in Context?
         if(auth.token === null) {
@@ -156,7 +175,7 @@ const Tabs = createBottomTabNavigator()
 const AppTabs = ({navigation}) => {
     const { auth } = React.useContext(AuthContext)
     const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-    
+
     React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
 			language.setLanguage(auth.lang)

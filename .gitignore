@@ -64,3 +64,5 @@ buck-out/
 /ios/Pods/
 /vendor/bundle/
 
+# Misc
+.env.test

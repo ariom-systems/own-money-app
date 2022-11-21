@@ -5,6 +5,27 @@ import Config from 'react-native-config'
 import NetInfo from '@react-native-community/netinfo'
 import React from 'react'
 
+
+import { useRecoilState, useSetRecoilState, useRecoilValue, selector } from 'recoil'
+
+export function checkConnectionInitial() {
+	//const [ appstate, setAppstate ] = useRecoilState(appstateAtom)
+	//const setAppstate = useSetRecoilState(appstateAtom)
+	checkConnection()
+	setTimeout(() => {
+		NetInfo.fetch().then(state => {
+			if(state.isInternetReachable !== true) {
+				//console.log('isInternetReachable: ' + state.isInternetReachable)
+				
+			} else {
+				//console.log('Connected to ' + Config.BASEURL)
+			}
+		})
+	}, 2500)
+	return null
+}
+
+
 export function initialCheckConnection(authDispatch) {
 	checkConnection()
 	setTimeout(() => {

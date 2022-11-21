@@ -11,61 +11,58 @@ export const Notice = (props) => {
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	
 	let wrapProps = props.wrap
-	let showClose = props.showClose || true
-	let noticeContent = getNotice(auth.status, auth.lang)
-	if(!(noticeContent instanceof Array)) {
-		if(noticeContent.hasOwnProperty('message')) {
-			return renderNotice(noticeContent, wrapProps, showClose, authDispatch)
+	let close = props.showClose || true
+	let content = getNotice(auth.status, auth.lang)
+	if(!(content instanceof Array)) {
+		if(content.hasOwnProperty('message')) {
+			return <NoticeBox content={content} wrap={wrapProps} showClose={close} />
 		} else {
-			let notice = getNotice(noticeContent.reason, auth.lang)
-			return renderNotice(notice, wrapProps, showClose, authDispatch)
+			let notice = getNotice(content.reason, auth.lang)
+			return <NoticeBox content={notice} wrap={wrapProps} showClose={close} />
 		}
-		
 	} else if(noticeContent instanceof Array) {
 		let notices = []
 		noticeContent.forEach(notice => {
 			let single = getNotice(notice.reason, auth.lang)
-			notices.push(renderNotice(single, wrapProps, showClose, authDispatch))
+			notices.push(<NoticeBox content={single} wrap={wrapProps} showClose={close} />)
 		})
 		return notices
 	}
 }
 
-function renderNotice(props, wrapProps, showClose, authDispatch) {
+export const NoticeBox = ({ content, wrapProps, showClose = true, timeout = 10000 }) => {
+	const { authDispatch } = React.useContext(AuthContext)
 
-	const handleClose = () => {
+	const handleDismiss = () => {
 		authDispatch({ type: 'CLEAR_STATUS' })
 	}
 
-	if(props !== 'undefined') {
-		//allow noticeContent to be overridden by props if required.
-		let noticeContent = {}
-		if(typeof props.style !== 'undefined') { noticeContent.style = props.style }
-		if(typeof props.icon !== 'undefined') { noticeContent.icon = props.icon }
-		if(typeof props.message !== 'undefined') { noticeContent.message = props.message }
-		if(typeof props.title !== 'undefined') { noticeContent.title = props.title }
-	
-		return (
-			<Box {...wrapProps} key={noticeContent.title}>
-				<Alert justifyContent={"center"} status={noticeContent.style} w={"100%"}>
-					<VStack space={"2"} w={"100%"}>
-						<HStack justifyContent={"space-between"} space={"2"}>
-							<HStack flexShrink={"1"} space={"2"} alignItems={"center"}>
-								<NBIonicon name={noticeContent.icon} fontSize={"xl"} />
-								<Heading fontSize={"md"} fontWeight={"medium"}>{noticeContent.title}</Heading>
-							</HStack>
-							{ showClose == true && (
-								<NBIonicon name={"close"} fontSize={"xl"} onPress={handleClose}/>
-							)}
+	React.useEffect(() => {
+		if(timeout !== false) {
+			setTimeout(() => {
+				handleDismiss()
+			}, timeout)	
+		}
+	}, [])
+
+	return (
+		<Box {...wrapProps} key={content.title}>
+			<Alert justifyContent={"center"} status={content.style} w={"100%"}>
+				<VStack space={"2"} w={"100%"}>
+					<HStack justifyContent={"space-between"} space={"2"}>
+						<HStack flexShrink={"1"} space={"2"} alignItems={"center"}>
+							<NBIonicon name={content.icon} fontSize={"xl"} />
+							<Heading fontSize={"md"} fontWeight={"medium"}>{content.title}</Heading>
 						</HStack>
-						<Box pl={"6"}>
-							<Text color={"info.600"} fontWeight={"medium"}>{noticeContent.message}</Text>
-						</Box>
-					</VStack>
-				</Alert>
-			</Box>
-		)
-	} else {
-		return false
-	}
+						{ showClose == true && (
+							<NBIonicon name={"close"} fontSize={"xl"} onPress={handleDismiss}/>
+						)}
+					</HStack>
+					<Box pl={"6"}>
+						<Text color={"info.600"} fontWeight={"medium"}>{content.message}</Text>
+					</Box>
+				</VStack>
+			</Alert>
+		</Box>
+	)
 }

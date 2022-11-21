@@ -79,12 +79,12 @@ const LoginScreen = ({ navigation }) => {
 					let authErrors = error.data.notices
 					if(authErrors.length == 1) {
 						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors[0] }})
-						const notice = getNotice(authErrors[0].reason)
+						const notice = getNotice(authErrors[0].reason, auth.lang)
 						setError(authErrors[0].origin, { type: 'custom', message: notice.message })
 					} else {
 						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors }})
 						authErrors.forEach(e => {
-							const notice = getNotice(e.reason)
+							const notice = getNotice(e.reason, auth.lang)
 							setError(e.origin, { type: 'custom', message: notice.message })
 						})
 					}

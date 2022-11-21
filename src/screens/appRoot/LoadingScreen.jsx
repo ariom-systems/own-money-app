@@ -10,6 +10,9 @@ import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
 import * as Hooks from '../../data/Hooks'
 
+import * as Recoil from 'recoil'
+import * as Atoms from '../../data/recoil/Atoms'
+
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
@@ -19,6 +22,10 @@ const LoadingScreen = () => {
 	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const { data, dataDispatch } = React.useContext(DataContext)
+	const [ globals, setGlobals ] = Recoil.useRecoilState(Atoms.globals)
+	const [ user, setUser ] = Recoil.useRecoilState(Atoms.user)
+	const [ transactions, setTransactions ] = Recoil.useRecoilState(Atoms.transactions)
+	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
 
 	Hooks.useEffectOnce(() => {
 		console.log('--statring preflight check--')
@@ -28,11 +35,15 @@ const LoadingScreen = () => {
 			api.get(Config.BASEURL + '/checktoken')
 				.then(response => { response.data.result == 'success' ? resolve() : reject(response.data.result) })
 		})
+
 		const loadGlobals = new Promise((resolve, reject) => {
 			api.get(buildDataPath('globals', null, 'branch'))
 				.then(response => {					
 					//console.log(response.data)
+					//old
 					dataDispatch({ type: 'LOAD_GLOBALS', payload: { data: response.data[0] } });
+					//new
+					setGlobals(response.data[0])
 					resolve('✅ Loaded Globals')
 				})
 				.catch(error => { reject('🚫 ' + error) })
@@ -40,7 +51,10 @@ const LoadingScreen = () => {
 		const loadUser = new Promise((resolve, reject) => {
 			api.get(buildDataPath('users', auth.uid, 'view'))
 				.then(response => {
+					//old
 					dataDispatch({ type: 'LOAD_USER', payload: { data: response.data } })
+					//new
+					setUser((initial) => ({...initial, ...response.data}))
 					resolve('✅ Loaded User Data')
 			 	})
 				.catch(error => { reject('🚫 ' + error) })
@@ -48,13 +62,28 @@ const LoadingScreen = () => {
 		const loadMetadata = new Promise((resolve, reject) => {
 			api.get(buildDataPath('meta', auth.uid, 'view', { endpoint: 'users' }))
 				.then(response => {
+					//old
 					dataDispatch({ type: 'LOAD_USER_META', payload: { data: response.data } })
+					//new
+					let max = response.data.daily_limit.max
+					let remaining = response.data.daily_limit.remaining
+					delete response.data.daily_limit
+					setUser((prev) => ({
+						...prev,
+						...response.data,
+						daily_limit_max: max,
+						daily_limit_remaining: remaining
+					}))
 					resolve('✅ Loaded User Metadata Data')
 			 	})
 				.catch(error => { reject('🚫 ' + error) })
 		})
+
 		const loadBeneficiaries = new Promise((resolve, reject) => {
-			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, ["id", "id_users", "firstname", "lastname", "status"])))
+			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, 
+				["id", "id_users", "firstname", "lastname", "thainame", "phone", "accountnumber", "accounttype", "bankname", "branchname", 
+				"branchcity", "address", "state", "city", "postcode", "country"]
+			)))
 				.then(response => {
 					let newResponse = []
 					newResponse = response.data.filter(function(obj) {
@@ -63,11 +92,18 @@ const LoadingScreen = () => {
 					newResponse = iterateInitials(newResponse)
 					newResponse = iterateFullName(newResponse) 
 					newResponse = sortByParam(newResponse, "firstname")
+					//old
 					dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
+					//new
+					setBeneficiaries((initial) => ({
+						...initial,
+						list: response.data
+					}))
 					resolve('✅ Loaded Beneficiaries')
 				})
 				.catch(error => { reject('🚫 ' + error) })
 		})
+
 		const loadTransactions = new Promise((resolve, reject) => {
 			const today = new Date(Date.parse(new Date())).getTime() / 1000
 			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))		
@@ -81,11 +117,18 @@ const LoadingScreen = () => {
 					newResponse = iterateDatesTimes(response.data, 'completed_date', 'co')
 					let count = newResponse.length
 					const groupArrays = groupArrayObjects(newResponse, 'cr_date')
-					
 					let dateStr = latest[0].created_date.replace(' ', 'T') + 'Z'
 					let timestamp = new Date(Date.parse(dateStr)).getTime() / 1000
+					//old
 					dataDispatch({ type: 'LOAD_TRANSACTIONS', payload: { data: groupArrays, index: timestamp, last: 0, count: count } })
 					dataDispatch({ type: 'LOAD_LATEST', payload: { data: groupArrays } })
+					//new
+					setTransactions((initial) => ({
+						...initial,
+						timestamp: timestamp,
+						list: groupArrays
+					}))
+
 					resolve('✅ Loaded Recent Transactions')
 				})
 				.catch(error => { reject('🚫 ' + error) })
