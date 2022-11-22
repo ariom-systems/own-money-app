@@ -4,7 +4,7 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import Config from 'react-native-config'
 import { AuthContext, DataContext } from '../../data/Context'
-import { keychainReset, buildDataPath, sortByParam,	iterateInitials, iterateFullName, iterateDatesTimes, groupArrayObjects } from '../../data/Actions'
+import { keychainReset, buildDataPath, sortByParam,	iterateInitials, iterateFullName, iterateDatesTimes, groupArrayObjects, addExtraRecordData } from '../../data/Actions'
 import { api } from '../../config'
 import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
@@ -110,25 +110,30 @@ const LoadingScreen = () => {
 				.then(response => {
 					const latest = response.data.slice(-1)
 					let newResponse = []
+					
+
+
+					//new
+					setTransactions((initial) => ({
+						...initial,
+						list: addExtraRecordData(response.data)
+					}))
+
+					//old
 					newResponse = iterateFullName(response.data)
 					newResponse = iterateInitials(newResponse)
 					newResponse = iterateDatesTimes(response.data, 'created_date', 'cr')
 					newResponse = iterateDatesTimes(response.data, 'processed_date', 'pr')
 					newResponse = iterateDatesTimes(response.data, 'completed_date', 'co')
+
 					let count = newResponse.length
 					const groupArrays = groupArrayObjects(newResponse, 'cr_date')
 					let dateStr = latest[0].created_date.replace(' ', 'T') + 'Z'
 					let timestamp = new Date(Date.parse(dateStr)).getTime() / 1000
-					//old
+										
 					dataDispatch({ type: 'LOAD_TRANSACTIONS', payload: { data: groupArrays, index: timestamp, last: 0, count: count } })
 					dataDispatch({ type: 'LOAD_LATEST', payload: { data: groupArrays } })
-					//new
-					setTransactions((initial) => ({
-						...initial,
-						timestamp: timestamp,
-						list: groupArrays
-					}))
-
+					
 					resolve('✅ Loaded Recent Transactions')
 				})
 				.catch(error => { reject('🚫 ' + error) })

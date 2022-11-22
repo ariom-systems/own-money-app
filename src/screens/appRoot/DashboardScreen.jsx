@@ -4,7 +4,10 @@ import { Avatar, Badge, Box, Button, Column, Divider, Heading, HStack,
 	Modal, Pressable, ScaleFade, ScrollView, SectionList, Spacer, Text, VStack } from 'native-base'
 
 import { AuthContext, DataContext } from '../../data/Context'
-import { formatCurrency } from '../../data/Actions'
+import { formatCurrency, groupTransactionsByDate } from '../../data/Actions'
+
+import * as Recoil from 'recoil'
+import * as Atoms from '../../data/recoil/Atoms'
 
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
@@ -17,38 +20,33 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 const DashboardScreen = ({ navigation }) => {
 	const { auth } = React.useContext(AuthContext)
 	const { data } = React.useContext(DataContext)
-	const [ transferList , setTransferList ] = React.useState([])
+	const globals = Recoil.useRecoilValue(Atoms.globals)
+	const transactions = Recoil.useRecoilValue(Atoms.transactions) 
+
+ 	const [ transferList , setTransferList ] = React.useState([])
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 	
 	HeaderItem.contextType = AuthContext
-	ListItem.contextType = DataContext
 
-	let rateAsOf, rateValue
-
-	if(data.globals.length !== 0) {
-		let formatted = formatCurrency(data.globals.rate, "th-TH", "THB")
-		rateValue = formatted.symbol + formatted.value
-	} else {
-		rateValue = 0.00
-	}
-	rateAsOf = new Date().toLocaleString('en-GB').split(',')[0]
+	let formatted = formatCurrency(globals.rate, "th-TH", "THB")
+	let rateValue = formatted.symbol + formatted.value
+	let rateAsOf = new Date().toLocaleString('en-GB').split(',')[0]
 	
 	React.useEffect(() => {
+		const listData = transactions.list.slice(0, 10)
+		let grouped = groupTransactionsByDate(listData)
 		let output = []
-		const listData = data.transactions
-		if(listData.length !== 0) {
-			listData.forEach(section => {
-				output.push(<HeaderItem key={section.header} header={section.header}/>)
-				section.data.forEach(item => {
-					output.push(<ListItem key={item.transaction_number} data={item} />)
-					if(item !== section.data[section.data.length - 1]) {
-						output.push(<Divider key={Math.random()} />)
-					}
-				})
+		grouped.forEach(section => {
+			output.push(<HeaderItem key={section.header} header={section.header}/>)
+			section.data.forEach(item => {
+				output.push(<ListItem key={item.transaction_number} data={item} />)
+				if(item !== section.data[section.data.length - 1]) {
+					output.push(<Divider key={Math.random()} />)
+				}
 			})
-		}
+		})
 		setTransferList(output)
-	}, [data.transactions])
+	}, [transactions.list])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -136,7 +134,7 @@ class HeaderItem extends React.PureComponent {
 	render() {
 		const auth = this.context.auth
 		const date = this.props.header
-		let formattedDate = new Date().toLocaleDateString(auth.lang, {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+		let formattedDate = new Date(date).toLocaleDateString(auth.lang, {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 		return(
 			<Box backgroundColor={"primary.200"} p={"4"} w={"100%"}>
 				<Heading size={"sm"}>{formattedDate}</Heading>
@@ -152,8 +150,6 @@ class ListItem extends React.PureComponent {
 			showModal: false
 		}
 	}
-
-	static contextType = DataContext
 
 	handlePress() {
 		this.setState({ showModal: true })
@@ -179,13 +175,13 @@ class ListItem extends React.PureComponent {
 					<HStack alignItems={"center"} space={"3"} py={"4"}>
 						<Avatar size={"48px"} backgroundColor={"primary.600"}>{data.initials}</Avatar>
 						<VStack>
-							<Text mb={"2"} bold>{data.fullname}</Text>
+							<Text mb={"2"} bold>{ data.fullname }</Text>
 						</VStack>
 						<Spacer />
 						<VStack alignContent={"flex-end"} space={"2"}>
-							<Badge colorScheme={statusBadge} variant={"outline"}>{data.status}</Badge>
-							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{sendAmount} AUD</Text>
-							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{receiveAmount} THB</Text>
+							<Badge colorScheme={statusBadge} variant={"outline"}>{ data.status }</Badge>
+							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{ sendAmount } AUD</Text>
+							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{ receiveAmount } THB</Text>
 						</VStack>
 					</HStack>
 				</Pressable>

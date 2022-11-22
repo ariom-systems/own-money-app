@@ -1,92 +1,5 @@
 import * as Keychain from "react-native-keychain"
 import { Buffer } from 'buffer'
-import Config from 'react-native-config'
-
-import NetInfo from '@react-native-community/netinfo'
-import React from 'react'
-
-
-import { useRecoilState, useSetRecoilState, useRecoilValue, selector } from 'recoil'
-
-export function checkConnectionInitial() {
-	//const [ appstate, setAppstate ] = useRecoilState(appstateAtom)
-	//const setAppstate = useSetRecoilState(appstateAtom)
-	checkConnection()
-	setTimeout(() => {
-		NetInfo.fetch().then(state => {
-			if(state.isInternetReachable !== true) {
-				//console.log('isInternetReachable: ' + state.isInternetReachable)
-				
-			} else {
-				//console.log('Connected to ' + Config.BASEURL)
-			}
-		})
-	}, 2500)
-	return null
-}
-
-
-export function initialCheckConnection(authDispatch) {
-	checkConnection()
-	setTimeout(() => {
-		NetInfo.fetch().then(state => {
-			if(state.isInternetReachable !== true) {
-				console.log('isInternetReachable: ' + state.isInternetReachable)
-				retryConnection(authDispatch)
-			} else {
-				console.log('Connected to ' + Config.BASEURL)
-			}
-		})
-	}, 2500)
-}
-
-
-export function checkConnection() {
-	NetInfo.fetch().then(state => {
-		return state.isInternetReachable
-	})
-}
-
-
-export function retryConnection(authDispatch) {
-	authDispatch({ type: 'SET_STATUS', payload: { data: 'offline' }})
-	const reconnecting = setInterval(() => {
-		NetInfo.fetch().then(state => {
-			if(state.isInternetReachable === true) {
-				authDispatch({ type: 'CLEAR_STATUS' })
-				clearInterval(reconnecting)
-			} else {
-				console.log('network connection issue')
-			}
-		})
-	}, 30000)
-}
-
-
-/**
- * Send an request to the remote server to initiate a password reset procedure. 
- * 
- * @category Auth
- * 
- * @param {string} email		
- * 
- * @returns {(JSON|String)}
- */
-export const requestPasswordReset = async (email) => {
-	const response = await fetch(Config.BASEURL + '/forgotpassword', {
-		method: 'POST',
-		headers: {
-			'Accept': 'application/json',
-			'Content-Type': 'application/x-www-form-urlencoded'
-		},
-		body: encodeURI(`email=${email}&context=mobile`)
-	})
-	if(response.ok) {
-		return response.json()
-	} else {
-		return response.text()
-	}
-}
 
 
 /**
@@ -176,7 +89,7 @@ export const parseToken = (token) => {
 
 
 /**
- * Builds the url path, header, and body of a Fetch request
+ * Builds the url path of a Fetch request
  * 		
  * @category Auth
  * 
@@ -226,6 +139,7 @@ export const buildDataPath = (endpoint, uid, action, args = []) => {
 	}
 	return path
 }
+
 
 /**
  * Read in an array to sort through and a key value to sort by. 
@@ -342,26 +256,19 @@ export function groupArrayObjects(input, key, delimeter = ' ', part = 0) {
 
 
 /**
- * Because console.log is too hard to type. Also because nested objects are reduced to [Object object] and
- * thats annoying
- * 		
+ * Formats an input number to a localised currency as specified by a locale. This function is
+ * a little more complicated than we'd like however the limiting factor is this app is built
+ * on React Native 0.70.4 and uses the Hermes engine which (as of November 2022) has no support
+ * for ECMA-402 (Intl). Gotta make do with what is available to us.
+ * 
  * @category Data
  * 
- * @param {array}      [input]		The thing to log.
+ * @param {string}		[input]			The numerical value to convert into a localised currency.
+ * @param {string}		[currencyCode]	A string representation of the country code/region to convert to. e.g "en-AU" or "th-TH"
+ * @param {string}		[currency]		The three letter currency code. e.g "AUD", "THB"
  * 
- * @returns  {void}
- */
-export function log($input) {
-	console.log(JSON.stringify($input, null, 4))
-}
-
-
-export function getRemainingLoginTime(expiry) {
-	const timeNow = Math.floor(Date.now()/1000)
-	const untilExpire = expiry - timeNow
-	return untilExpire
-}
-
+ * @returns {object}
+*/
 export function formatCurrency(input, countryCode, currency) {
 	const intlObj = new Intl.NumberFormat(countryCode, { style: 'currency', currency: currency})
 	let rawNumberObj
@@ -389,14 +296,65 @@ export function formatCurrency(input, countryCode, currency) {
 }
 
 
-export function formatFloat(input) {
-	let newInput = input.toString().replaceAll(',', '')
-	return newInput
+/**
+ * Iterates through an array of transaction or beneficiary records and adds extra record properties using existing
+ * record data. Examples include separating datetime strings into dates and times, as well as
+ * computing initials from firstname and last name.
+ * 
+ * @category Data
+ * 
+ * @param {array}		[input]		An array of objects to iterate through.
+ * 
+ * @returns {array}
+ */
+export function addExtraRecordData(input) {
+	output = input.map(item => {
+		if(item.hasOwnProperty('created_date')) {
+			let [ cr_date, cr_time ] = item.created_date.split(" ")
+			item = { ...item, created_date: cr_date, created_time: cr_time }
+		}
+		if(item.hasOwnProperty('processed_date')) {
+			let [ pr_date, pr_time ] = item.processed_date.split(" ")
+			item = { ...item, processed_date: pr_date, processed_time: pr_time }
+		}
+		if(item.hasOwnProperty('completed_date')) {
+			let [ co_date, co_time ] = item.completed_date.split(" ")
+			item = { ...item, completed_date: co_date, completed_time: co_time }
+		}
+		//fullname and initials
+		let fullname = [item.firstname, item.lastname].join(' ')
+		let match = fullname.match(/\b(\w)/g)
+		item = { ...item, fullname: fullname, initials: match.join('') }
+		return item
+	})
+	return output
 }
 
-export function valueIsBetween(input, conditions) {
-	let lowerLimit, upperLimit
-	if(typeof conditions.min !== 'undefined') { lowerLimit = Number(conditions.min) } else { lowerLimit = 0 }
-	if(typeof conditions.max !== 'undefined') { upperLimit = Number(conditions.max) } else { upperLimit = Number.MAX_SAFE_INTEGER }
-	if( Number(input) >= lowerLimit &&  Number(input) <= upperLimit ) { return true } else { return false }
+
+/**
+ * Iterates through an array of transaction records and groups them by date. Returns an array of dates
+ * with a child array of tranactions with that date. Used in formatting tranaction data for list display.
+ * 
+ * @category Data
+ * 
+ * @param {array}		[input]		An indexed array of transaction objects loaded straight from a data source.
+ * 
+ * @returns {array}
+ */
+export function groupTransactionsByDate(input) {
+	const groups = input.reduce((groups, item) => {
+		const header = item.created_date
+		if(!groups[header]) {
+			groups[header] = []
+		}
+		groups[header].push(item)
+		return groups
+	}, {})
+	const groupArrays = Object.keys(groups).map((header) => {
+		return {
+			header,
+			data: groups[header]
+		}
+	})
+	return groupArrays
 }

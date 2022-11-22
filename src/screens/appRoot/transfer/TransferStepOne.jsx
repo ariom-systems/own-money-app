@@ -20,7 +20,7 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 import { useRecoilState, useRecoilValue, selector } from 'recoil'
 //import { transfersAtom } from '../../../data/recoil/Atoms'
 import { AuthContext, DataContext, TransferContext } from '../../../data/Context'
-import { formatCurrency, formatFloat, valueIsBetween } from '../../../data/Actions'
+import { formatCurrency, valueIsBetween } from '../../../data/Actions'
 import { api } from '../../../config'
 import { buildDataPath } from '../../../data/Actions'
 import { useAspect } from '../../../data/Hooks'
@@ -75,6 +75,20 @@ const TransferStepOneInner = () => {
 
 	
 	//console.log(transfers)
+
+/*
+function formatFloat(input) {
+	let newInput = input.toString().replaceAll(',', '')
+	return newInput
+}
+
+function valueIsBetween(input, conditions) {
+	let lowerLimit, upperLimit
+	if(typeof conditions.min !== 'undefined') { lowerLimit = Number(conditions.min) } else { lowerLimit = 0 }
+	if(typeof conditions.max !== 'undefined') { upperLimit = Number(conditions.max) } else { upperLimit = Number.MAX_SAFE_INTEGER }
+	if( Number(input) >= lowerLimit &&  Number(input) <= upperLimit ) { return true } else { return false }
+}
+*/
 
 	const onSubmit = submitted => {
 		// let subAUD = formatFloat(submitted.aud)

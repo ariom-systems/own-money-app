@@ -33,8 +33,10 @@ import { NativeBaseProvider, extendTheme } from 'native-base'
 
 //Other
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
-import { getRemainingLoginTime, initialCheckConnection, keychainLoad, keychainReset, parseToken, checkConnectionInitial } from './src/data/Actions'
-import { useInterval } from './src/data/Hooks';
+import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
+import { initialCheckConnection } from './src/data/handlers/connection'
+
+import * as Hooks from './src/data/Hooks';
 import { optionsDashboard, optionsBeneficiaries, optionsTransfer, optionsTransactions, optionsProfile } from './src/components/dashboard/TabOptions'
 import LogoutScreen from './src/screens/appRoot/LogoutScreen';
 import NetInfo from '@react-native-community/netinfo'
@@ -92,14 +94,7 @@ const AppNavigator = ({navigation}) => {
     const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
     React.useEffect(() => {
-        NetInfo.fetch().then(state => {
-            return state.isInternetReachable
-        })
-
-
-
         //check if we can connect to the API first
-        checkConnectionInitial()
         initialCheckConnection(authDispatch)
         // begin authentication run: is token present in Context?
         if(auth.token === null) {
@@ -133,23 +128,24 @@ const AppNavigator = ({navigation}) => {
 		}
 	}, [language, auth])
 
-    useInterval(() => {
-        const timeLeft = getRemainingLoginTime(auth.expire) 
+    Hooks.useInterval(() => {
+        async function checkTokenExpiry(timestamp) {
+            if(timestamp <= 0) {
+                const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+                if(reset === true) {
+                    authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }})
+                    authDispatch({ type: 'LOGOUT'})
+                }
+            }
+        }
+        const timeNow = Math.floor(Date.now()/1000)
+	    const timeLeft = auth.expire - timeNow
         checkTokenExpiry(timeLeft)
     }, auth.expire > 0 ? 60000 : null)
 
-    async function checkTokenExpiry(timestamp) {
-        if(timestamp <= 0) {
-            const reset = await keychainReset('token') //shutup vscode, await DOES do something here
-            if(reset === true) {
-                authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }})
-                authDispatch({ type: 'LOGOUT'})
-            }
-        }
-    }
-
     // const scheme = useColorScheme()
     // theme={scheme === 'dark' ? ReactNavigationThemeDark : ReactNavigationThemeDefault}
+    
     return (
         <>
             { auth.token === null ? (
