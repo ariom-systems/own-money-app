@@ -5,7 +5,7 @@ import IconSettingsCog from '../../components/common/IconSettingsCog'
 
 Ionicons.loadFont()
 
-export const optionsDashboard = (navigation) => ({
+export const Dashboard = (navigation) => ({
 	headerShown: true,
 	headerRight: () => (<IconSettingsCog props={navigation} />),
 	tabBarIcon: ({focused, color, size = 24}) => {
@@ -24,7 +24,7 @@ export const optionsDashboard = (navigation) => ({
 	tabBarInactiveTintColor: 'gray',
 })
 
-export const optionsBeneficiaries = (navigation) => ({
+export const Beneficiaries = (navigation) => ({
 	headerShown: true,
 	headerRight: () => (<IconSettingsCog props={navigation} />),
 	tabBarIcon: ({focused, color, size = 24}) => {
@@ -42,7 +42,7 @@ export const optionsBeneficiaries = (navigation) => ({
 	tabBarInactiveTintColor: 'gray',
 })
 
-export const optionsTransfer = (navigation) => ({
+export const Transfer = (navigation) => ({
 	headerRight: () => (<IconSettingsCog props={navigation} />),
 	tabBarIcon: ({focused, color, size = 24}) => {
 		if(Platform.OS === 'ios') {
@@ -59,7 +59,7 @@ export const optionsTransfer = (navigation) => ({
 	tabBarInactiveTintColor: 'gray',
 })
 
-export const optionsTransactions = (navigation) => ({
+export const Transactions = (navigation) => ({
 	headerRight: () => (<IconSettingsCog props={navigation} />),
 	tabBarIcon: ({focused, color, size = 24}) => {
 		if(Platform.OS === 'ios') {
@@ -76,7 +76,7 @@ export const optionsTransactions = (navigation) => ({
 	tabBarInactiveTintColor: 'gray',
 })
 
-export const optionsProfile = (navigation) => ({
+export const Profile = (navigation) => ({
 	headerRight: () => (<IconSettingsCog props={navigation} />),
 	tabBarIcon: ({focused, color, size = 24}) => {
 		if(Platform.OS === 'ios') {

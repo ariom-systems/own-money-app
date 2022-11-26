@@ -833,15 +833,6 @@
     "@formatjs/ecma402-abstract" "1.13.0"
     "tslib" "2.4.0"
 
-"@formatjs/intl-displaynames@^6.1.4":
-  "integrity" "sha512-sEbziGLsWQo6nA8ZUBcsDRlZzPg+uMVjDmbTalgGqRWLbdXuxMldTYdaCK+UptyJhkmNVM/erz3csTiyqamXHQ=="
-  "resolved" "https://registry.npmjs.org/@formatjs/intl-displaynames/-/intl-displaynames-6.1.4.tgz"
-  "version" "6.1.4"
-  dependencies:
-    "@formatjs/ecma402-abstract" "1.13.0"
-    "@formatjs/intl-localematcher" "0.2.31"
-    "tslib" "2.4.0"
-
 "@formatjs/intl-getcanonicallocales@^2.0.4", "@formatjs/intl-getcanonicallocales@2.0.4":
   "integrity" "sha512-+Sd9QcfnUQlo/hnBq8Czh3TyVgHWK1AW2fAlUABLCd6zVxJwFpHX20CATetH9lKKgbaG8fOP/ijn/7So6aa2fQ=="
   "resolved" "https://registry.npmjs.org/@formatjs/intl-getcanonicallocales/-/intl-getcanonicallocales-2.0.4.tgz"

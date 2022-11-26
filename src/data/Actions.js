@@ -1,5 +1,6 @@
 import * as Keychain from "react-native-keychain"
 import { Buffer } from 'buffer'
+import { log } from 'console'
 
 
 /**
@@ -286,7 +287,7 @@ export function formatCurrency(input, countryCode, currency) {
 	let amountObj = { symbol: '', value: []}
 	rawNumberObj.map(({type, value}) => {
 		switch(type) {
-			case 'currency': amountObj.symbol = value; break
+			case 'currency': amountObj.symbol = value.replace('A',''); break
 			default: amountObj.value.push(value); break
 		}
 	})
@@ -320,6 +321,10 @@ export function addExtraRecordData(input) {
 		if(item.hasOwnProperty('completed_date')) {
 			let [ co_date, co_time ] = item.completed_date.split(" ")
 			item = { ...item, completed_date: co_date, completed_time: co_time }
+		}
+		if(item.hasOwnProperty('transfer_amount')) {
+			//thanks to https://stackoverflow.com/questions/8976627/how-to-add-two-strings-as-if-they-were-numbers
+			item = { ...item, amount_paid: parseFloat(+item.transfer_amount + +item.fee_AUD).toFixed(2) }
 		}
 		//fullname and initials
 		let fullname = [item.firstname, item.lastname].join(' ')
@@ -357,4 +362,38 @@ export function groupTransactionsByDate(input) {
 		}
 	})
 	return groupArrays
+}
+
+
+/**
+ * Maps data from one object to corresponding properties in a template object. Used for populating
+ * SectionList components with external key/value array data
+ * 
+ * @category Data
+ * 
+ * @param {object}			[data]		The data to transform and map.
+ * @param {object|array}	[template]	Structure for the data to fit into.
+ * 
+ * @returns {object|array}
+ */
+export function mapSectionDataFromTemplate(data, template) {
+	if(Object.keys(data.view).length !== 0) {
+		let mappedTemplate = template.map((section, index) => {
+			let obj = {}, title = section.title
+			let mappedSection = section.data.map((item, index2) => {
+				for(const [key, value] of Object.entries(data.view)) {
+					if(key === item.key) {
+						item.value = value
+					}
+				}
+				return item
+			})
+			obj.title = title
+			obj.data = mappedSection
+			return obj
+		})
+		return mappedTemplate
+	} else {
+		return template
+	}
 }

@@ -54,38 +54,9 @@ export const user = atom({
 export const beneficiaries = atom({
 	key: 'beneficiaries',
 	default: {
-		add: {
-			firstname: '',
-			lastname: '',
-			thainame: '',
-			phone: '',
-			accountnumber: '',
-			accounttype: '',
-			bankname: '',
-			branchname: '',
-			branchcity: '',
-			address: '',
-			state: '',
-			city: '',
-			postcode: '',
-			country: 'Thailand'
-		},
-		edit: {
-			firstname: '',
-			lastname: '',
-			thainame: '',
-			phone: '',
-			accountnumber: '',
-			accounttype: '',
-			bankname: '',
-			branchname: '',
-			branchcity: '',
-			address: '',
-			state: '',
-			city: '',
-			postcode: '',
-			country: 'Thailand'
-		},
+		add: {},
+		edit: {},
+		view: {},
 		list: []
 	}
 })
@@ -109,7 +80,16 @@ export const transactions = atom({
 			purpose: '',
 			termandconditions: ''
 		},
+		view: 0,
 		timestamp: 0,
 		list: []
+	}
+})
+
+export const loading = atom({
+	key: 'loading',
+	default: {
+		status: false,
+		text: "loading"
 	}
 })

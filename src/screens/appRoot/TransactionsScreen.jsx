@@ -9,12 +9,10 @@ const Stack = createNativeStackNavigator()
 
 const TransactionsScreen = ({ navigation }) => {
 	return (
-		<NavigationContainer independent={true}>
-			<Stack.Navigator>
-				<Stack.Screen options={{ headerShown: false }} name="TransactionsList" component={TransactionsList} />
-				<Stack.Screen options={{ headerShown: false }} name="TransactionsDetail" component={TransactionsDetail} />
-			</Stack.Navigator>
-		</NavigationContainer>
+		<Stack.Navigator>
+			<Stack.Screen options={{ headerShown: false }} name="TransactionsList" component={TransactionsList} />
+			<Stack.Screen options={{ headerShown: false }} name="TransactionsDetail" component={TransactionsDetail} />
+		</Stack.Navigator>
 	)
 }
 

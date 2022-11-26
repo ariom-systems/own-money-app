@@ -34,12 +34,11 @@ import { NativeBaseProvider, extendTheme } from 'native-base'
 //Other
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
 import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
-import { initialCheckConnection } from './src/data/handlers/connection'
+import { initialCheckConnection } from './src/data/handlers/Connection'
 
 import * as Hooks from './src/data/Hooks';
-import { optionsDashboard, optionsBeneficiaries, optionsTransfer, optionsTransactions, optionsProfile } from './src/components/dashboard/TabOptions'
+import * as TabOptions from './src/components/common/TabOptions'
 import LogoutScreen from './src/screens/appRoot/LogoutScreen';
-import NetInfo from '@react-native-community/netinfo'
 
 //Recoil
 import { RecoilRoot } from 'recoil'
@@ -181,11 +180,11 @@ const AppTabs = ({navigation}) => {
 
     return (
         <Tabs.Navigator>
-            <Tabs.Screen options={{...optionsDashboard(navigation), title: language.screens.dashboard }} name='Dashboard' component={ DashboardScreen } />
-            <Tabs.Screen options={{...optionsBeneficiaries(navigation), title: language.screens.beneficiaries }} name='Beneficiaries' component={ BeneficiariesScreen } />
-            <Tabs.Screen options={{...optionsTransfer(navigation), title: language.screens.transfer }} name='Transfer' component={ TransferScreen } />
-            <Tabs.Screen options={{...optionsTransactions(navigation), title: language.screens.transactions }} name='Transactions' component={ TransactionsScreen } />
-            <Tabs.Screen options={{...optionsProfile(navigation), title: language.screens.profile }} name='Your Profile' component={ ProfileScreen } />
+            <Tabs.Screen options={{...TabOptions.Dashboard(navigation), title: language.screens.dashboard }} name='Dashboard' component={ DashboardScreen } />
+            <Tabs.Screen options={{...TabOptions.Beneficiaries(navigation), title: language.screens.beneficiaries }} name='Beneficiaries' component={ BeneficiariesScreen } />
+            <Tabs.Screen options={{...TabOptions.Transfer(navigation), title: language.screens.transfer }} name='Transfer' component={ TransferScreen } />
+            <Tabs.Screen options={{...TabOptions.Transactions(navigation), title: language.screens.transactions }} name='Transactions' component={ TransactionsScreen } />
+            <Tabs.Screen options={{...TabOptions.Profile(navigation), title: language.screens.profile }} name='Your Profile' component={ ProfileScreen } />
         </Tabs.Navigator>
     )
 }

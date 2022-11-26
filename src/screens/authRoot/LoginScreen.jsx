@@ -15,6 +15,10 @@ import image from '../../assets/img/logo.png'
 import Config from 'react-native-config'
 import { api } from '../../config'
 
+//debug only
+import { deleteUserPinCode } from '@haskkor/react-native-pincode'
+import { keychainReset } from '../../data/Actions'
+
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 
@@ -193,7 +197,7 @@ const LoginScreen = ({ navigation }) => {
 								<HStack>
 									<LanguageToggle />
 								</HStack>
-								{/* <HStack w={"100%"} space={"3"}>
+								<HStack w={"100%"} space={"3"}>
 									<Button
 										flexGrow={"1"}
 										variant={"outline"}
@@ -206,10 +210,10 @@ const LoginScreen = ({ navigation }) => {
 										variant={"outline"}
 										onPress={() => {
 											console.log('clearing pin')
-											deleteUserPinCode("com.acaregroup.OwnMoney")
+											deleteUserPinCode("com.ariom.ownmoney")
 											keychainReset("pin")
 										}}>Clear PIN Code</Button>
-								</HStack> */}
+								</HStack>
 							</VStack>
 						</VStack>
 					</KeyboardAvoidingView>

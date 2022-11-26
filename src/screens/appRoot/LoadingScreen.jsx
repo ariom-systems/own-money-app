@@ -5,7 +5,7 @@ Ionicon.loadFont()
 import Config from 'react-native-config'
 import { AuthContext, DataContext } from '../../data/Context'
 import { keychainReset, buildDataPath, sortByParam,	iterateInitials, iterateFullName, iterateDatesTimes, groupArrayObjects, addExtraRecordData } from '../../data/Actions'
-import { api } from '../../config'
+import { api, beneficiaryColumns } from '../../config'
 import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
 import * as Hooks from '../../data/Hooks'
@@ -23,6 +23,7 @@ const LoadingScreen = () => {
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const { data, dataDispatch } = React.useContext(DataContext)
 	const [ globals, setGlobals ] = Recoil.useRecoilState(Atoms.globals)
+	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
 	const [ user, setUser ] = Recoil.useRecoilState(Atoms.user)
 	const [ transactions, setTransactions ] = Recoil.useRecoilState(Atoms.transactions)
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
@@ -44,6 +45,7 @@ const LoadingScreen = () => {
 					dataDispatch({ type: 'LOAD_GLOBALS', payload: { data: response.data[0] } });
 					//new
 					setGlobals(response.data[0])
+					setLoading((initial) => (initial))
 					resolve('✅ Loaded Globals')
 				})
 				.catch(error => { reject('🚫 ' + error) })
@@ -80,11 +82,16 @@ const LoadingScreen = () => {
 		})
 
 		const loadBeneficiaries = new Promise((resolve, reject) => {
-			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, 
-				["id", "id_users", "firstname", "lastname", "thainame", "phone", "accountnumber", "accounttype", "bankname", "branchname", 
-				"branchcity", "address", "state", "city", "postcode", "country"]
-			)))
+			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, beneficiaryColumns )))
 				.then(response => {
+					
+					//new
+					setBeneficiaries((initial) => ({
+						...initial,
+						list: addExtraRecordData(response.data)
+					}))
+					
+					//old
 					let newResponse = []
 					newResponse = response.data.filter(function(obj) {
 						return obj.status !== 'In-Active'
@@ -92,13 +99,9 @@ const LoadingScreen = () => {
 					newResponse = iterateInitials(newResponse)
 					newResponse = iterateFullName(newResponse) 
 					newResponse = sortByParam(newResponse, "firstname")
-					//old
+					
 					dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
-					//new
-					setBeneficiaries((initial) => ({
-						...initial,
-						list: response.data
-					}))
+					
 					resolve('✅ Loaded Beneficiaries')
 				})
 				.catch(error => { reject('🚫 ' + error) })
@@ -108,18 +111,16 @@ const LoadingScreen = () => {
 			const today = new Date(Date.parse(new Date())).getTime() / 1000
 			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))		
 				.then(response => {
-					const latest = response.data.slice(-1)
-					let newResponse = []
-					
-
-
+		
 					//new
 					setTransactions((initial) => ({
 						...initial,
 						list: addExtraRecordData(response.data)
 					}))
-
+					
 					//old
+					const latest = response.data.slice(-1)
+					let newResponse = []
 					newResponse = iterateFullName(response.data)
 					newResponse = iterateInitials(newResponse)
 					newResponse = iterateDatesTimes(response.data, 'created_date', 'cr')
@@ -192,6 +193,7 @@ const LoadingScreen = () => {
 					if( previous >= 1 ) {
 						userMeta['daily_limit'] = {
 							...userMeta.daily_limit,
+							//TODO: Fix this! This sometimes breaks!!!
 							remaining: userMeta.daily_limit.max 
 						}
 					}

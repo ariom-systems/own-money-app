@@ -1,7 +1,8 @@
-import React from 'react';
+import React from 'react'
 import { ImageBackground, Platform, StyleSheet } from 'react-native'
-import { Avatar, Badge, Box, Button, Column, Divider, Heading, HStack,
-	Modal, Pressable, ScaleFade, ScrollView, SectionList, Spacer, Text, VStack } from 'native-base'
+import { Box, Button, Divider, Heading, HStack, ScrollView, Text, VStack } from 'native-base'
+import HeaderItem from '../../components/dashboard/HeaderItem'
+import ListItem from '../../components/dashboard/ListItem'
 
 import { AuthContext, DataContext } from '../../data/Context'
 import { formatCurrency, groupTransactionsByDate } from '../../data/Actions'
@@ -19,15 +20,13 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const DashboardScreen = ({ navigation }) => {
 	const { auth } = React.useContext(AuthContext)
-	const { data } = React.useContext(DataContext)
 	const globals = Recoil.useRecoilValue(Atoms.globals)
-	const transactions = Recoil.useRecoilValue(Atoms.transactions) 
+	const transactions = Recoil.useRecoilValue(Atoms.transactions)
+	const user = Recoil.useRecoilValue(Atoms.user)
 
  	const [ transferList , setTransferList ] = React.useState([])
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 	
-	HeaderItem.contextType = AuthContext
-
 	let formatted = formatCurrency(globals.rate, "th-TH", "THB")
 	let rateValue = formatted.symbol + formatted.value
 	let rateAsOf = new Date().toLocaleString('en-GB').split(',')[0]
@@ -82,7 +81,7 @@ const DashboardScreen = ({ navigation }) => {
 				<VStack px={"2.5%"} py={"5%"} space={"4"}>
 					<Box justifItems={"flex-start"}>
 						<Box p={"5%"} backgroundColor={"white"} rounded={"lg"}>
-							<Heading>{ language.dashboard.greeting } {data.user.firstname} {data.user.lastname}!</Heading>
+							<Heading>{ language.dashboard.greeting } {user.firstname} {user.lastname}!</Heading>
 							<Box backgroundColor={"gray.200"} borderRadius={"8"} p={"4"} my={"4"}>
 								<HStack justifyContent={"space-between"} borderBottomColor={"coolGray.400"} borderBottomWidth={"1"} pb={"2"}>
 									<Heading fontSize={"lg"}>{ language.dashboard.currentRate }</Heading>
@@ -125,122 +124,6 @@ const DashboardScreen = ({ navigation }) => {
 			</ScrollView>
 		</ImageBackground>
 	)
-}
-
-
-
-class HeaderItem extends React.PureComponent {
-	static contextType = AuthContext
-	render() {
-		const auth = this.context.auth
-		const date = this.props.header
-		let formattedDate = new Date(date).toLocaleDateString(auth.lang, {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-		return(
-			<Box backgroundColor={"primary.200"} p={"4"} w={"100%"}>
-				<Heading size={"sm"}>{formattedDate}</Heading>
-			</Box>
-		)
-	}
-}
-
-class ListItem extends React.PureComponent {
-	constructor(props) {
-		super(props)
-		this.state = {
-			showModal: false
-		}
-	}
-
-	handlePress() {
-		this.setState({ showModal: true })
-	}
-
-	render() {
-		const data = this.props.data
-		let statusBadge
-		switch(data.status) {
-			case 'Wait for payment': statusBadge = 'default'; break
-			case 'Cancelled': statusBadge = 'danger'; break
-			case 'Completed': statusBadge = 'success'; break
-		}
-		const sendAmount = formatCurrency(data.transfer_amount, "en-AU", "AUD").full
-		const receiveAmount = formatCurrency(data.received_amount, "th-TH", "THB").full
-		const rate = formatCurrency(data.rate, "en-AU", "AUD").full
-		const fees = formatCurrency(data.fee_AUD, "en-AU", "AUD").full
-		const totalToPay = formatCurrency((Number.parseFloat(data.transfer_amount) + Number.parseFloat(data.fee_AUD)), "en-AU", "AUD").full
-
-		return (
-			<Box>
-				<Pressable px={"4"} onPress={() => this.handlePress() }>
-					<HStack alignItems={"center"} space={"3"} py={"4"}>
-						<Avatar size={"48px"} backgroundColor={"primary.600"}>{data.initials}</Avatar>
-						<VStack>
-							<Text mb={"2"} bold>{ data.fullname }</Text>
-						</VStack>
-						<Spacer />
-						<VStack alignContent={"flex-end"} space={"2"}>
-							<Badge colorScheme={statusBadge} variant={"outline"}>{ data.status }</Badge>
-							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{ sendAmount } AUD</Text>
-							<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{ receiveAmount } THB</Text>
-						</VStack>
-					</HStack>
-				</Pressable>
-				<Modal isOpen={this.state.showModal} onClose={() => this.setState({ showModal: false }) } size={"lg"}>
-					<Modal.Content w={"95%"} >
-						<Modal.CloseButton />
-						<Modal.Header>{"Transaction: " + data.transaction_number}</Modal.Header>
-						<Modal.Body>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelBeneficiaryName }</Text>
-								<Text textAlign={"right"} >{ data.fullname }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelAccountNumber }</Text>
-								<Text textAlign={"right"} >{ data.accountnumber }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"} borderBottomWidth={"1"} borderBottomColor={"coolGray.300"}>
-								<Text bold>{ language.dashboard.modalLabelBank }</Text>
-								<Text textAlign={"right"}>{ data.bankname }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelSendAmount }</Text>
-								<Text textAlign={"right"} >{sendAmount} { language.dashboard.audCode }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelRate }</Text>
-								<Text textAlign={"right"} >{rate} { language.dashboard.thbCode }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelFees }</Text>
-								<Text textAlign={"right"} >{fees} { language.dashboard.audCode }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelTotalToPay }</Text>
-								<Text textAlign={"right"} >{totalToPay} { language.dashboard.audCode }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"} borderBottomWidth={"1"} borderBottomColor={"coolGray.300"}>
-								<Text bold>{ language.dashboard.modalLabelReceivableAmount }</Text>
-								<Text textAlign={"right"}>{receiveAmount} { language.dashboard.thbCode }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelStatus }</Text>
-								<Badge colorScheme={statusBadge} variant={"solid"} textAlign={"right"} >{ data.status }</Badge>
-							</HStack>
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelCreatedDate }</Text>
-								<Text textAlign={"right"} >{ data.created_date }</Text>
-							</HStack>
-							{ data.status == 'Completed' && ( 
-							<HStack justifyContent={"space-between"} py={"4"}>
-								<Text bold>{ language.dashboard.modalLabelCompletedDate }</Text>
-								<Text textAlign={"right"} >{ data.completed_date }</Text>
-							</HStack>)}
-						</Modal.Body>
-					</Modal.Content>
-				</Modal>
-			</Box>
-		)
-	}
 }
 
 export default DashboardScreen

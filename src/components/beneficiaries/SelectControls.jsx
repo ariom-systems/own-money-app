@@ -5,6 +5,16 @@ import { AuthContext } from '../../data/Context'
 import { api } from '../../config'
 import { useFormContext } from 'react-hook-form'
 
+export const Controlled = (props) => {
+	switch(props.component) {
+		case 'AccountType': return <AccountType {...props} /> ; break
+		case 'BankName': return <BankName {...props} /> ; break
+		case 'BranchCity': return <BranchCity {...props} /> ; break
+		case 'Province': return <Province {...props} /> ; break
+		case 'District': return <District {...props} /> ; break
+	}
+}
+
 
 export const AccountType = (props) => {
 	const [ accountType, setAccountType ] = React.useState({

@@ -4,7 +4,7 @@ import PINCode, { hasUserSetPinCode, deleteUserPinCode } from '@haskkor/react-na
 import TouchID from 'react-native-touch-id'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
-import Dialog from '../../components/common/Dialog'
+import AlertModal from '../../components/common/AlertModal'
 import { keychainSave, keychainReset, log } from '../../data/Actions'
 import { AuthContext } from '../../data/Context'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
@@ -50,7 +50,7 @@ const PinCodeScreen = ({ navigation }) => {
 
 	React.useEffect(() => {
 		const checkKeychainForPin = async () => {
-			const result = await hasUserSetPinCode('com.acaregroup.OwnMoney')
+			const result = await hasUserSetPinCode('com.ariom.ownmoney')
 			if(typeof result !== 'undefined') {
 				if (result === true) {
 					setHasPin(true)
@@ -88,7 +88,7 @@ const PinCodeScreen = ({ navigation }) => {
 	const handleResetPinAction = async () => {
 		await keychainReset('pin')
 		await keychainReset('token')
-		await deleteUserPinCode('com.acaregroup.OwnMoney')
+		await deleteUserPinCode('com.ariom.ownmoney')
 		authDispatch({ type: 'RESET_PIN' })
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' }})
 		authDispatch({ type: 'LOGOUT' })
@@ -154,7 +154,7 @@ const PinCodeScreen = ({ navigation }) => {
 				delayBetweenAttempts={500}
 				callbackErrorTouchId={handleTouchError}
 				passcodeFallback={false}
-				pinCodeKeychainName={"com.acaregroup.OwnMoney"}
+				pinCodeKeychainName={"com.ariom.ownmoney"}
 				finishProcess={(pin) => hasPin ? handleEnterPin(pin) : handlePinSet(pin)}
 				disableLockScreen={true}
 				//Styles
@@ -178,63 +178,47 @@ const PinCodeScreen = ({ navigation }) => {
 				touchIDSentence={language.pinCode.touchIDSentence}
 			/>
 			{ hasPin == true && (
-				<>
-					<VStack space={"10"} w={"100%"} h={"30%"} pb={"2%"} justifyContent={"center"} alignItems={"center"}>
-						<Pressable onPress={handleResetPinCheck}>
-							<Text color={"primary.600"}>{ language.pinCode.forgotPincodeLink }</Text>
-						</Pressable>
-						{biometry !== 'none' && (
-						<Pressable onPress={() => setKey(Math.random()) /* this doesn't feel right */}>
-							{biometry == 'TouchID' ? (
-								<NBIonicon name={'finger-print'} fontSize={"4xl"} />
-							) : (
-								<NBMaterial name={'face-recognition'} fontSize={"4xl"} />
-							)}
-						</Pressable>
+				<VStack space={"10"} w={"100%"} h={"30%"} pb={"2%"} justifyContent={"center"} alignItems={"center"}>
+					<Pressable onPress={handleResetPinCheck}>
+						<Text color={"primary.600"}>{ language.pinCode.forgotPincodeLink }</Text>
+					</Pressable>
+					{biometry !== 'none' && (
+					<Pressable onPress={() => setKey(Math.random()) /* this doesn't feel right */}>
+						{biometry == 'TouchID' ? (
+							<NBIonicon name={'finger-print'} fontSize={"4xl"} />
+						) : (
+							<NBMaterial name={'face-recognition'} fontSize={"4xl"} />
 						)}
-						<HStack>
-							<LanguageToggle />
-						</HStack>
-					</VStack>
-					<Dialog
-						show={show1}
-						close={onClose1}
-						header={ language.pinCode.biometricDialogTitle }
-						body={(
-							<Text>{ language.pinCode.biometricDialogMessage }</Text>
-						)}
-						buttons={(
-							<>
-								<Button.Group>
-									<Button onPress={() => setKey(Math.random())}>{ language.pinCode.biometricDialogButtonTryAgain }</Button>
-									<Button onPress={onClose1}>{ language.pinCode.biometricDialogButtonEnterPin }</Button>
-								</Button.Group>
-							</>
-						)}
-					/>
-					<Dialog
-						show={show2}
-						close={onClose2}
-						header={language.pinCode.resetPinDialogTitle}
-						ldRef={cancelRef}
-						body={(
-							<>
-								<Text>{ language.pinCode.resetPinDialogMessageLine1}</Text>
-								<Text>{ language.pinCode.resetPinDialogMessageLine2}</Text>
-							</>
-						)}
-						buttons={(
-							<>
-								<Button.Group>
-									<Button onPress={handleResetPinAction} >{ language.pinCode.resetPinDialogButtonReset}</Button>
-									<Button onPress={onClose2} ref={cancelRef}>{ language.pinCode.resetPinDialogButtonCancel}</Button>
-								</Button.Group>
-							</>
-						)}
-					/>
-				</>
+					</Pressable>
+					)}
+					<HStack>
+						<LanguageToggle />
+					</HStack>
+				</VStack>
 			)}
-			
+			<AlertModal
+				show={show1}
+				close={onClose1}
+				header={ language.pinCode.biometricDialogTitle }
+				content={<Text>{ language.pinCode.biometricDialogMessage }</Text>}
+			>
+				<Button.Group>
+					<Button onPress={() => setKey(Math.random())}>{ language.pinCode.biometricDialogButtonTryAgain }</Button>
+					<Button onPress={onClose1}>{ language.pinCode.biometricDialogButtonEnterPin }</Button>
+				</Button.Group>
+			</AlertModal>
+			<AlertModal
+				show={show2}
+				close={onClose2}
+				header={language.pinCode.resetPinDialogTitle}
+				ldRef={cancelRef}
+				content={<Text>{language.pinCode.resetPinDialogMessageLine1}{`\n\n`}{language.pinCode.resetPinDialogMessageLine2}</Text>}
+			>
+				<Button.Group>
+					<Button onPress={handleResetPinAction} >{ language.pinCode.resetPinDialogButtonReset}</Button>
+					<Button onPress={onClose2} ref={cancelRef}>{ language.pinCode.resetPinDialogButtonCancel}</Button>
+				</Button.Group>
+			</AlertModal>
 		</>)
 }
 

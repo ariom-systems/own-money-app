@@ -10,18 +10,16 @@ import BeneficiariesDelete from './beneficiaries/BeneficiariesDelete'
 
 const Stack = createNativeStackNavigator()
 
-const BeneficiariesScreen = ({ navigation }) => {
+const BeneficiariesScreen = () => {
 
 	return (		
-		<NavigationContainer independent={true}>
-			<Stack.Navigator>
-				<Stack.Screen options={{ headerShown: false }} name="BeneficiariesList" component={BeneficiariesList} />
-				<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDetail" component={BeneficiariesDetail} />
-				<Stack.Screen options={{ headerShown: false }} name="BeneficiariesEdit" component={BeneficiariesEdit} />
-				<Stack.Screen options={{ headerShown: false }} name="BeneficiariesAdd" component={BeneficiariesAdd} />
-				<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDelete" component={BeneficiariesDelete} />
-			</Stack.Navigator>
-		</NavigationContainer>
+		<Stack.Navigator>
+			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesList" component={BeneficiariesList} />
+			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDetail" component={BeneficiariesDetail} />
+			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesEdit" component={BeneficiariesEdit} />
+			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesAdd" component={BeneficiariesAdd} />
+			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDelete" component={BeneficiariesDelete} />
+		</Stack.Navigator>
 	)
 }
 

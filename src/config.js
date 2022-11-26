@@ -14,6 +14,27 @@ export const api = create({
 	timeout: 5000
 })
 
+//no idea where else to put this
+export const beneficiaryColumns = [
+	"id",
+	"id_users",
+	"firstname",
+	"lastname",
+	"thainame",
+	"phone",
+	"accountnumber",
+	"accounttype",
+	"bankname",
+	"branchname",
+	"branchcity",
+	"address",
+	"state",
+	"city",
+	"postcode",
+	"country",
+	"status"
+]
+
 export const NativeBaseTheme = extendTheme({
 	colors: {
 		primary: {
