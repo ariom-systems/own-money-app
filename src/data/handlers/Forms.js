@@ -11,24 +11,6 @@ export const rulesBeneficiariesAdd = {
 
 }
 
-export const defaultsBeneficiariesEdit = {
-	id: '',
-	firstname: '',
-	lastname: '',
-	thainame: '',
-	phone: '',
-	accountnumber: '',
-	accounttype: '',
-	bankname: '',
-	branchname: '',
-	branchcity: '',
-	address: '',
-	state: '',
-	city: '',
-	postcode: '',
-	country: 'Thailand'
-}
-
 export const rulesBeneficiariesEdit = {
 	firstname: { required: language.beneficiariesEdit.listDataFirstNameErrorRequired },
 	lastname: { required: language.beneficiariesEdit.listDataLastNameErrorRequired },

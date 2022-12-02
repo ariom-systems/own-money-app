@@ -1,6 +1,6 @@
 import React from 'react'
 
-export function useInterval(callback, delay) {
+export function useInterval(callback, delay, cancel = null) {
 	const savedCallback = React.useRef()
 
 	React.useEffect(() => {
@@ -16,9 +16,15 @@ export function useInterval(callback, delay) {
 			let id = setInterval(tick, delay)
 			return () => clearInterval(id)
 		}
+
+		if(cancel === undefined) {
+			let id = setInterval(tick, delay)
+			return () => clearInterval(id)
+		}
+
+
 	}, [delay])
 }
-
 
 export function useAspect(initial) {
 	const [ aspect, setAspect ] = React.useState(initial)

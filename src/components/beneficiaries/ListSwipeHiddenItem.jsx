@@ -8,7 +8,8 @@ Ionicon.loadFont()
 const NBIonicon = Factory(Ionicon)
 
 import * as Recoil from 'recoil'
-import * as Atoms from '../../data/recoil/Atoms'
+import { loading } from '../../data/recoil/Atoms'
+import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
@@ -16,11 +17,14 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ListSwipeHiddenItem = (props) => {
-	const { id, firstname, lastname } = props.data.item
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
-	const setLoading = Recoil.useSetRecoilState(Atoms.loading)
-	const navigation = useNavigation()
 	const { auth } = React.useContext(AuthContext)
+	const { id, firstname, lastname } = props.data.item
+	let index = props.data.index
+	const setBeneficiary = Recoil.useSetRecoilState(beneficiaryObj)
+	const beneficiaries = Recoil.useRecoilValue(beneficiaryList)
+	const setLoading = Recoil.useSetRecoilState(loading)
+	const navigation = useNavigation()
+	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	//AlertDialog
 	const [ isOpen, setIsOpen ] = React.useState(false)
@@ -28,28 +32,37 @@ const ListSwipeHiddenItem = (props) => {
 	const cancelRef = React.createRef(null)
 
 	const handleEdit = (item) => {
-		setBeneficiaries(prev => ({
-			...prev,
-			edit: item
-		}))
+		setBeneficiary(item)
 		navigation.navigate('BeneficiariesEdit')
 	}
 	
-	const handleDelete = (id) => { 
+	const handleDelete = (item) => { 
 		onClose()
+		setBeneficiary(item)
 		//navigation.navigate('BeneficiariesDelete')
 	}
 
+	let corners
+	if(index === 0) {
+		corners = "top"
+	} else if(index === beneficiaries.length - 1) {
+		corners = "bottom"
+	} else {
+		corners = "none"
+	}
+
 	return (
-		<HStack key={ id } justifyContent={"flex-end"} flex={"1"}>
-			<Pressable onPress={() => handleEdit( beneficiaries.edit ) }>
+		<HStack backgroundColor={"coolGray.100"} key={ id } justifyContent={"flex-end"} flex={"1"}
+			roundedTop={ corners == "top" ? "10" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
+			<Pressable onPress={() => handleEdit({...props.data.item, index: props.data.index }) }>
 				<VStack w={"80px"} h={"80px"} backgroundColor={"warmGray.300"} alignItems={"center"} justifyContent={"center"}>
 					<NBIonicon name={"create-outline"} fontSize={"3xl"} />
 					<Text>{ language.beneficiariesList.slideButtonEdit }</Text>
 				</VStack>
 			</Pressable>
 			<Pressable onPress={() => setIsOpen(!isOpen)}>					
-				<VStack w={"80px"} h={"80px"} backgroundColor={"danger.600"} alignItems={"center"} justifyContent={"center"}>
+				<VStack w={"80px"} h={"80px"} backgroundColor={"danger.600"} alignItems={"center"} justifyContent={"center"}
+				roundedTopRight={ corners == "top" ? "10" : false } roundedBottomRight={ corners == "bottom" ? "10" : false }>
 					<NBIonicon name={"trash-outline"} fontSize={"3xl"} color={"white"} />
 					<Text color={"white"}>{ language.beneficiariesList.slideButtonDelete }</Text>
 				</VStack>
@@ -69,7 +82,7 @@ const ListSwipeHiddenItem = (props) => {
 					<AlertDialog.Footer>
 						<Button.Group space={2}>
 							<Button variant="unstyled" colorScheme="coolGray" onPress={ onClose } ref={ cancelRef.current }>{ language.beneficiariesList.alertDeleteButtonCancel }</Button>
-							<Button colorScheme="danger" onPress={() => handleDelete( id ) }>{ language.beneficiariesList.alertDeleteButtonConfirm }</Button>
+							<Button colorScheme="danger" onPress={() => handleDelete({...props.data.item, index: props.data.index }) }>{ language.beneficiariesList.alertDeleteButtonConfirm }</Button>
 						</Button.Group>
 					</AlertDialog.Footer>
 				</AlertDialog.Content>

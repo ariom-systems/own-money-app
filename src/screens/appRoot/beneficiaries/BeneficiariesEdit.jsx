@@ -1,18 +1,20 @@
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 import { useForm, FormProvider, useFormContext } from 'react-hook-form'
-import { Button, Center, Factory, HStack, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
+import { Box, Button, Center, Factory, HStack, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import { AuthContext } from '../../../data/Context'
-import { buildDataPath, addExtraRecordData } from '../../../data/Actions'
-import { api, beneficiaryColumns } from '../../../config'
+import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData } from '../../../data/Actions'
+import { api } from '../../../config'
 import Spinner from '../../../components/common/Spinner'
+import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
 import * as Atoms from '../../../data/recoil/Atoms'
+import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 
-import { defaultsBeneficiariesEdit, rulesBeneficiariesEdit } from '../../../data/handlers/Forms'
+import { rulesBeneficiariesEdit } from '../../../data/handlers/Forms'
 import EditHeaderItem from '../../../components/beneficiaries/EditHeaderItem'
 import EditFormTextInput from '../../../components/beneficiaries/EditFormTextInput'
 import EditFormSelectInput from '../../../components/beneficiaries/EditFormSelectInput'
@@ -27,10 +29,8 @@ const NBIonicon = Factory(Ionicon)
 export default function BeneficiariesEdit() {
 	const methods = useForm({
 		mode: 'onBlur',
-		criteriaMode: 'all',
-		defaultValues: defaultsBeneficiariesEdit
+		criteriaMode: 'all'
 	})
-
 	return (
 		<FormProvider {...methods}>
 			<BeneficiariesEditInner />
@@ -40,12 +40,34 @@ export default function BeneficiariesEdit() {
 
 function BeneficiariesEditInner() {
 	const navigation = useNavigation()
-	const [ initialLoad, setInitialLoad ] = React.useState(true)
 	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
-	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
+	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
+	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
+	const setLoading = Recoil.useSetRecoilState(Atoms.loading)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+
+	React.useEffect(() => {
+		if(beneficiary !== null) {
+			setValue('id', beneficiary.id, { shouldTouch: true }) //passthrough only
+			setValue('index', beneficiary.index, { shouldTouch: true }) //passthrough only
+			setValue('status', beneficiary.status, { shouldTouch: true }) //passthrough only
+			setValue('firstname', beneficiary.firstname, { shouldTouch: true })
+			setValue('lastname', beneficiary.lastname, { shouldTouch: true })
+			setValue('thainame', beneficiary.thainame, { shouldTouch: true })
+			setValue('phone', beneficiary.phone, { shouldTouch: true })
+			setValue('accountnumber', beneficiary.accountnumber, { shouldTouch: true })
+			setValue('accounttype', beneficiary.accounttype, { shouldTouch: true })
+			setValue('bankname', beneficiary.bankname, { shouldTouch: true })
+			setValue('branchname', beneficiary.branchname, { shouldTouch: true })
+			setValue('branchcity', beneficiary.branchcity, { shouldTouch: true })
+			setValue('address', beneficiary.address, { shouldTouch: true })
+			setValue('state', beneficiary.state, { shouldTouch: true })
+			setValue('city', beneficiary.city, { shouldTouch: true })
+			setValue('postcode', beneficiary.postcode, { shouldTouch: true })
+			setValue('country', beneficiary.country, { shouldTouch: true })
+		}
+	},[beneficiary])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -55,72 +77,43 @@ function BeneficiariesEditInner() {
 		}
 	}, [language, auth])
 
-	React.useEffect(() => {
-		setLoading({ status: false, text: "" })
-		if(initialLoad == true) {
-			setValue('id', beneficiaries.edit.id, { shouldTouch: true })
-			setValue('firstname', beneficiaries.edit.firstname, { shouldTouch: true })
-			setValue('lastname', beneficiaries.edit.lastname, { shouldTouch: true })
-			setValue('thainame', beneficiaries.edit.thainame, { shouldTouch: true })
-			setValue('phone', beneficiaries.edit.phone, { shouldTouch: true })
-			setValue('accountnumber', beneficiaries.edit.accountnumber, { shouldTouch: true })
-			setValue('accounttype', beneficiaries.edit.accounttype, { shouldTouch: true })
-			setValue('bankname', beneficiaries.edit.bankname, { shouldTouch: true })
-			setValue('branchname', beneficiaries.edit.branchname, { shouldTouch: true })
-			setValue('branchcity', beneficiaries.edit.branchcity, { shouldTouch: true })
-			setValue('address', beneficiaries.edit.address, { shouldTouch: true })
-			setValue('state', beneficiaries.edit.state, { shouldTouch: true })
-			setValue('city', beneficiaries.edit.city, { shouldTouch: true })
-			setValue('postcode', beneficiaries.edit.postcode, { shouldTouch: true })
-			setValue('country', beneficiaries.edit.country, { shouldTouch: true })
-			setInitialLoad(false)
-		}
-	}, [initialLoad, beneficiaries])
+	const handleBack = () => {
+		navigation.goBack()
+	}
 
 	const onSubmit = data => {
 		setLoading({ status: true, text: 'Saving' })
+		//push changes to remote
 		api.put(buildDataPath('beneficiaries', auth.uid, 'edit', {id: data.id} ), data)
-			.then(response => {
+		.then(response => {
+			if(response.ok == true) {			
 				if(response.data == true) {
+					//if update is successful, re-parse submitted form data and send it to beneficiaryList atom
+					let newData = addObjectExtraData(data)				
+					const newList = atomReplaceItemAtIndex(beneficiaries, data.index, newData)
+					setBeneficiaries(newList)
+					setLoading({ status: false, text: "" })
 					authDispatch({ type: 'SET_STATUS', payload: { data: 'beneficiaryUpdated' }})
-					api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, beneficiaryColumns )))
-					.then(response => {
-						setBeneficiaries((initial) => ({
-							...initial,
-							list: addExtraRecordData(response.data)
-						}))
-					})
-					.catch(error => { throw error })
+					navigation.popToTop()
 				} else {
 					throw response.data
 				}
-			})
-			.finally(result => {
-				setLoading({ status: false, text: "" })
-				setBeneficiaries((prev) => ({
-					...prev,
-					edit: {},
-					view: {}
-				}))
-				navigation.popToTop()
-			})
-			.catch(error => console.log("onSubmit", error))
+			} else {
+				throw response.data
+			}
+			
+		})
+		.catch(error => {
+			console.log(error)
+			authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
+		})
 	}
 
 	//TODO: improve the list of errors shown to the user
 	const onError = (errors, e) => console.log(errors, e)
 
-	const handleBack = (item) => {
-		setBeneficiaries((prev) => ({
-			...prev,
-			edit: {}
-		}))
-		navigation.goBack()
-	}
-
 	return (
 		<>
-			
 			<StatusBar barStyle={"light-content"} backgroundColor={"#8B6A27"} />
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex={"1"} space={"4"} w={"100%"}>
@@ -134,7 +127,13 @@ function BeneficiariesEditInner() {
 							flex={"1"}
 							isLoadingText={"Saving..."}
 							onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
+						
 					</HStack>
+					{ (auth.status !== null && auth.status !== "") && (
+						<Box px={"4"}>
+							<Notice wrap={{w:"90%", m: "4"}}></Notice>
+						</Box>
+					)}
 					<ScrollView w={"100%"}>
 						<VStack py={"4"} space={"4"}>
 

@@ -13,7 +13,8 @@ export const AuthProvider = ({children}) => {
         loading: false,
         expire: 0,
         status: null,
-        lang: 'en-AU'
+        lang: 'en-AU',
+        extra: null
     }
     
     const [auth, authDispatch] = React.useReducer(authReducer, authInitialState);

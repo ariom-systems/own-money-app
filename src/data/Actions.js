@@ -310,29 +310,49 @@ export function formatCurrency(input, countryCode, currency) {
  */
 export function addExtraRecordData(input) {
 	output = input.map(item => {
-		if(item.hasOwnProperty('created_date')) {
-			let [ cr_date, cr_time ] = item.created_date.split(" ")
-			item = { ...item, created_date: cr_date, created_time: cr_time }
-		}
-		if(item.hasOwnProperty('processed_date')) {
-			let [ pr_date, pr_time ] = item.processed_date.split(" ")
-			item = { ...item, processed_date: pr_date, processed_time: pr_time }
-		}
-		if(item.hasOwnProperty('completed_date')) {
-			let [ co_date, co_time ] = item.completed_date.split(" ")
-			item = { ...item, completed_date: co_date, completed_time: co_time }
-		}
-		if(item.hasOwnProperty('transfer_amount')) {
-			//thanks to https://stackoverflow.com/questions/8976627/how-to-add-two-strings-as-if-they-were-numbers
-			item = { ...item, amount_paid: parseFloat(+item.transfer_amount + +item.fee_AUD).toFixed(2) }
-		}
-		//fullname and initials
-		let fullname = [item.firstname, item.lastname].join(' ')
-		let match = fullname.match(/\b(\w)/g)
-		item = { ...item, fullname: fullname, initials: match.join('') }
-		return item
+		return addObjectExtraData(item)
 	})
 	return output
+}
+
+
+/**
+ * Iterates through the properties of an object and adds extra properties using existing
+ * data. Examples include separating datetime strings into dates and times, as well as
+ * computing initials from firstname and last name.
+ * 
+ * @category Data
+ * 
+ * @param {object}		[input]		An array of objects to iterate through.
+ * 
+ * @returns {object}
+ */
+export function addObjectExtraData(input) {
+	if(input.hasOwnProperty('created_date')) {
+		let [ cr_date, cr_time ] = input.created_date.split(" ")
+		input = { ...input, created_date: cr_date, created_time: cr_time }
+	}
+
+	if(input.hasOwnProperty('processed_date')) {
+		let [ pr_date, pr_time ] = input.processed_date.split(" ")
+		input = { ...input, processed_date: pr_date, processed_time: pr_time }
+	}
+
+	if(input.hasOwnProperty('completed_date')) {
+		let [ co_date, co_time ] = input.completed_date.split(" ")
+		input = { ...input, completed_date: co_date, completed_time: co_time }
+	}
+
+	if(input.hasOwnProperty('transfer_amount')) {
+		//thanks to https://stackoverflow.com/questions/8976627/how-to-add-two-strings-as-if-they-were-numbers
+		input = { ...input, amount_paid: parseFloat(+input.transfer_amount + +input.fee_AUD).toFixed(2) }
+	}
+
+	//fullname and initials
+	let fullname = [input.firstname, input.lastname].join(' ')
+	let match = fullname.match(/\b(\w)/g)
+	input = { ...input, fullname: fullname, initials: match.join('') }
+	return input
 }
 
 
@@ -377,11 +397,13 @@ export function groupTransactionsByDate(input) {
  * @returns {object|array}
  */
 export function mapSectionDataFromTemplate(data, template) {
-	if(Object.keys(data.view).length !== 0) {
+	// console.log("data", data)
+	// console.log("template", template)
+	if(Object.keys(data).length !== 0) {
 		let mappedTemplate = template.map((section, index) => {
 			let obj = {}, title = section.title
 			let mappedSection = section.data.map((item, index2) => {
-				for(const [key, value] of Object.entries(data.view)) {
+				for(const [key, value] of Object.entries(data)) {
 					if(key === item.key) {
 						item.value = value
 					}
@@ -396,4 +418,29 @@ export function mapSectionDataFromTemplate(data, template) {
 	} else {
 		return template
 	}
+}
+
+
+/**
+ * Replaces an item at a specified index with a new value. 
+ * Used for updating Recoil atoms
+ *
+ * @category Data
+ * 
+ * @param {array}		[atom]				The list to update
+ * @param {integer}		[indexToReplace]	The position of the item to replace
+ * @param {object}		[newItem]			The payload data to replace the item with
+ * 
+ * @returns {array}
+ */
+export function atomReplaceItemAtIndex(atom, indexToReplace, newItem) {
+	const newAtom = atom.map((item, index) => {
+		if(index == indexToReplace) {
+			let quark = {}
+			Object.assign(quark, item, newItem)
+			return quark
+		}
+		return item
+	})
+	return newAtom
 }

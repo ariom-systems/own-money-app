@@ -9,7 +9,8 @@ import AlertModal from '../../../components/common/AlertModal'
 
 import { mapSectionDataFromTemplate } from '../../../data/Actions'
 import * as Recoil from 'recoil'
-import * as Atoms from '../../../data/recoil/Atoms'
+import { loading } from '../../../data/recoil/Atoms'
+import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { BeneficiaryBlank } from '../../../data/templates/BeneficiariesDetailSectionList'
 
 import { AuthContext } from '../../../data/Context'
@@ -25,10 +26,11 @@ const icon = <NBIonicon name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"
 
 export default function BeneficiariesDetail({ route, navigation }) {
 	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
-	const setLoading = Recoil.useSetRecoilState(Atoms.loading)
-	const [ sections, setSections ] = React.useState(BeneficiaryBlank)
-	const [ currentName, setCurrentName ] = React.useState("")
+	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
+	const setLoading = Recoil.useSetRecoilState(loading)
+
+	const sections = mapSectionDataFromTemplate(beneficiary, BeneficiaryBlank)
+
 	const [ isOpen, setIsOpen ] = React.useState(false)
 	const onClose = () => setIsOpen(false)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
@@ -45,30 +47,19 @@ export default function BeneficiariesDetail({ route, navigation }) {
 
 	React.useEffect(() => {
 		setLoading({ status: false, text: "" })
-		let newSections = mapSectionDataFromTemplate(beneficiaries, BeneficiaryBlank)
-		setSections(newSections)
-		setCurrentName(beneficiaries.view.fullname)
-	},[beneficiaries.view])
+	},[])
 
-	const handleEdit = (item) => {
+	const handleEdit = () => {
 		setLoading({ status: true, text: 'Loading' })
-		setBeneficiaries(prev => ({
-			...prev,
-			edit: item
-		}))
 		navigation.navigate('BeneficiariesEdit')
 	}
 
 	const handleBack = (navigation) => {
 		setLoading({ status: false, text: "" })
-		setBeneficiaries((prev) => ({
-			...prev,
-			view: {}
-		}))
 		navigation.popToTop()
 	}
 
-	const handleDelete = (id) => {
+	const handleDelete = () => {
 		//navigation.navigate('BeneficiariesDelete', { id: id })
 	}
 
@@ -80,7 +71,7 @@ export default function BeneficiariesDetail({ route, navigation }) {
 				<HStack alignItems={"center"} space={"3"} flexDir={"row"} py={"4"} px={"4"}>
 					<Button flex={"1"} onPress={() => handleBack(navigation)}>{ language.beneficiariesDetail.buttonBack }</Button>
 					<Spacer />
-					<Pressable onPress={() => handleEdit(beneficiaries.view)}>
+					<Pressable onPress={() => handleEdit()}>
 						<NBIonicon name={"create-outline"} fontSize={"3xl"} />
 					</Pressable>
 					<Pressable onPress={() => setIsOpen(!isOpen)}>
@@ -101,13 +92,13 @@ export default function BeneficiariesDetail({ route, navigation }) {
 				header={(
 					<HStack>
 						{icon}
-						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiariesDetail.alertDeleteHeading} {currentName}?</Heading>
+						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiariesDetail.alertDeleteHeading} { sections.fullname }?</Heading>
 					</HStack>
 				)}
-				content={ language.beneficiariesDetail.alertDeleteMessageLine1 + " " + currentName + ". " + language.beneficiariesDetail.alertDeleteMessageLine2 }>
+				content={ language.beneficiariesDetail.alertDeleteMessageLine1 + " " + sections.fullname + ". " + language.beneficiariesDetail.alertDeleteMessageLine2 }>
 				<Button.Group space={2}>
 					<Button variant="unstyled" colorScheme="coolGray" onPress={onClose} ref={cancelRef}>{ language.beneficiariesDetail.alertDeleteButtonCancel }</Button>
-					<Button colorScheme="danger" onPress={() => {onClose(); handleDelete(beneficiaries.view.id)}}>{ language.beneficiariesDetail.alertDeleteButtonConfirm }</Button>
+					<Button colorScheme="danger" onPress={() => {onClose(); handleDelete()}}>{ language.beneficiariesDetail.alertDeleteButtonConfirm }</Button>
 				</Button.Group>
 			</AlertModal>
 		</>

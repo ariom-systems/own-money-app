@@ -1,4 +1,5 @@
 import React from 'react'
+import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
 import { Center, Divider, Fab, Factory, StatusBar, VStack } from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
@@ -8,30 +9,46 @@ import ListSwipeItem from '../../../components/beneficiaries/ListSwipeItem'
 import ListSwipeHiddenItem from '../../../components/beneficiaries/ListSwipeHiddenItem'
 import Spinner from '../../../components/common/Spinner'
 
-import { AuthContext, DataContext } from '../../../data/Context'
+import { AuthContext} from '../../../data/Context'
 import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
 import * as Atoms from '../../../data/recoil/Atoms'
+import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
 
 const NBIonicon = Factory(Ionicon)
 
 const BeneficiariesList = ({navigation}) => {
 	const { auth } = React.useContext(AuthContext)
-	const beneficiaries = Recoil.useRecoilValue(Atoms.beneficiaries)
+	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
+	const [ beneficiariesLocal, setBeneficiariesLocal ] = React.useState(null)
+	//const [ beneficiary, setBeneficiary ] = Recoil.useRecoilState(beneficiaryObj)
 	const loading = Recoil.useRecoilValue(Atoms.loading)
+	
+
+	const handleSlide = (key) => {
+		//setBeneficiary(beneficiaries.find(obj => { return obj.id === key }))
+		//console.log("selected: ", beneficiaries.find(obj => { return obj.id === key }))
+	}
+
+	React.useEffect(() => {
+		const unsubscribe = navigation.addListener('focus', () => {
+			setBeneficiariesLocal(beneficiaries)
+		})
+		return unsubscribe
+	},[navigation, beneficiaries])
 
 	return (
-		<>	
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			{ loading.status && <Spinner /> }
 			<StatusBar barStyle={"dark-content"}/>
 			<Center flex={1} justifyContent={"center"}>
-				<VStack flex="1" w={"100%"} justifyContent={"flex-start"}>
+				<VStack flex="1" w={"100%"} px={"2.5%"} py={"5%"} justifyContent={"flex-start"}>
 					{ (auth.status !== null && auth.status !== "") && <Notice /> }
 					<FocusRender>
 						<SwipeListView
-							data={beneficiaries.list}
-							renderItem={(item, rowMap) => <ListSwipeItem data={item} rowMap={rowMap} navigation={navigation} />}
+							data={beneficiaries}
+							renderItem={(item, rowMap) => <ListSwipeItem data={item} rowMap={rowMap} navigation={navigation} /> }
 							renderHiddenItem={(item, rowMap) => <ListSwipeHiddenItem data={item} rowMap={rowMap} navigation={navigation}  />}
 							rightOpenValue={-160}
 							previewRowKey={'0'}
@@ -56,7 +73,7 @@ const BeneficiariesList = ({navigation}) => {
 						onPress={() => navigation.navigate('BeneficiariesAdd')}/>
 				</VStack>
 			</Center>
-		</>						
+		</ImageBackground>				
 	)
 }
 

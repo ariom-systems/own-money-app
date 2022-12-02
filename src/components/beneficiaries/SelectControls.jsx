@@ -81,16 +81,17 @@ export const BranchCity = (props) => {
 		api.get(buildDataPath('globals', null, 'provinces'))
 		.then(response => {
 			let cities = []
-			//console.log('branch-cities')
-			response.data.map((element, index) => {
-				const value = element.name_en
-				const label = element.name_en + ' (' + element.name_th + ')'
-				cities.push(<Select.Item key={index} label={label} value={value}/>)
-			})
-			setCity({
-				loaded: true,
-				cities: cities
-			})
+			if(Array.isArray(response.data)) {
+				response.data.map((element, index) => {
+					const value = element.name_en
+					const label = element.name_en + ' (' + element.name_th + ')'
+					cities.push(<Select.Item key={index} label={label} value={value}/>)
+				})
+				setCity({
+					loaded: true,
+					cities: cities
+				})
+			}
 		}, error => {
 			setCity({
 				loaded: true,
@@ -144,12 +145,14 @@ export const Province = (props) => {
 		.then(response => {
 			let list = []
 			if(response.ok == true) {
-				response.data.map((element, index) => {
-					const value = element.name_en
-					const label = element.name_en + ' (' + element.name_th + ')'
-					list.push(<Select.Item key={index} label={label} value={value}/>)
-				})
-				setProvince({...province, isLoaded: true, provinces: list})
+				if(Array.isArray(response.data)) {
+					response.data.map((element, index) => {
+						const value = element.name_en
+						const label = element.name_en + ' (' + element.name_th + ')'
+						list.push(<Select.Item key={index} label={label} value={value}/>)
+					})
+					setProvince({...province, isLoaded: true, provinces: list})
+				}
 			}
 		})
 		.catch(error => console.log(error))
@@ -210,12 +213,14 @@ export const District = (props) => {
 		.then(response => {
 			if(response.ok == true) {
 				let list = []
-				response.data.map((item, index) => {
-					const label = item.district + ' (' + item.name_th + ')'
-					const value = item.district
-					list.push(<Select.Item key={index} label={label} value={value} />)
-				})
-				setDistrict({...district, isLoaded: true, districts: list})
+				if(Array.isArray(response.data)) {
+					response.data.map((item, index) => {
+						const label = item.district + ' (' + item.name_th + ')'
+						const value = item.district
+						list.push(<Select.Item key={index} label={label} value={value} />)
+					})
+					setDistrict({...district, isLoaded: true, districts: list})
+				}
 			}
 		})
 		.catch(error => console.log(error))

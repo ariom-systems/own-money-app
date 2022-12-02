@@ -251,13 +251,15 @@ const SelectControlPurpose = (props) => {
 		.then(response => {
 			let list = []
 			if(response.ok == true) {
-				response.data.map((element, index) => {
-					list.push(<Select.Item key={index} label={element.purpose} value={element.purpose}/>)
-				})
-				if(auth.uid == 16) { //ME!!!
-					list.push(<Select.Item key={'999'} label={"API Testing Only"} value={"API Testing Only"}/>)
+				if(Array.isArray(response.data)) {
+					response.data.map((element, index) => {
+						list.push(<Select.Item key={index} label={element.purpose} value={element.purpose}/>)
+					})
+					if(auth.uid == 16) { //ME!!!
+						list.push(<Select.Item key={'999'} label={"API Testing Only"} value={"API Testing Only"}/>)
+					}
+					setPurposes(list)
 				}
-				setPurposes(list)
 			}
 		})
 		.catch(error => console.log(error))

@@ -6,10 +6,18 @@ export const authReducer = (state, action) => {
                 status: action.payload.data
             }
         break
+        case 'SET_STATUS_DETAILED':
+            return {
+                ...state,
+                status: action.payload.data,
+                extra: action.payload.extra
+            }
+        break
         case 'CLEAR_STATUS':
             return {
                 ...state,
-                status: null
+                status: null,
+                extra: null
             }
         break
         case 'LOADING':

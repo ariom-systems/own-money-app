@@ -2,6 +2,8 @@ import React from 'react'
 import { FormControl, HStack, Input } from 'native-base'
 import { ErrorMessage } from '../common/Forms'
 import { useController, useForm } from 'react-hook-form'
+import * as Recoil from 'recoil'
+
 
 const EditFormTextInput = (props) => {
 	const { name, control, rules = {}, errors, label, placeholder, required } = props

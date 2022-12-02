@@ -4,46 +4,44 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import { AuthContext } from '../../data/Context'
 import { getNotice } from '../../data/handlers/Status'
+import { BounceIn } from 'react-native-reanimated'
+import * as Hooks from '../../data/Hooks'
 
 const NBIonicon = Factory(Ionicon)
 
 export const Notice = (props) => {
 	const { auth, authDispatch } = React.useContext(AuthContext)
-	
-	let wrapProps = props.wrap
-	let close = props.showClose || true
+	const { wrap, showClose, timeout, children } = props
 	let content = getNotice(auth.status, auth.lang)
+
 	if(!(content instanceof Array)) {
 		if(content.hasOwnProperty('message')) {
-			return <NoticeBox content={content} wrap={wrapProps} showClose={close} />
+			return <NoticeBox content={content} wrap={wrap} showClose={showClose} timeout={timeout} extra={children} />
 		} else {
 			let notice = getNotice(content.reason, auth.lang)
-			return <NoticeBox content={notice} wrap={wrapProps} showClose={close} />
+			return <NoticeBox content={notice} wrap={wrap} showClose={showClose} timeout={timeout} extra={children} />
 		}
 	} else if(noticeContent instanceof Array) {
 		let notices = []
 		noticeContent.forEach(notice => {
 			let single = getNotice(notice.reason, auth.lang)
-			notices.push(<NoticeBox content={single} wrap={wrapProps} showClose={close} />)
+			notices.push(<NoticeBox content={single} wrap={wrap} showClose={showClose} timeout={timeout} extra={children} />)
 		})
 		return notices
 	}
 }
 
-export const NoticeBox = ({ content, wrapProps, showClose = true, timeout = 10000 }) => {
-	const { authDispatch } = React.useContext(AuthContext)
+export const NoticeBox = (props) => {
+	const { content, wrapProps, showClose = true, timeout, extra } = props
+	const { auth, authDispatch } = React.useContext(AuthContext)
 
 	const handleDismiss = () => {
 		authDispatch({ type: 'CLEAR_STATUS' })
 	}
 
-	React.useEffect(() => {
-		if(timeout !== false) {
-			setTimeout(() => {
-				handleDismiss()
-			}, timeout)	
-		}
-	}, [])
+	Hooks.useInterval(() => {
+		handleDismiss()
+	}, auth.extra === null ? 10000 : null)
 
 	return (
 		<Box {...wrapProps} key={content.title}>
@@ -58,9 +56,16 @@ export const NoticeBox = ({ content, wrapProps, showClose = true, timeout = 1000
 							<NBIonicon name={"close"} fontSize={"xl"} onPress={handleDismiss}/>
 						)}
 					</HStack>
-					<Box pl={"6"}>
+					<Box pl={ typeof extra == "undefined" ? "6" : "0"}>
 						<Text color={"info.600"} fontWeight={"medium"}>{content.message}</Text>
 					</Box>
+
+					{ extra && (
+						<Box p={"4"} bgColor={"primary.300"}>
+							<Text bold>Server Response:</Text>
+							{ extra }
+						</Box>
+					) }
 				</VStack>
 			</Alert>
 		</Box>

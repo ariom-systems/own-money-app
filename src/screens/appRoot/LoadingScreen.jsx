@@ -12,6 +12,7 @@ import * as Hooks from '../../data/Hooks'
 
 import * as Recoil from 'recoil'
 import * as Atoms from '../../data/recoil/Atoms'
+import { beneficiaryList } from '../../data/recoil/beneficiaries'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
@@ -27,6 +28,7 @@ const LoadingScreen = () => {
 	const [ user, setUser ] = Recoil.useRecoilState(Atoms.user)
 	const [ transactions, setTransactions ] = Recoil.useRecoilState(Atoms.transactions)
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
+	const setBeneficiaryList = Recoil.useSetRecoilState(beneficiaryList)
 
 	Hooks.useEffectOnce(() => {
 		console.log('--statring preflight check--')
@@ -85,6 +87,10 @@ const LoadingScreen = () => {
 			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, beneficiaryColumns )))
 				.then(response => {
 					
+					//NEW new
+					let responseData = addExtraRecordData(response.data)
+					setBeneficiaryList((init) => ([ ...responseData ]))
+
 					//new
 					setBeneficiaries((initial) => ({
 						...initial,
