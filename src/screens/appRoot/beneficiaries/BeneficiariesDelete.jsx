@@ -1,38 +1,41 @@
 import React from 'react'
 import { Center, StatusBar, VStack } from 'native-base'
-import { AuthContext, DataContext } from '../../../data/Context'
-import { buildDataPath } from '../../../data/Actions'
-import { api } from '../../../config'
 import LoadingOverlay from '../../../components/common/LoadingOverlay'
 
-export default function BeneficiariesDelete({route, navigation}) {
-	const { id } = route.params
+import { AuthContext, DataContext } from '../../../data/Context'
+import { api } from '../../../config'
+import { buildDataPath, atomRemoveItemAtIndex } from '../../../data/Actions'
+import * as Recoil from 'recoil'
+import * as Atoms from '../../../data/recoil/Atoms'
+import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { useNavigation } from '@react-navigation/native';
+
+export default function BeneficiariesDelete() {
+	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const { data, dataDispatch } = React.useContext(DataContext)
+	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
+	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
+	const resetBeneficiary = Recoil.useResetRecoilState(beneficiaryObj)
+	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
 
 	React.useEffect(() => {
-		api.delete(buildDataPath('beneficiaries', auth.uid, 'delete', { id: Number.parseInt(id) }))
+		api.delete(buildDataPath('beneficiaries', auth.uid, 'delete', { id: Number.parseInt(beneficiary.id) }))
 		.then(response => {
 			if (response.data == true) {
-				const newBeneficiaries = data.beneficiaries.filter(function(obj) {
-					return obj.id !== id
-				})
-				dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newBeneficiaries }})
+				let newList = atomRemoveItemAtIndex(beneficiaries, beneficiary.index)
+				setBeneficiaries(newList)
+				resetBeneficiary()
 				authDispatch({ type: 'SET_STATUS', payload: { data: 'beneficiaryDeleted' }})
-				dataDispatch({ type: 'CLEAR_BENEFICIARY' })
-				navigation.popToTop('BeneficiariesList')
+				navigation.navigate('BeneficiariesList')
 			}
 		})
-	},[])
+	},[beneficiary.id])
 
 	return (
 		<>
+			{ loading.status && <LoadingOverlay /> }
 			<StatusBar barStyle={"dark-content"} />
-			<Center flex={1} justifyContent={"center"}>
-				<VStack pt={4} flex="1" w={"100%"} justifyContent={"flex-start"}>
-					<LoadingOverlay />
-				</VStack>
-			</Center>
 		</>
 	)
 }

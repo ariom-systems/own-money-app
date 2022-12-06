@@ -32,7 +32,7 @@ export const beneficiaryColumns = [
 	"city",
 	"postcode",
 	"country",
-	"status"
+	"status" 
 ]
 
 export const NativeBaseTheme = extendTheme({

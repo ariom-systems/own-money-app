@@ -40,8 +40,8 @@ const ListSwipeItem = (props) => {
 	}
 
 	return (
-		<Pressable onPress={() => handlePress({...props.data.item, index: props.data.index }) }>
-			<HStack key={ id } alignItems={"center"} py={"4"} pl={"4"} space={"3"} backgroundColor={"coolGray.100"}
+		<Pressable key={ index } onPress={() => handlePress({...props.data.item, index: props.data.index }) }>
+			<HStack alignItems={"center"} py={"4"} pl={"4"} space={"3"} backgroundColor={"coolGray.100"}
 				roundedTop={ corners == "top" ? "10" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
 				<Avatar size={"48px"} backgroundColor={ status == 'Verified' ? '#8B6A27' : 'light.600' }>{ initials }</Avatar>
 				<VStack>

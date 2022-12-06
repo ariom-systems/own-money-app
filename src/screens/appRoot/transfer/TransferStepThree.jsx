@@ -121,7 +121,7 @@ const TransferStepThreeInner = () => {
 	return (
 		<ScrollView w={"100%"} flex={"1"} ref={scrollRef}>
 			<Box mx={"2.5%"} mt={"5%"} px={"5%"} pt={"5%"}  backgroundColor={"white"} h={"100%"} rounded={"2xl"}>
-				{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
+				{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
 				<StepIndicator
 					stepCount={4}
 					currentPosition={transfer.step}

@@ -103,7 +103,7 @@ export const parseToken = (token) => {
  * 
  * @returns {Object|boolean}	Returns an object on success, false on error
  */
-export const buildDataPath = (endpoint, uid, action, args = []) => {
+export const buildDataPath = (endpoint, uid, action, args = {}) => {
 	let path = ''
 	switch(endpoint) {
 		case 'users':
@@ -153,14 +153,65 @@ export const buildDataPath = (endpoint, uid, action, args = []) => {
  * @returns  {array}
  */
 export function sortByParam(input, key) {
-	input = input.sort((a, b) => {
-		if(a[key] < b[key]) return -1
-		if(a[key] > b[key]) return 1
-		return 0
-	})
-	return input
-}
+	const props = arguments
 
+	const dynamicSort = (property) => {
+		let sortOrder = 1
+		if(property[0] === "-") {
+			sortOrder = -1
+			property = property.substr(1)
+		}
+		return function(a, b) {
+			let result = (a[property] < b[property] ? -1 : (a[property] > b[property]) ? 1 : 0)
+			return result * sortOrder
+		}
+	}
+
+	return function(obj1, obj2) {
+		let i = 0, result = 0, numberOfProperties = props.length
+		while(result === 0 && i < numberOfProperties) {
+			result = dynamicSort(props[i])(obj1, obj2)
+			i++
+		}
+		return result
+	}
+	// if(key != "fullname") {
+	// 	input = input.sort((a, b) => {
+	// 		if(a[key] < b[key]) return -1
+	// 		if(a[key] > b[key]) return 1
+	// 		return 0
+	// 	})
+	// 	return input
+	// } else {
+	// 	const compareStrings = (x, y) => {
+	// 		if(x < y) return -1
+	// 		if(x > y) return 1
+	// 		return 0
+	// 	}
+
+	// 	const compareFn = (a, b) => {
+			
+	// 	}
+		
+	// 	input = input.sort((a, b) => {
+	// 		console.log("a", a[key])
+	// 		console.log("b", b[key])
+	// 		const splitA = a[key].split(" ")
+	// 		const splitB = b[key].split(" ")
+	// 		const lastA = splitA[splitA.length - 1]
+	// 		const lastB = splitB[splitB.length - 1]
+
+
+
+	// 		return lastA === lastB ?
+	// 			compareStrings(splitA[0], splitB[0]) :
+	// 			compareStrings(lastA, lastB)
+	// 	})
+	// }
+	
+
+
+}
 
 /**
  * Read an array of strings and return a combined string of each words first letter. 
@@ -422,7 +473,7 @@ export function mapSectionDataFromTemplate(data, template) {
 
 
 /**
- * Replaces an item at a specified index with a new value. 
+ * Replaces an item within an array at a specified index with a new value. 
  * Used for updating Recoil atoms
  *
  * @category Data
@@ -443,4 +494,50 @@ export function atomReplaceItemAtIndex(atom, indexToReplace, newItem) {
 		return item
 	})
 	return newAtom
+}
+
+
+export function atomRemoveItemAtIndex(atom, indexToRemove) {
+	let newAtom = [...atom]
+	console.log("newAtom", newAtom)
+	//don't combined the 2 lines below! they produce different results otherwise. splice returns the removed item
+	newAtom.splice(indexToRemove, 1)
+	return newAtom
+}
+
+
+/**
+ * Adds an item to an array and reorders/reindexes the array according to a specified key
+ * 
+ * @category Data
+ * 
+ * @param {array}		[atom]				The list to add the item to
+ * @param {object}		[newItem]			The payload data to add
+ * @param {string}		[reorderKey]				The name of the object property to reorder the list by
+ * 
+ * @returns {array}
+ */
+export function atomAddNewItem(atom, newItem, reorderKey) {
+	let newData = [...atom]
+	newData.push(newItem)
+	newData.sort(sortByParam(reorderKey))
+	return newData
+}
+
+
+/**
+ * Formats a flat array into an object with named properties and null values, then JSON stringifies 
+ * it. An over-engineered solution to a problem that should be resolved in other ways.
+ * 
+ * @category Data
+ * 
+ * @param {array}		[input]				The array to transform.
+ * 
+ * @returns {object}
+ */
+export function stringifyArray(input) {
+	const output = input.reduce((accumulator, value) => {
+		return {...accumulator, [value]: ''}
+	}, {})
+	return JSON.stringify(output)
 }

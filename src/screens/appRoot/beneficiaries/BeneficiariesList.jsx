@@ -1,7 +1,7 @@
 import React from 'react'
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
-import { Center, Divider, Fab, Factory, StatusBar, VStack } from 'native-base'
+import { Box, Center, Divider, Fab, Factory, StatusBar, VStack } from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
@@ -12,7 +12,7 @@ import Spinner from '../../../components/common/Spinner'
 import { AuthContext} from '../../../data/Context'
 import { Notice } from '../../../components/common/Notice'
 
-import * as Recoil from 'recoil'
+import { useRecoilState, selector, get } from 'recoil'
 import * as Atoms from '../../../data/recoil/Atoms'
 import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
 
@@ -20,31 +20,24 @@ const NBIonicon = Factory(Ionicon)
 
 const BeneficiariesList = ({navigation}) => {
 	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
-	const [ beneficiariesLocal, setBeneficiariesLocal ] = React.useState(null)
-	//const [ beneficiary, setBeneficiary ] = Recoil.useRecoilState(beneficiaryObj)
-	const loading = Recoil.useRecoilValue(Atoms.loading)
-	
-
-	const handleSlide = (key) => {
-		//setBeneficiary(beneficiaries.find(obj => { return obj.id === key }))
-		//console.log("selected: ", beneficiaries.find(obj => { return obj.id === key }))
-	}
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const [ loading, setLoading ] = useRecoilState(Atoms.loading)
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener('focus', () => {
-			setBeneficiariesLocal(beneficiaries)
+			setLoading({ status: false, text: "" })
 		})
 		return unsubscribe
 	},[navigation, beneficiaries])
 
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			{ loading.status && <Spinner /> }
 			<StatusBar barStyle={"dark-content"}/>
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex="1" w={"100%"} px={"2.5%"} py={"5%"} justifyContent={"flex-start"}>
-					{ (auth.status !== null && auth.status !== "") && <Notice /> }
+					{ (auth.status !== null && auth.status !== "") && (
+						<Notice nb={{w:"100%", mb: "4"}} />
+					)}
 					<FocusRender>
 						<SwipeListView
 							data={beneficiaries}
@@ -55,7 +48,7 @@ const BeneficiariesList = ({navigation}) => {
 							previewOpenValue={0}
 							previewOpenDelay={3000}
 							ItemSeparatorComponent={<Divider />}
-							keyExtractor={item => item.id}
+							keyExtractor={(item, index) => item + index }
 							getItemLayout={(item, index) => {
 								return { length: 80, offset: 80 * index, index }
 							}}

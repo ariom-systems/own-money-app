@@ -14,7 +14,7 @@ const BeneficiariesScreen = () => {
 
 	return (		
 		<Stack.Navigator>
-			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesList" component={BeneficiariesList} />
+			<Stack.Screen options={{ headerShown: false, unmountOnBlur: true }} name="BeneficiariesList" component={BeneficiariesList} />
 			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDetail" component={BeneficiariesDetail} />
 			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesEdit" component={BeneficiariesEdit} />
 			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesAdd" component={BeneficiariesAdd} />

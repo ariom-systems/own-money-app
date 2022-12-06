@@ -172,8 +172,8 @@ export function getNotice(reasonCode, currentLang) {
 			case 'beneficiaryDeleted':
 				return {
 					icon: 'checkmark-circle-outline',
-					message: language.beneficiaryDeletedMessage,
-					title: language.beneficiaryDeletedTitle,
+					message: language.notices.beneficiaryDeletedMessage,
+					title: language.notices.beneficiaryDeletedTitle,
 					style: 'success'
 				}
 			break

@@ -69,7 +69,7 @@ const ForgotPasswordScreen = ({ navigation }) => {
 						w={"100%"}>
 						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
 							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
+								{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
 								<Image source={image} resizeMode={"contain"} alt={language.forgotPassword.logoAlt} size={"160"} />
 								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.forgotPassword.underLogo}</Text>
 								<FormControl isInvalid={ formState.errors.email ? true : false }>

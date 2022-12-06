@@ -4,7 +4,8 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import Config from 'react-native-config'
 import { AuthContext, DataContext } from '../../data/Context'
-import { keychainReset, buildDataPath, sortByParam,	iterateInitials, iterateFullName, iterateDatesTimes, groupArrayObjects, addExtraRecordData } from '../../data/Actions'
+import { keychainReset, buildDataPath, sortByParam,	iterateInitials, iterateFullName, 
+	iterateDatesTimes, groupArrayObjects, addExtraRecordData, stringifyArray } from '../../data/Actions'
 import { api, beneficiaryColumns } from '../../config'
 import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
@@ -84,11 +85,12 @@ const LoadingScreen = () => {
 		})
 
 		const loadBeneficiaries = new Promise((resolve, reject) => {
-			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, beneficiaryColumns )))
+			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), stringifyArray(beneficiaryColumns))
 				.then(response => {
 					
 					//NEW new
 					let responseData = addExtraRecordData(response.data)
+					responseData.sort(sortByParam("initials", "firstname"))
 					setBeneficiaryList((init) => ([ ...responseData ]))
 
 					//new
@@ -104,7 +106,7 @@ const LoadingScreen = () => {
 					})
 					newResponse = iterateInitials(newResponse)
 					newResponse = iterateFullName(newResponse) 
-					newResponse = sortByParam(newResponse, "firstname")
+					responseData.sort(sortByParam("firstname"))
 					
 					dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
 					

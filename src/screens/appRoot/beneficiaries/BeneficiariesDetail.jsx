@@ -1,4 +1,5 @@
-import React from 'react';
+import React from 'react'
+import { ImageBackground } from 'react-native'
 import { Box, Button, Center, Divider, Factory,
 	Heading, HStack, Pressable, SectionList, Spacer, StatusBar, Text, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
@@ -64,30 +65,34 @@ export default function BeneficiariesDetail({ route, navigation }) {
 	}
 
 	return (
-		<>	
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
 			<StatusBar barStyle={"dark-content"}/>
-			<Center flex={1} justifyContent={"center"} pb={"4"}>
-				
-				<HStack alignItems={"center"} space={"3"} flexDir={"row"} py={"4"} px={"4"}>
-					<Button flex={"1"} onPress={() => handleBack(navigation)}>{ language.beneficiariesDetail.buttonBack }</Button>
-					<Spacer />
-					<Pressable onPress={() => handleEdit()}>
-						<NBIonicon name={"create-outline"} fontSize={"3xl"} />
-					</Pressable>
-					<Pressable onPress={() => setIsOpen(!isOpen)}>
-						<NBIonicon name={"trash-outline"} fontSize={"3xl"} pl={"1"} />
-					</Pressable>
-				</HStack>
-				<VStack flex="1" space={"4"} w={"100%"}>
-					<SectionList
-						sections={ sections }
-						keyExtractor={(item, index) => item + index }
-						renderItem={(item, index) => <DetailRowItem data={item} key={index} />}
-						renderSectionHeader={({section: { title }}) => <DetailHeaderItem title={title} />}
-						stickySectionHeadersEnabled={false}
-					/>
-				</VStack>
-			</Center>
+				<Box w={"100%"} p={"4"} bgColor={"warmGray.200"} zIndex={"2"}>
+					<HStack alignItems={"center"} space={"3"} flexDir={"row"}>
+						<Button flex={"1"} onPress={() => handleBack(navigation)}>{ language.beneficiariesDetail.buttonBack }</Button>
+						<Spacer />
+						<Pressable onPress={() => handleEdit()}>
+							<NBIonicon name={"create-outline"} fontSize={"3xl"} />
+						</Pressable>
+						<Pressable onPress={() => setIsOpen(!isOpen)}>
+							<NBIonicon name={"trash-outline"} fontSize={"3xl"} pl={"1"} />
+						</Pressable>
+					</HStack>
+				</Box>
+
+				<Center flex={1} justifyContent={"center"} zIndex={"1"}>
+					<VStack w={"100%"} flex={"1"} px={"4"} space={"4"}>
+						<SectionList
+							sections={ sections }
+							keyExtractor={(item, index) => item + index }
+							renderItem={(item, index) => <DetailRowItem data={item} key={index} nb={{ bgColor: "white" }} />}
+							renderSectionHeader={({section: { title }}) => <DetailHeaderItem title={title} nb={{ mt: "4"}}  />}
+							stickySectionHeadersEnabled={false}
+							showsVerticalScrollIndicator={false}
+						/>
+					</VStack>
+				</Center>
+			
 			<AlertModal show={isOpen} close={onClose} ldRef={cancelRef}
 				header={(
 					<HStack>
@@ -101,6 +106,6 @@ export default function BeneficiariesDetail({ route, navigation }) {
 					<Button colorScheme="danger" onPress={() => {onClose(); handleDelete()}}>{ language.beneficiariesDetail.alertDeleteButtonConfirm }</Button>
 				</Button.Group>
 			</AlertModal>
-		</>
+		</ImageBackground>
 	)
 }

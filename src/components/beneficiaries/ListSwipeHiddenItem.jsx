@@ -39,7 +39,7 @@ const ListSwipeHiddenItem = (props) => {
 	const handleDelete = (item) => { 
 		onClose()
 		setBeneficiary(item)
-		//navigation.navigate('BeneficiariesDelete')
+		navigation.navigate('BeneficiariesDelete')
 	}
 
 	let corners
@@ -52,7 +52,7 @@ const ListSwipeHiddenItem = (props) => {
 	}
 
 	return (
-		<HStack backgroundColor={"coolGray.100"} key={ id } justifyContent={"flex-end"} flex={"1"}
+		<HStack backgroundColor={"coolGray.100"} key={ index } justifyContent={"flex-end"} flex={"1"}
 			roundedTop={ corners == "top" ? "10" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
 			<Pressable onPress={() => handleEdit({...props.data.item, index: props.data.index }) }>
 				<VStack w={"80px"} h={"80px"} backgroundColor={"warmGray.300"} alignItems={"center"} justifyContent={"center"}>

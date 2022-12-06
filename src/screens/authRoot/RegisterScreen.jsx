@@ -80,7 +80,7 @@ const RegisterScreen = ({ navigation }) => {
 						w={"100%"}>
 						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
 							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
+								{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
 								<Image source={image} resizeMode={"contain"} alt={language.register.logoAlt} size={"md"} />
 								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.register.underLogo}</Text>
 								<FormControl isInvalid={ formState.errors.email ? true : false }>

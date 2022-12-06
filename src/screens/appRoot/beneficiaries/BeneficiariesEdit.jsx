@@ -1,13 +1,14 @@
 import React from 'react'
+import { ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useForm, FormProvider, useFormContext } from 'react-hook-form'
-import { Box, Button, Center, Factory, HStack, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
+import { Box, Button, Center, Factory, HStack, ScrollView, Spacer, Spinner, StatusBar, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import { AuthContext } from '../../../data/Context'
+import * as Forms from '../../../components/common/Forms'
 import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData } from '../../../data/Actions'
 import { api } from '../../../config'
-import Spinner from '../../../components/common/Spinner'
 import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
@@ -15,9 +16,6 @@ import * as Atoms from '../../../data/recoil/Atoms'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 
 import { rulesBeneficiariesEdit } from '../../../data/handlers/Forms'
-import EditHeaderItem from '../../../components/beneficiaries/EditHeaderItem'
-import EditFormTextInput from '../../../components/beneficiaries/EditFormTextInput'
-import EditFormSelectInput from '../../../components/beneficiaries/EditFormSelectInput'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
@@ -43,7 +41,7 @@ function BeneficiariesEditInner() {
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
 	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
-	const setLoading = Recoil.useSetRecoilState(Atoms.loading)
+	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
@@ -113,200 +111,216 @@ function BeneficiariesEditInner() {
 	const onError = (errors, e) => console.log(errors, e)
 
 	return (
-		<>
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<StatusBar barStyle={"light-content"} backgroundColor={"#8B6A27"} />
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex={"1"} space={"4"} w={"100%"}>
-					<HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
-						<Button
-							flex={"1"}
-							variant={"subtle"}
-							onPress={() => handleBack()}>{ language.beneficiariesEdit.buttonBack }</Button>
-						<Spacer />
-						<Button
-							flex={"1"}
-							isLoadingText={"Saving..."}
-							onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
-						
-					</HStack>
-					{ (auth.status !== null && auth.status !== "") && (
-						<Box px={"4"}>
-							<Notice wrap={{w:"90%", m: "4"}}></Notice>
-						</Box>
-					)}
-					<ScrollView w={"100%"}>
-						<VStack py={"4"} space={"4"}>
 
-							<EditHeaderItem heading={ language.beneficiariesEdit.listDataHeaderPersonalDetails } />
-
-							<EditFormTextInput
-								name={ "firstname" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.firstname }
-								errors={ formState.errors.firstname }
-								label={ language.beneficiariesEdit.listDataFirstNameLabel }
-								placeholder={ language.beneficiariesEdit.listDataFirstNamePlaceholder }
-								required={true}
-							/>
-
-							<EditFormTextInput
-								name={ "lastname" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.lastname }
-								errors={ formState.errors.lastname }
-								label={ language.beneficiariesEdit.listDataLastNameLabel }
-								placeholder={ language.beneficiariesEdit.listDataLastNamePlaceholder }
-								required={true}
-							/>
-
-							<EditFormTextInput
-								name={ "thainame" }
-								control={ control }
-								errors={ formState.errors.thainame }
-								label={ language.beneficiariesEdit.listDataThaiNameLabel }
-								placeholder={ language.beneficiariesEdit.listDataThaiNamePlaceholder }
-								required={false}
-							/>
-
-							<EditFormTextInput
-								name={ "phone" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.phone }
-								errors={ formState.errors.phone }
-								label={ language.beneficiariesEdit.listDataPhoneLabel }
-								placeholder={ language.beneficiariesEdit.listDataPhonePlaceholder }
-								required={false}
-							/>
-
-						</VStack>
-						<VStack py={"4"} space={"4"}>
-
-							<EditHeaderItem heading={ language.beneficiariesEdit.listDataHeaderBankDetails } />
-
-							<EditFormTextInput
-								name={ "accountnumber" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.accountnumber }
-								errors={ formState.errors.accountnumber }
-								label={ language.beneficiariesEdit.listDataAccountNumberLabel }
-								placeholder={ language.beneficiariesEdit.listDataAccountNumberPlaceholder }
-								required={true}
-							/>
-
-							<EditFormSelectInput
-								name={ "accounttype" }
-								control={ control }
-								component={"AccountType"}
-								rules={ rulesBeneficiariesEdit.accounttype }
-								errors={ formState.errors.accounttype }
-								label={ language.beneficiariesEdit.listDataAccountTypeLabel }
-								placeholder={ language.beneficiariesEdit.listDataAccountTypePlaceholder }
-								required={true}
-							/>
-
-							<EditFormSelectInput
-								name={ "bankname" }
-								control={ control }
-								component={"BankName"}
-								rules={ rulesBeneficiariesEdit.bankname }
-								errors={ formState.errors.bankname }
-								label={ language.beneficiariesEdit.listDataBankNameLabel }
-								placeholder={ language.beneficiariesEdit.listDataBankNamePlaceholder }
-								required={true}
-							/>
-
-							<EditFormTextInput
-								name={ "branchname" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.branchname }
-								errors={ formState.errors.branchname }
-								label={ language.beneficiariesEdit.listDataBranchNameLabel }
-								placeholder={ language.beneficiariesEdit.listDataBranchNamePlaceholder }
-								required={true}
-							/>
-
-							<EditFormSelectInput
-								name={ "branchcity" }
-								control={ control }
-								component={"BranchCity"}
-								rules={ rulesBeneficiariesEdit.branchcity }
-								errors={ formState.errors.branchname }
-								label={ language.beneficiariesEdit.listDataBranchCityLabel }
-								placeholder={ language.beneficiariesEdit.listDataBranchCityPlaceholder }
-								required={true}
-							/>
-							
-						</VStack>
-						<VStack py={"4"} space={"4"}>
-							
-							<EditHeaderItem heading={ language.beneficiariesEdit.listDataHeaderAddressDetails } />
-
-							<EditFormTextInput
-								name={ "address" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.address }
-								errors={ formState.errors.address }
-								label={ language.beneficiariesEdit.listDataThaiAddressLabel }
-								placeholder={ language.beneficiariesEdit.listDataThaiAddressPlaceholder }
-								required={true}
-							/>
-
-							<EditFormSelectInput
-								name={ "state" }
-								control={ control }
-								component={"Province"}
-								rules={ rulesBeneficiariesEdit.state }
-								errors={ formState.errors.state }
-								label={ language.beneficiariesEdit.listDataProvinceLabel }
-								placeholder={ language.beneficiariesEdit.listDataProvincePlaceholder }
-								required={true}
-							/>
-
-							<EditFormSelectInput
-								name={ "city" }
-								control={ control }
-								component={"District"}
-								rules={ rulesBeneficiariesEdit.city }
-								errors={ formState.errors.city }
-								label={ language.beneficiariesEdit.listDataDistrictLabel }
-								placeholder={ language.beneficiariesEdit.listDataDistrictPlaceholder }
-								required={true}
-							/>
-
-							<EditFormTextInput
-								name={ "postcode" }
-								control={ control }
-								rules={ rulesBeneficiariesEdit.postcode }
-								errors={ formState.errors.postcode }
-								label={ language.beneficiariesEdit.listDataPostCodeLabel }
-								placeholder={ language.beneficiariesEdit.listDataPostCodePlaceholder }
-								required={true}
-							/>
-
-							<EditFormTextInput
-								name={ "country" }
-								control={ control }
-								errors={ formState.errors.country }
-								label={ language.beneficiariesEdit.listDataCountryLabel }
-								placeholder={ language.beneficiariesEdit.listDataCountryPlaceholder }
-								required={true}
-							/>
-							
-						</VStack>
-						<HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
+					<Box p={"4"} bgColor={"warmGray.200"}>
+						<HStack space={"3"} flexDir={"row"}>
 							<Button
 								flex={"1"}
 								variant={"subtle"}
-								onPress={() => navigation.popToTop() }>{ language.beneficiariesEdit.buttonBack }</Button>
+								onPress={() => handleBack()}>{ language.beneficiariesEdit.buttonBack }</Button>
 							<Spacer />
 							<Button
 								flex={"1"}
 								isLoadingText={"Saving..."}
 								onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
+							
 						</HStack>
+					</Box>
+					
+					{ (auth.status !== null && auth.status !== "") && (
+						<Box px={"4"} pb={"4"}>
+							<Notice nb={{w:"90%", m: "4"}}></Notice>
+						</Box>
+					)}
+
+					<ScrollView w={"100%"}>
+						<Box px={"4"} mb={"4"}>
+							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+
+								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesEdit.listDataHeaderPersonalDetails }</Forms.HeaderItem>
+
+								<Forms.TextInput
+									name={ "firstname" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.firstname }
+									errors={ formState.errors.firstname }
+									label={ language.beneficiariesEdit.listDataFirstNameLabel }
+									placeholder={ language.beneficiariesEdit.listDataFirstNamePlaceholder }
+									required={true}
+								/>
+
+								<Forms.TextInput
+									name={ "lastname" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.lastname }
+									errors={ formState.errors.lastname }
+									label={ language.beneficiariesEdit.listDataLastNameLabel }
+									placeholder={ language.beneficiariesEdit.listDataLastNamePlaceholder }
+									required={true}
+								/>
+
+								<Forms.TextInput
+									name={ "thainame" }
+									control={ control }
+									errors={ formState.errors.thainame }
+									label={ language.beneficiariesEdit.listDataThaiNameLabel }
+									placeholder={ language.beneficiariesEdit.listDataThaiNamePlaceholder }
+									required={false}
+								/>
+
+								<Forms.TextInput
+									name={ "phone" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.phone }
+									errors={ formState.errors.phone }
+									label={ language.beneficiariesEdit.listDataPhoneLabel }
+									placeholder={ language.beneficiariesEdit.listDataPhonePlaceholder }
+									required={false}
+								/>
+
+							</VStack>
+						</Box>
+
+						<Box px={"4"} mb={"4"}>
+
+							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+
+								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesEdit.listDataHeaderBankDetails }</Forms.HeaderItem>
+
+								<Forms.TextInput
+									name={ "accountnumber" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.accountnumber }
+									errors={ formState.errors.accountnumber }
+									label={ language.beneficiariesEdit.listDataAccountNumberLabel }
+									placeholder={ language.beneficiariesEdit.listDataAccountNumberPlaceholder }
+									required={true}
+								/>
+
+								<Forms.SelectInput
+									name={ "accounttype" }
+									control={ control }
+									component={"AccountType"}
+									rules={ rulesBeneficiariesEdit.accounttype }
+									errors={ formState.errors.accounttype }
+									label={ language.beneficiariesEdit.listDataAccountTypeLabel }
+									placeholder={ language.beneficiariesEdit.listDataAccountTypePlaceholder }
+									required={true}
+								/>
+
+								<Forms.SelectInput
+									name={ "bankname" }
+									control={ control }
+									component={"BankName"}
+									rules={ rulesBeneficiariesEdit.bankname }
+									errors={ formState.errors.bankname }
+									label={ language.beneficiariesEdit.listDataBankNameLabel }
+									placeholder={ language.beneficiariesEdit.listDataBankNamePlaceholder }
+									required={true}
+								/>
+
+								<Forms.TextInput
+									name={ "branchname" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.branchname }
+									errors={ formState.errors.branchname }
+									label={ language.beneficiariesEdit.listDataBranchNameLabel }
+									placeholder={ language.beneficiariesEdit.listDataBranchNamePlaceholder }
+									required={true}
+								/>
+
+								<Forms.SelectInput
+									name={ "branchcity" }
+									control={ control }
+									component={"BranchCity"}
+									rules={ rulesBeneficiariesEdit.branchcity }
+									errors={ formState.errors.branchname }
+									label={ language.beneficiariesEdit.listDataBranchCityLabel }
+									placeholder={ language.beneficiariesEdit.listDataBranchCityPlaceholder }
+									required={true}
+								/>
+								
+							</VStack>
+						</Box>
+						<Box px={"4"} mb={"4"}>
+
+							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+							
+								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesEdit.listDataHeaderAddressDetails }</Forms.HeaderItem>
+
+								<Forms.TextInput
+									name={ "address" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.address }
+									errors={ formState.errors.address }
+									label={ language.beneficiariesEdit.listDataThaiAddressLabel }
+									placeholder={ language.beneficiariesEdit.listDataThaiAddressPlaceholder }
+									required={true}
+								/>
+
+								<Forms.SelectInput
+									name={ "state" }
+									control={ control }
+									component={"Province"}
+									rules={ rulesBeneficiariesEdit.state }
+									errors={ formState.errors.state }
+									label={ language.beneficiariesEdit.listDataProvinceLabel }
+									placeholder={ language.beneficiariesEdit.listDataProvincePlaceholder }
+									required={true}
+								/>
+
+								<Forms.SelectInput
+									name={ "city" }
+									control={ control }
+									component={"District"}
+									rules={ rulesBeneficiariesEdit.city }
+									errors={ formState.errors.city }
+									label={ language.beneficiariesEdit.listDataDistrictLabel }
+									placeholder={ language.beneficiariesEdit.listDataDistrictPlaceholder }
+									required={true}
+								/>
+
+								<Forms.TextInput
+									name={ "postcode" }
+									control={ control }
+									rules={ rulesBeneficiariesEdit.postcode }
+									errors={ formState.errors.postcode }
+									label={ language.beneficiariesEdit.listDataPostCodeLabel }
+									placeholder={ language.beneficiariesEdit.listDataPostCodePlaceholder }
+									required={true}
+								/>
+
+								<Forms.TextInput
+									name={ "country" }
+									control={ control }
+									errors={ formState.errors.country }
+									label={ language.beneficiariesEdit.listDataCountryLabel }
+									placeholder={ language.beneficiariesEdit.listDataCountryPlaceholder }
+									required={true}
+								/>
+								
+							</VStack>
+						</Box>
+						<Box p={"4"} bgColor={"warmGray.200"}>
+							<HStack space={"3"} flexDir={"row"}>
+								<Button
+									flex={"1"}
+									variant={"subtle"}
+									onPress={() => navigation.popToTop() }>{ language.beneficiariesEdit.buttonBack }</Button>
+								<Spacer />
+								<Button
+									flex={"1"}
+									isLoadingText={"Saving..."}
+									onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
+							</HStack>
+						</Box>
 					</ScrollView>
 				</VStack>
 			</Center>
-		</>
+		</ImageBackground>
 	)
 }

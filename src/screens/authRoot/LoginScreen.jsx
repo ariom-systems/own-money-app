@@ -120,7 +120,7 @@ const LoginScreen = ({ navigation }) => {
 						w={"100%"}>
 						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
 							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
+								{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
 								<Image source={image} resizeMode={"contain"} alt={language.login.logoAlt} size={"160"} />
 								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.login.underLogo}</Text>
 								<FormControl isInvalid={ formState.errors.email ? true : false }>
@@ -197,7 +197,7 @@ const LoginScreen = ({ navigation }) => {
 								<HStack>
 									<LanguageToggle />
 								</HStack>
-								<HStack w={"100%"} space={"3"}>
+								{/* <HStack w={"100%"} space={"3"}>
 									<Button
 										flexGrow={"1"}
 										variant={"outline"}
@@ -213,7 +213,7 @@ const LoginScreen = ({ navigation }) => {
 											deleteUserPinCode("com.ariom.ownmoney")
 											keychainReset("pin")
 										}}>Clear PIN Code</Button>
-								</HStack>
+								</HStack> */}
 							</VStack>
 						</VStack>
 					</KeyboardAvoidingView>

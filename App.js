@@ -1,6 +1,6 @@
-import 'react-native-gesture-handler'
 //Core
 import React from 'react'
+import 'react-native-gesture-handler'
 import { ActivityIndicator, useColorScheme, LogBox, Image, ImageBackground } from 'react-native'
 
 //Navigation
@@ -51,6 +51,7 @@ const thStrings = require('./src/i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 LogBox.ignoreLogs(["Could not find Fiber with id"])
+LogBox.ignoreLogs(["TypeError: undefined is not an object (evaluating 'window.document.createElement')"])
 
 const RootStack = createNativeStackNavigator()
 const AuthStack = createNativeStackNavigator()
