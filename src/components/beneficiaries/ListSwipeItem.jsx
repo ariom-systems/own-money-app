@@ -3,7 +3,7 @@ import { Avatar, HStack, Pressable, Text, VStack } from 'native-base'
 import { useNavigation } from '@react-navigation/native'
 
 import * as Recoil from 'recoil'
-import { loading } from '../../data/recoil/Atoms'
+import { loadingState } from '../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
 
 import LocalizedStrings from 'react-native-localization'
@@ -16,13 +16,8 @@ const ListSwipeItem = (props) => {
 	let index = props.data.index
 	const beneficiaries = Recoil.useRecoilValue(beneficiaryList)
 	const setBeneficiary = Recoil.useSetRecoilState(beneficiaryObj)
-	const setLoading = Recoil.useSetRecoilState(loading)
+	const setLoading = Recoil.useSetRecoilState(loadingState)
 	const navigation = useNavigation()
-
-	React.useEffect(() => {
-		status = props.data.item.status
-		//console.log(id, status, initials, fullname)
-	}, [])
 
 	const handlePress = (item) => {
 		setBeneficiary(item)
@@ -42,7 +37,7 @@ const ListSwipeItem = (props) => {
 	return (
 		<Pressable key={ index } onPress={() => handlePress({...props.data.item, index: props.data.index }) }>
 			<HStack alignItems={"center"} py={"4"} pl={"4"} space={"3"} backgroundColor={"coolGray.100"}
-				roundedTop={ corners == "top" ? "10" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
+				roundedTop={ corners == "top" ? "8" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
 				<Avatar size={"48px"} backgroundColor={ status == 'Verified' ? '#8B6A27' : 'light.600' }>{ initials }</Avatar>
 				<VStack>
 					<Text mb={"2"} bold>{ fullname }</Text>

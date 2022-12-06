@@ -51,7 +51,7 @@ const thStrings = require('./src/i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 LogBox.ignoreLogs(["Could not find Fiber with id"])
-LogBox.ignoreLogs(["TypeError: undefined is not an object (evaluating 'window.document.createElement')"])
+LogBox.ignoreLogs(["Duplicate atom key"])
 
 const RootStack = createNativeStackNavigator()
 const AuthStack = createNativeStackNavigator()

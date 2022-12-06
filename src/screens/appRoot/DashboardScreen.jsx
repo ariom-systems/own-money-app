@@ -8,7 +8,9 @@ import { AuthContext, DataContext } from '../../data/Context'
 import { formatCurrency, groupTransactionsByDate } from '../../data/Actions'
 
 import * as Recoil from 'recoil'
-import * as Atoms from '../../data/recoil/Atoms'
+import { userState } from '../../data/recoil/user'
+import { transactionList } from '../../data/recoil/transactions'
+import { globalState } from '../../data/recoil/system'
 
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
@@ -20,9 +22,9 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const DashboardScreen = ({ navigation }) => {
 	const { auth } = React.useContext(AuthContext)
-	const globals = Recoil.useRecoilValue(Atoms.globals)
-	const transactions = Recoil.useRecoilValue(Atoms.transactions)
-	const user = Recoil.useRecoilValue(Atoms.user)
+	const globals = Recoil.useRecoilValue(globalState)
+	const transactions = Recoil.useRecoilValue(transactionList)
+	const user = Recoil.useRecoilValue(userState)
 
  	const [ transferList , setTransferList ] = React.useState([])
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
@@ -32,7 +34,7 @@ const DashboardScreen = ({ navigation }) => {
 	let rateAsOf = new Date().toLocaleString('en-GB').split(',')[0]
 	
 	React.useEffect(() => {
-		const listData = transactions.list.slice(0, 10)
+		const listData = transactions.slice(0, 10)
 		let grouped = groupTransactionsByDate(listData)
 		let output = []
 		grouped.forEach(section => {
@@ -45,7 +47,7 @@ const DashboardScreen = ({ navigation }) => {
 			})
 		})
 		setTransferList(output)
-	}, [transactions.list])
+	}, [transactions])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {

@@ -12,8 +12,8 @@ import { api } from '../../../config'
 import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
-import * as Atoms from '../../../data/recoil/Atoms'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { loadingState } from '../../../data/recoil/system'
 
 import { rulesBeneficiariesEdit } from '../../../data/handlers/Forms'
 
@@ -41,7 +41,7 @@ function BeneficiariesEditInner() {
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
 	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
-	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
+	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 

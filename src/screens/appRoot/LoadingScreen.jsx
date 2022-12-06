@@ -12,8 +12,10 @@ import { ImageBackground } from 'react-native'
 import * as Hooks from '../../data/Hooks'
 
 import * as Recoil from 'recoil'
-import * as Atoms from '../../data/recoil/Atoms'
+import { userState } from '../../data/recoil/user'
 import { beneficiaryList } from '../../data/recoil/beneficiaries'
+import { transactionList } from '../../data/recoil/transactions'
+import { globalState } from '../../data/recoil/system'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
@@ -23,13 +25,10 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 const LoadingScreen = () => {
 	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
-	const { data, dataDispatch } = React.useContext(DataContext)
-	const [ globals, setGlobals ] = Recoil.useRecoilState(Atoms.globals)
-	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
-	const [ user, setUser ] = Recoil.useRecoilState(Atoms.user)
-	const [ transactions, setTransactions ] = Recoil.useRecoilState(Atoms.transactions)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(Atoms.beneficiaries)
-	const setBeneficiaryList = Recoil.useSetRecoilState(beneficiaryList)
+	const [ user, setUser ] = Recoil.useRecoilState(userState)
+	const [ globals, setGlobals ] = Recoil.useRecoilState(globalState)
+	const setTransactions = Recoil.useSetRecoilState(transactionList)
+	const setBeneficiaries = Recoil.useSetRecoilState(beneficiaryList)
 
 	Hooks.useEffectOnce(() => {
 		console.log('--statring preflight check--')
@@ -39,47 +38,12 @@ const LoadingScreen = () => {
 			api.get(Config.BASEURL + '/checktoken')
 				.then(response => { response.data.result == 'success' ? resolve() : reject(response.data.result) })
 		})
-
-		const loadGlobals = new Promise((resolve, reject) => {
-			api.get(buildDataPath('globals', null, 'branch'))
-				.then(response => {					
-					//console.log(response.data)
-					//old
-					dataDispatch({ type: 'LOAD_GLOBALS', payload: { data: response.data[0] } });
-					//new
-					setGlobals(response.data[0])
-					setLoading((initial) => (initial))
-					resolve('✅ Loaded Globals')
-				})
-				.catch(error => { reject('🚫 ' + error) })
-		})
+		
 		const loadUser = new Promise((resolve, reject) => {
 			api.get(buildDataPath('users', auth.uid, 'view'))
 				.then(response => {
-					//old
-					dataDispatch({ type: 'LOAD_USER', payload: { data: response.data } })
-					//new
 					setUser((initial) => ({...initial, ...response.data}))
 					resolve('✅ Loaded User Data')
-			 	})
-				.catch(error => { reject('🚫 ' + error) })
-		})
-		const loadMetadata = new Promise((resolve, reject) => {
-			api.get(buildDataPath('meta', auth.uid, 'view', { endpoint: 'users' }))
-				.then(response => {
-					//old
-					dataDispatch({ type: 'LOAD_USER_META', payload: { data: response.data } })
-					//new
-					let max = response.data.daily_limit.max
-					let remaining = response.data.daily_limit.remaining
-					delete response.data.daily_limit
-					setUser((prev) => ({
-						...prev,
-						...response.data,
-						daily_limit_max: max,
-						daily_limit_remaining: remaining
-					}))
-					resolve('✅ Loaded User Metadata Data')
 			 	})
 				.catch(error => { reject('🚫 ' + error) })
 		})
@@ -87,29 +51,9 @@ const LoadingScreen = () => {
 		const loadBeneficiaries = new Promise((resolve, reject) => {
 			api.post(buildDataPath('beneficiaries', auth.uid, 'list'), stringifyArray(beneficiaryColumns))
 				.then(response => {
-					
-					//NEW new
 					let responseData = addExtraRecordData(response.data)
 					responseData.sort(sortByParam("initials", "firstname"))
-					setBeneficiaryList((init) => ([ ...responseData ]))
-
-					//new
-					setBeneficiaries((initial) => ({
-						...initial,
-						list: addExtraRecordData(response.data)
-					}))
-					
-					//old
-					let newResponse = []
-					newResponse = response.data.filter(function(obj) {
-						return obj.status !== 'In-Active'
-					})
-					newResponse = iterateInitials(newResponse)
-					newResponse = iterateFullName(newResponse) 
-					responseData.sort(sortByParam("firstname"))
-					
-					dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
-					
+					setBeneficiaries((init) => ([ ...responseData ]))
 					resolve('✅ Loaded Beneficiaries')
 				})
 				.catch(error => { reject('🚫 ' + error) })
@@ -119,38 +63,27 @@ const LoadingScreen = () => {
 			const today = new Date(Date.parse(new Date())).getTime() / 1000
 			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))		
 				.then(response => {
-		
-					//new
-					setTransactions((initial) => ({
-						...initial,
-						list: addExtraRecordData(response.data)
-					}))
-					
-					//old
-					const latest = response.data.slice(-1)
-					let newResponse = []
-					newResponse = iterateFullName(response.data)
-					newResponse = iterateInitials(newResponse)
-					newResponse = iterateDatesTimes(response.data, 'created_date', 'cr')
-					newResponse = iterateDatesTimes(response.data, 'processed_date', 'pr')
-					newResponse = iterateDatesTimes(response.data, 'completed_date', 'co')
-
-					let count = newResponse.length
-					const groupArrays = groupArrayObjects(newResponse, 'cr_date')
-					let dateStr = latest[0].created_date.replace(' ', 'T') + 'Z'
-					let timestamp = new Date(Date.parse(dateStr)).getTime() / 1000
-										
-					dataDispatch({ type: 'LOAD_TRANSACTIONS', payload: { data: groupArrays, index: timestamp, last: 0, count: count } })
-					dataDispatch({ type: 'LOAD_LATEST', payload: { data: groupArrays } })
-					
+					setTransactions(addExtraRecordData(response.data))
 					resolve('✅ Loaded Recent Transactions')
+				})
+				.catch(error => { reject('🚫 ' + error) })
+		})
+
+		const loadGlobals = new Promise((resolve, reject) => {
+			api.get(buildDataPath('globals', null, 'branch'))
+				.then(response => {					
+					setGlobals((initial) => ({
+						...initial,
+						...response.data[0]
+					}))
+					resolve('✅ Loaded Globals')
 				})
 				.catch(error => { reject('🚫 ' + error) })
 		})
 
 		verifyLoggedIn
 			.then(verified => {
-				Promise.all([loadGlobals, loadUser, loadMetadata, loadBeneficiaries, loadTransactions])
+				Promise.all([loadGlobals, loadUser, loadBeneficiaries, loadTransactions])
 					.then(values => {
 						values.forEach(value => {
 							console.log(value)
@@ -159,9 +92,12 @@ const LoadingScreen = () => {
 						console.log('--preflight check complete--')
 					})
 					.catch(error => {
-						console.log(error)
+						console.log("promise.all error", error)
 						handleLogout('server-error')
 					})
+			})
+			.then(result => {
+
 			})
 			.finally(loaded => {
 				navigation.navigate('AppTabs')
@@ -173,50 +109,50 @@ const LoadingScreen = () => {
 		return () => {}
 	})
 
-	React.useEffect(() => {		
-		let userMeta = data.userMeta
-		if(typeof userMeta !== 'undefined') {
-			//only do this if there is no daily limit set
-			if(userMeta['daily_limit'] == "") {
-				let now = new Date(Date.now()).toISOString()
-				let last_reset = now.slice(0, 19).replace('T', ' ')
-				if(userMeta.firsttime_rate == 0) {
-					userMeta['daily_limit'] = { max: 1000, remaining: 1000, last_reset: last_reset }
-				} else {
-					userMeta['daily_limit'] = { max: 9000, remaining: 9000, last_reset: last_reset }
-				}
-			}
-			if (typeof userMeta.logins !== 'undefined' && Array.isArray(userMeta.logins)) {
-				if(userMeta.logins.length >= 2) {
-					const loginTimes = userMeta.logins.slice(-2)
-					const oneDay = 1000 * 60 * 60 * 24
-					loginTimes.forEach((time, index) => {
-						loginTimes[index] = time.replace(' ', 'T')
-					})
-					const lasttime = new Date(loginTimes[1])
-					const timebefore = new Date(loginTimes[0])
-					const timediff = lasttime.getTime() - timebefore.getTime()
-					const previous = Math.round(timediff / oneDay)
-					//if the time between the last login and this one is greater than/equal to 1 (day), reset the daily limit
-					if( previous >= 1 ) {
-						userMeta['daily_limit'] = {
-							...userMeta.daily_limit,
-							//TODO: Fix this! This sometimes breaks!!!
-							remaining: userMeta.daily_limit.max 
-						}
-					}
-				} else {
-					userMeta['daily_limit'] = {
-						...userMeta.daily_limit,
-						remaining: userMeta.daily_limit.max 
-					}
-				}
-			}
+	// React.useEffect(() => {		
+	// 	let userMeta = data.userMeta
+	// 	if(typeof userMeta !== 'undefined') {
+	// 		//only do this if there is no daily limit set
+	// 		if(userMeta['daily_limit'] == "") {
+	// 			let now = new Date(Date.now()).toISOString()
+	// 			let last_reset = now.slice(0, 19).replace('T', ' ')
+	// 			if(userMeta.firsttime_rate == 0) {
+	// 				userMeta['daily_limit'] = { max: 1000, remaining: 1000, last_reset: last_reset }
+	// 			} else {
+	// 				userMeta['daily_limit'] = { max: 9000, remaining: 9000, last_reset: last_reset }
+	// 			}
+	// 		}
+	// 		if (typeof userMeta.logins !== 'undefined' && Array.isArray(userMeta.logins)) {
+	// 			if(userMeta.logins.length >= 2) {
+	// 				const loginTimes = userMeta.logins.slice(-2)
+	// 				const oneDay = 1000 * 60 * 60 * 24
+	// 				loginTimes.forEach((time, index) => {
+	// 					loginTimes[index] = time.replace(' ', 'T')
+	// 				})
+	// 				const lasttime = new Date(loginTimes[1])
+	// 				const timebefore = new Date(loginTimes[0])
+	// 				const timediff = lasttime.getTime() - timebefore.getTime()
+	// 				const previous = Math.round(timediff / oneDay)
+	// 				//if the time between the last login and this one is greater than/equal to 1 (day), reset the daily limit
+	// 				if( previous >= 1 ) {
+	// 					userMeta['daily_limit'] = {
+	// 						...userMeta.daily_limit,
+	// 						//TODO: Fix this! This sometimes breaks!!!
+	// 						remaining: userMeta.daily_limit.max 
+	// 					}
+	// 				}
+	// 			} else {
+	// 				userMeta['daily_limit'] = {
+	// 					...userMeta.daily_limit,
+	// 					remaining: userMeta.daily_limit.max 
+	// 				}
+	// 			}
+	// 		}
 			
-			dataDispatch({ type: 'LOAD_USER_META', payload: { data: userMeta } })
-		}
+	// 		dataDispatch({ type: 'LOAD_USER_META', payload: { data: userMeta } })
+	// 	}
 				
-	}, [data.userMeta])
+	// }, [data.userMeta])
 
 	const handleLogout = async (reason) => {
 		const reset = await keychainReset('token') //shutup vscode, await DOES do something here

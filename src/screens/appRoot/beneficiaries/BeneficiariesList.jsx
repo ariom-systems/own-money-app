@@ -7,21 +7,20 @@ import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import ListSwipeItem from '../../../components/beneficiaries/ListSwipeItem'
 import ListSwipeHiddenItem from '../../../components/beneficiaries/ListSwipeHiddenItem'
-import Spinner from '../../../components/common/Spinner'
 
 import { AuthContext} from '../../../data/Context'
 import { Notice } from '../../../components/common/Notice'
 
-import { useRecoilState, selector, get } from 'recoil'
-import * as Atoms from '../../../data/recoil/Atoms'
+import * as Recoil from 'recoil'
+import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
 
 const NBIonicon = Factory(Ionicon)
 
 const BeneficiariesList = ({navigation}) => {
 	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
-	const [ loading, setLoading ] = useRecoilState(Atoms.loading)
+	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
+	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener('focus', () => {

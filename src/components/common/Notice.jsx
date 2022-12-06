@@ -8,7 +8,7 @@ import { getNotice } from '../../data/handlers/Status'
 const NBIonicon = Factory(Ionicon)
 
 export const Notice = (props) => {
-	const { auth, authDispatch } = React.useContext(AuthContext)
+	const { auth } = React.useContext(AuthContext)
 	const { nb, showClose, timeout, children } = props
 	let content = getNotice(auth.status, auth.lang)
 
@@ -31,7 +31,7 @@ export const Notice = (props) => {
 
 export const NoticeBox = (props) => {
 	const { content, showClose = true, timeout, extra, nb = null } = props
-	const { auth, authDispatch } = React.useContext(AuthContext)
+	const { authDispatch } = React.useContext(AuthContext)
 
 	React.useEffect(() => {
 		setTimeout(() => {

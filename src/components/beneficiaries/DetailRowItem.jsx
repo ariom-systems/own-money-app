@@ -9,8 +9,8 @@ const DetailRowItem = (props) => {
 	const { label, value } = data.item
 	
 	return (
-		<Box {...nb} roundedBottom={ index == sectionLength ? "4" : "0"}>
-			<VStack px={"4"} py={"2"} roundedBottom={ index == sectionLength ? "4" : "0"}>
+		<Box {...nb} roundedBottom={ index == sectionLength ? "8" : "0"}>
+			<VStack px={"4"} py={"2"} roundedBottom={ index == sectionLength ? "8" : "0"}>
 				<Text fontSize={"xs"} color={"coolGray.500"}>{label}</Text>
 				<Text fontSize={"lg"}>{value}</Text>
 			</VStack>

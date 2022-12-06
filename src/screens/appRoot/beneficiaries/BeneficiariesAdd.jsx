@@ -12,7 +12,7 @@ import { api, beneficiaryColumns } from '../../../config'
 import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
-import * as Atoms from '../../../data/recoil/Atoms'
+import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { rulesBeneficiariesAdd } from '../../../data/handlers/Forms'
 
@@ -43,7 +43,7 @@ function BeneficiariesAddInner() {
 	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
-	const [loading, setLoading] = Recoil.useRecoilState(Atoms.loading)
+	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 

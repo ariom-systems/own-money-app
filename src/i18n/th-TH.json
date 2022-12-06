@@ -307,7 +307,7 @@
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
 			"labelLoading": "กำลังดำเนินการ",
-			"labelScrollDown": "เลื่อนลงมาเพื่อดูข้อมูลเพิ่มเติม"
+			"labelLoadMore": "โหลดเพิ่มเติม"
 		},
 		"transactionsDetail": {
 			"buttonBack": "ย้อนกลับ",

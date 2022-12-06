@@ -8,7 +8,7 @@ Ionicon.loadFont()
 const NBIonicon = Factory(Ionicon)
 
 import * as Recoil from 'recoil'
-import { loading } from '../../data/recoil/Atoms'
+import { loadingState } from '../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
 
 import LocalizedStrings from 'react-native-localization'
@@ -22,7 +22,7 @@ const ListSwipeHiddenItem = (props) => {
 	let index = props.data.index
 	const setBeneficiary = Recoil.useSetRecoilState(beneficiaryObj)
 	const beneficiaries = Recoil.useRecoilValue(beneficiaryList)
-	const setLoading = Recoil.useSetRecoilState(loading)
+	const setLoading = Recoil.useSetRecoilState(loadingState)
 	const navigation = useNavigation()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
@@ -53,7 +53,7 @@ const ListSwipeHiddenItem = (props) => {
 
 	return (
 		<HStack backgroundColor={"coolGray.100"} key={ index } justifyContent={"flex-end"} flex={"1"}
-			roundedTop={ corners == "top" ? "10" : false } roundedBottom={ corners == "bottom" ? "10" : false }>
+			roundedTop={ corners == "top" ? "8" : false } roundedBottom={ corners == "bottom" ? "8" : false }>
 			<Pressable onPress={() => handleEdit({...props.data.item, index: props.data.index }) }>
 				<VStack w={"80px"} h={"80px"} backgroundColor={"warmGray.300"} alignItems={"center"} justifyContent={"center"}>
 					<NBIonicon name={"create-outline"} fontSize={"3xl"} />
@@ -62,7 +62,7 @@ const ListSwipeHiddenItem = (props) => {
 			</Pressable>
 			<Pressable onPress={() => setIsOpen(!isOpen)}>					
 				<VStack w={"80px"} h={"80px"} backgroundColor={"danger.600"} alignItems={"center"} justifyContent={"center"}
-				roundedTopRight={ corners == "top" ? "10" : false } roundedBottomRight={ corners == "bottom" ? "10" : false }>
+				roundedTopRight={ corners == "top" ? "8" : false } roundedBottomRight={ corners == "bottom" ? "8" : false }>
 					<NBIonicon name={"trash-outline"} fontSize={"3xl"} color={"white"} />
 					<Text color={"white"}>{ language.beneficiariesList.slideButtonDelete }</Text>
 				</VStack>

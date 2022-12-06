@@ -6,8 +6,8 @@ import { AuthContext, DataContext } from '../../../data/Context'
 import { api } from '../../../config'
 import { buildDataPath, atomRemoveItemAtIndex } from '../../../data/Actions'
 import * as Recoil from 'recoil'
-import * as Atoms from '../../../data/recoil/Atoms'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { loadingState } from '../../../data/recoil/system'
 import { useNavigation } from '@react-navigation/native';
 
 export default function BeneficiariesDelete() {
@@ -17,7 +17,7 @@ export default function BeneficiariesDelete() {
 	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
 	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
 	const resetBeneficiary = Recoil.useResetRecoilState(beneficiaryObj)
-	const [ loading, setLoading ] = Recoil.useRecoilState(Atoms.loading)
+	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
 
 	React.useEffect(() => {
 		api.delete(buildDataPath('beneficiaries', auth.uid, 'delete', { id: Number.parseInt(beneficiary.id) }))

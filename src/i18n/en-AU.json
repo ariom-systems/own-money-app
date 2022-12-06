@@ -308,7 +308,7 @@
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
 			"labelLoading": "Loading",
-			"labelScrollDown": "Scroll down to load more"
+			"labelLoadMore": "Load more"
 		},
 		"transactionsDetail": {
 			"buttonBack": "Back",

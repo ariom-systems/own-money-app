@@ -10,7 +10,7 @@ import AlertModal from '../../../components/common/AlertModal'
 
 import { mapSectionDataFromTemplate } from '../../../data/Actions'
 import * as Recoil from 'recoil'
-import { loading } from '../../../data/recoil/Atoms'
+import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { BeneficiaryBlank } from '../../../data/templates/BeneficiariesDetailSectionList'
 
@@ -28,7 +28,7 @@ const icon = <NBIonicon name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"
 export default function BeneficiariesDetail({ route, navigation }) {
 	const { auth } = React.useContext(AuthContext)
 	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
-	const setLoading = Recoil.useSetRecoilState(loading)
+	const setLoading = Recoil.useSetRecoilState(loadingState)
 
 	const sections = mapSectionDataFromTemplate(beneficiary, BeneficiaryBlank)
 
