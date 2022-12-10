@@ -24,7 +24,7 @@ export const HeaderItem = ({nb, children}) => {
 }
 
 export const TextInput = (props) => {
-	const { name, control, rules = {}, errors, label, placeholder, required } = props
+	const { name, control, rules = {}, errors, label, placeholder = "", required, inputAttributes = null } = props
 	const {
 		field,
 		fieldState: { isTouched, isDirty },
@@ -48,7 +48,9 @@ export const TextInput = (props) => {
 				name={ field.name }
 				fontSize={"lg"}
 				autoCorrect={false}
-				autoCapitalize={'none'} />
+				autoCapitalize={'none'}
+				{...inputAttributes}
+				/>
 			{ errors && (
 				<ErrorMessage message={ errors.message } />
 			)}

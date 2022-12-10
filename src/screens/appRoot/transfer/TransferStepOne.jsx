@@ -63,6 +63,7 @@ const TransferStepOneInner = () => {
 	const { auth } = React.useContext(AuthContext)
 	const { data , dataDispatch } = React.useContext(DataContext)
 	//const [ transfers, setTransfers ] = useRecoilState(transfersAtom)
+	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	//On Load actions
 	// React.useEffect(() => {

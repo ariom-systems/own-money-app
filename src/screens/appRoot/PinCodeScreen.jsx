@@ -9,6 +9,9 @@ import { keychainSave, keychainReset, log } from '../../data/Actions'
 import { AuthContext } from '../../data/Context'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 
+import * as Recoil from 'recoil';
+import { globalState } from '../../data/recoil/system'
+
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')

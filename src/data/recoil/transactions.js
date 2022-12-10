@@ -11,7 +11,7 @@ export const transactionList = atom({
 	effects_UNSTABLE: [
 		({ setSelf, onSet}) => {
 			onSet((newVal, oldVal) => {
-				console.log("transactionList onSet", newVal.length, oldVal.length)
+				//console.log("transactionList onSet", newVal.length, oldVal.length)
 			})
 		}
 	]

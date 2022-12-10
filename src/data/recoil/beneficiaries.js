@@ -11,7 +11,7 @@ export const beneficiaryList = atom({
 	effects_UNSTABLE: [
 		({ setSelf, onSet}) => {
 			onSet((newVal, oldVal) => {
-				console.log("beneficiaryList onSet", newVal.length, oldVal.length)
+				//console.log("beneficiaryList onSet", newVal.length, oldVal.length)
 			})
 		}
 	]

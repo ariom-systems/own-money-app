@@ -15,7 +15,7 @@ import * as Recoil from 'recoil'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState } from '../../../data/recoil/system'
 
-import { rulesBeneficiariesEdit } from '../../../data/handlers/Forms'
+import { validationRulesBeneficiariesEdit } from '../../../config'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
@@ -146,7 +146,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "firstname" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.firstname }
+									rules={ validationRulesBeneficiariesEdit.firstname }
 									errors={ formState.errors.firstname }
 									label={ language.beneficiariesEdit.listDataFirstNameLabel }
 									placeholder={ language.beneficiariesEdit.listDataFirstNamePlaceholder }
@@ -156,7 +156,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "lastname" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.lastname }
+									rules={ validationRulesBeneficiariesEdit.lastname }
 									errors={ formState.errors.lastname }
 									label={ language.beneficiariesEdit.listDataLastNameLabel }
 									placeholder={ language.beneficiariesEdit.listDataLastNamePlaceholder }
@@ -175,7 +175,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "phone" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.phone }
+									rules={ validationRulesBeneficiariesEdit.phone }
 									errors={ formState.errors.phone }
 									label={ language.beneficiariesEdit.listDataPhoneLabel }
 									placeholder={ language.beneficiariesEdit.listDataPhonePlaceholder }
@@ -194,7 +194,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "accountnumber" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.accountnumber }
+									rules={ validationRulesBeneficiariesEdit.accountnumber }
 									errors={ formState.errors.accountnumber }
 									label={ language.beneficiariesEdit.listDataAccountNumberLabel }
 									placeholder={ language.beneficiariesEdit.listDataAccountNumberPlaceholder }
@@ -205,7 +205,7 @@ function BeneficiariesEditInner() {
 									name={ "accounttype" }
 									control={ control }
 									component={"AccountType"}
-									rules={ rulesBeneficiariesEdit.accounttype }
+									rules={ validationRulesBeneficiariesEdit.accounttype }
 									errors={ formState.errors.accounttype }
 									label={ language.beneficiariesEdit.listDataAccountTypeLabel }
 									placeholder={ language.beneficiariesEdit.listDataAccountTypePlaceholder }
@@ -216,7 +216,7 @@ function BeneficiariesEditInner() {
 									name={ "bankname" }
 									control={ control }
 									component={"BankName"}
-									rules={ rulesBeneficiariesEdit.bankname }
+									rules={ validationRulesBeneficiariesEdit.bankname }
 									errors={ formState.errors.bankname }
 									label={ language.beneficiariesEdit.listDataBankNameLabel }
 									placeholder={ language.beneficiariesEdit.listDataBankNamePlaceholder }
@@ -226,7 +226,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "branchname" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.branchname }
+									rules={ validationRulesBeneficiariesEdit.branchname }
 									errors={ formState.errors.branchname }
 									label={ language.beneficiariesEdit.listDataBranchNameLabel }
 									placeholder={ language.beneficiariesEdit.listDataBranchNamePlaceholder }
@@ -237,7 +237,7 @@ function BeneficiariesEditInner() {
 									name={ "branchcity" }
 									control={ control }
 									component={"BranchCity"}
-									rules={ rulesBeneficiariesEdit.branchcity }
+									rules={ validationRulesBeneficiariesEdit.branchcity }
 									errors={ formState.errors.branchname }
 									label={ language.beneficiariesEdit.listDataBranchCityLabel }
 									placeholder={ language.beneficiariesEdit.listDataBranchCityPlaceholder }
@@ -255,7 +255,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "address" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.address }
+									rules={ validationRulesBeneficiariesEdit.address }
 									errors={ formState.errors.address }
 									label={ language.beneficiariesEdit.listDataThaiAddressLabel }
 									placeholder={ language.beneficiariesEdit.listDataThaiAddressPlaceholder }
@@ -266,7 +266,7 @@ function BeneficiariesEditInner() {
 									name={ "state" }
 									control={ control }
 									component={"Province"}
-									rules={ rulesBeneficiariesEdit.state }
+									rules={ validationRulesBeneficiariesEdit.state }
 									errors={ formState.errors.state }
 									label={ language.beneficiariesEdit.listDataProvinceLabel }
 									placeholder={ language.beneficiariesEdit.listDataProvincePlaceholder }
@@ -277,7 +277,7 @@ function BeneficiariesEditInner() {
 									name={ "city" }
 									control={ control }
 									component={"District"}
-									rules={ rulesBeneficiariesEdit.city }
+									rules={ validationRulesBeneficiariesEdit.city }
 									errors={ formState.errors.city }
 									label={ language.beneficiariesEdit.listDataDistrictLabel }
 									placeholder={ language.beneficiariesEdit.listDataDistrictPlaceholder }
@@ -287,7 +287,7 @@ function BeneficiariesEditInner() {
 								<Forms.TextInput
 									name={ "postcode" }
 									control={ control }
-									rules={ rulesBeneficiariesEdit.postcode }
+									rules={ validationRulesBeneficiariesEdit.postcode }
 									errors={ formState.errors.postcode }
 									label={ language.beneficiariesEdit.listDataPostCodeLabel }
 									placeholder={ language.beneficiariesEdit.listDataPostCodePlaceholder }

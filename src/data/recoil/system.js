@@ -4,10 +4,9 @@ export const globalState = atom({
 	key: 'globals',
 	default: {
 		rate: 0,
-		fee: 0,
 		steps: {},
 		lang: 'en-AU',
-		sinceLastLogin: 0,
+		lastDailyLimitReset: 0
 	}
 })
 

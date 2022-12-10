@@ -1,6 +1,6 @@
 import React from 'react'
-
 import { Badge, HStack, Modal as ModalComponent, Text } from 'native-base'
+import { useNavigation } from '@react-navigation/native'
 import { AuthContext } from '../../data/Context'
 import { formatCurrency } from '../../data/Actions'
 
@@ -11,6 +11,7 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const Modal = (props) => {
 	const { auth } = React.useContext(AuthContext)
+	const navigation = useNavigation()
 	const { accountnumber, amount_paid, bankname, completed_date, completed_time, created_date, created_time, 
 		fee_AUD, fullname, initials, rate, received_amount, status, transaction_number, transfer_amount } = props.data
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)

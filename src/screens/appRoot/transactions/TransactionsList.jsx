@@ -2,7 +2,7 @@ import React from 'react'
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
 
-import { Center, Divider, SectionList, StatusBar, VStack } from 'native-base'
+import { Button, Center, Divider, HStack, SectionList, StatusBar, VStack } from 'native-base'
 
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
@@ -16,9 +16,8 @@ import { api } from '../../../config'
 
 import ListHeaderItem from '../../../components/transactions/ListHeaderItem'
 import ListRowItem from '../../../components/transactions/ListRowItem'
-import ListFooterItem from '../../../components/transactions/ListFooterItem'
 
-import { selector, useRecoilValue, useRecoilState } from 'recoil'
+import { selector, useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { transactionList } from '../../../data/recoil/transactions'
 import { loadingState } from '../../../data/recoil/system'
 
@@ -35,14 +34,21 @@ const transactionsGrouped = selector({
 	}
 })
 
-const TransactionsList = ({ navigation }) => {
+const handleRefresh = (transactions) => {
+	const datetime = [transactions.created_date, transactions.created_time]
 
+	const timestamp = new Date(datetime.join('T')).getTime()
+	console.log(timestamp)
+	//api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))
+	//api.get(buildDataPath('transactions', auth.uid, 'list', { from: data.transactionTimestamp, count: 11 }))
+}
+
+const TransactionsList = ({ navigation }) => {
 	const { auth } = React.useContext(AuthContext)
 	const groupedList = useRecoilValue(transactionsGrouped)
+	const [ transactions, setTransactions ] = useRecoilState(transactionList)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-
-	
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -76,7 +82,7 @@ const TransactionsList = ({ navigation }) => {
 							maxToRenderPerBatch={10}
 							removeClippedSubviews={true}
 							refreshing={loading}
-							//onEndReached={handleRefresh}
+							onEndReached={handleRefresh(transactions)}
 							onEndReachedThreshold={0.001}
 							stickySectionHeadersEnabled={false}
 							/>
@@ -84,6 +90,30 @@ const TransactionsList = ({ navigation }) => {
 				</VStack>
 			</Center>
 		</ImageBackground>					
+	)
+}
+
+const ListFooterItem = () => {
+	const { auth } = React.useContext(AuthContext)
+	const transactions = useRecoilValue(transactionList)
+	const loading = useRecoilValue(loadingState)
+
+
+	React.useEffect(() => {
+		if(language.getLanguage() !== auth.lang) {
+			language.setLanguage(auth.lang)
+			navigation.setOptions()
+			forceUpdate()
+		}
+	}, [language, auth])
+
+	return (
+		<HStack justifyContent={"center"} py={"8"} alignItems={"center"}>
+			{ loading.status == true && <Spinner size={"lg"} /> }
+			<Button onPress={handleRefresh(transactions)}>
+				{ loading.status == true ? language.transactionsList.labelLoading : language.transactionsList.labelLoadMore }
+			</Button>
+		</HStack>
 	)
 }
 
@@ -99,8 +129,7 @@ export default TransactionsList
 	// 	} else {
 	// 		clearTimeout(dataTimeout)
 	// 		const dataTimeout = setTimeout(() => {
-	// 			api.setHeader('Authorization', 'Bearer ' + auth.token)
-	// 			api.get(buildDataPath('transactions', auth.uid, 'list', { from: data.transactionTimestamp, count: 11 }))
+	// 			
 	// 			.then(response => {
 	// 				if(response.data !== null) {
 	// 					const oldData = data.transactions

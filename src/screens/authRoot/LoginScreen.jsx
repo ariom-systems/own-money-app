@@ -2,15 +2,18 @@ import React from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { ImageBackground, Platform } from 'react-native'
 import { useFocusEffect } from '@react-navigation/native'
-import { Button, Center, Factory, FormControl, HStack, Image, Input, KeyboardAvoidingView, 
+import { Button, Center, FormControl, HStack, Image, Input, KeyboardAvoidingView, 
 	Pressable, ScrollView, StatusBar, Text, VStack } from 'native-base'
+
 import { getNotice } from '../../data/handlers/Status'
+import { Notice } from '../../components/common/Notice'
+
 import { AuthContext } from '../../data/Context'
 import { keychainSave, parseToken } from '../../data/Actions'
-import { ErrorMessage } from '../../components/common/Forms'
-import { Notice } from '../../components/common/Notice'
+
+import * as Forms from '../../components/common/Forms'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
-import LocalizedStrings from 'react-native-localization'
+
 import image from '../../assets/img/logo.png'
 import Config from 'react-native-config'
 import { api } from '../../config'
@@ -19,9 +22,11 @@ import { api } from '../../config'
 import { deleteUserPinCode } from '@haskkor/react-native-pincode'
 import { keychainReset } from '../../data/Actions'
 
+import { validationRulesLogin } from '../../config'
+
+import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
-
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const LoginScreen = ({ navigation }) => {
@@ -55,6 +60,7 @@ const LoginScreen = ({ navigation }) => {
 							expire: jwt_data.exp,
 							status: null
 						}
+
 						resolve(authObj)
 					} else {
 						reject(response)
@@ -119,65 +125,35 @@ const LoginScreen = ({ navigation }) => {
 						behavior={Platform.OS === "ios" ? "padding" : "height"}
 						w={"100%"}>
 						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
-							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
+							<VStack space={"4"} alignItems={"center"}>
+								{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"95%", my: "4", rounded: "8"}} />}
 								<Image source={image} resizeMode={"contain"} alt={language.login.logoAlt} size={"160"} />
 								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.login.underLogo}</Text>
-								<FormControl isInvalid={ formState.errors.email ? true : false }>
-									<FormControl.Label>{language.login.formEmailLabel}</FormControl.Label>
-									<Controller
-										control={control}
-										rules={{
-											required: language.login.formEmailMessageRequired,
-											pattern: {
-												value: /\S+@\S+\.\S+/i,
-												message: language.login.formEmailMessagePattern
-											}
-											
-										}}
-										render={({ field: { onChange, onBlur, value } }) => (
-											<Input
-												size={"lg"}
-												value={value}
-												onChangeText={onChange}
-												onBlur={onBlur}
-												autoCapitalize={"none"}
-												autoCorrect={false}
-												keyboardType={"email-address"} />
-										)}
-										name={"email"} />
-									{ formState.errors.email && (
-										<ErrorMessage message={formState.errors.email.message} icon={"alert-circle-outline"} />
-									)}
-								</FormControl>
 
-								<FormControl isInvalid={formState.errors.password ? true : false }>
-									<FormControl.Label>{language.login.formPasswordLabel}</FormControl.Label>
-									<Controller
-										control={control}
-										rules={{
-											required: language.login.formPasswordMessageRequired
-										}}
-										render={({ field: { onChange, onBlur, value } }) => (
-											<Input
-												size={"lg"}
-												type={"password"}
-												value={value}
-												onChangeText={onChange}
-												onBlur={onBlur}
-												autoCapitalize={"none"}
-												autoCorrect={false} />
-										)}
-										name={"password"}
-									/>
-									{ formState.errors.password && (
-										<ErrorMessage message={formState.errors.password.message} icon={"alert-circle-outline"} />
-									)}
-								</FormControl>
-								<Pressable alignSelf={"flex-end"} mt={"1"} onPress={() => navigation.navigate('ForgotPassword')}>
+								<Forms.TextInput
+									name={ "email" }
+									control={ control }
+									rules={ validationRulesLogin.email }
+									errors={ formState.errors.email }
+									label={ language.login.formEmailLabel }
+									required={true}
+									inputAttributes={{ keyboardType: "email-address", size: "lg"}}
+								/>
+
+								<Forms.TextInput
+									name={ "password" }
+									control={ control }
+									rules={ validationRulesLogin.password }
+									errors={ formState.errors.password }
+									label={ language.login.formPasswordLabel }
+									required={true}
+									inputAttributes={{ type: "password", size: "lg"}}
+								/>
+								
+								<Pressable alignSelf={"flex-end"} mt={"1"} mr={"4"} onPress={() => navigation.navigate('ForgotPassword')}>
 									<Text fontSize={"xs"} fontWeight={"500"} color={"indigo.500"} >{language.login.forgotPassword}</Text>
 								</Pressable>
-								<HStack space={"3"} flexDir={"row"}>
+								<HStack px={"4"} space={"3"} flexDir={"row"}>
 									<Button
 										mt={"2"}
 										flex={"1"}
@@ -194,7 +170,7 @@ const LoginScreen = ({ navigation }) => {
 											{language.login.buttonRegister}
 									</Button>
 								</HStack>
-								<HStack>
+								<HStack pb={"4"}>
 									<LanguageToggle />
 								</HStack>
 								{/* <HStack w={"100%"} space={"3"}>

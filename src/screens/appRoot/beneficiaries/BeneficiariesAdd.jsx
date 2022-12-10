@@ -14,7 +14,7 @@ import { Notice } from '../../../components/common/Notice'
 import * as Recoil from 'recoil'
 import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
-import { rulesBeneficiariesAdd } from '../../../data/handlers/Forms'
+import { validationRulesBeneficiariesAdd } from '../../../config'
 
 import LocalizedStrings from 'react-native-localization'
 import LoadingOverlay from '../../../components/common/LoadingOverlay';
@@ -124,7 +124,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "firstname" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.firstname }
+									rules={ validationRulesBeneficiariesAdd.firstname }
 									errors={ formState.errors.firstname }
 									label={ language.beneficiariesAdd.listDataFirstNameLabel }
 									placeholder={ language.beneficiariesAdd.listDataFirstNamePlaceholder }
@@ -134,7 +134,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "lastname" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.lastname }
+									rules={ validationRulesBeneficiariesAdd.lastname }
 									errors={ formState.errors.lastname }
 									label={ language.beneficiariesAdd.listDataLastNameLabel }
 									placeholder={ language.beneficiariesAdd.listDataLastNamePlaceholder }
@@ -153,7 +153,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "phone" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.phone }
+									rules={ validationRulesBeneficiariesAdd.phone }
 									errors={ formState.errors.phone }
 									label={ language.beneficiariesAdd.listDataPhoneLabel }
 									placeholder={ language.beneficiariesAdd.listDataPhonePlaceholder }
@@ -170,7 +170,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "accountnumber" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.accountnumber }
+									rules={ validationRulesBeneficiariesAdd.accountnumber }
 									errors={ formState.errors.accountnumber }
 									label={ language.beneficiariesAdd.listDataAccountNumberLabel }
 									placeholder={ language.beneficiariesAdd.listDataAccountNumberPlaceholder }
@@ -181,7 +181,7 @@ function BeneficiariesAddInner() {
 									name={ "accounttype" }
 									control={ control }
 									component={"AccountType"}
-									rules={ rulesBeneficiariesAdd.accounttype }
+									rules={ validationRulesBeneficiariesAdd.accounttype }
 									errors={ formState.errors.accounttype }
 									label={ language.beneficiariesAdd.listDataAccountTypeLabel }
 									placeholder={ language.beneficiariesAdd.listDataAccountTypePlaceholder }
@@ -192,7 +192,7 @@ function BeneficiariesAddInner() {
 									name={ "bankname" }
 									control={ control }
 									component={"BankName"}
-									rules={ rulesBeneficiariesAdd.bankname }
+									rules={ validationRulesBeneficiariesAdd.bankname }
 									errors={ formState.errors.bankname }
 									label={ language.beneficiariesAdd.listDataBankNameLabel }
 									placeholder={ language.beneficiariesAdd.listDataBankNamePlaceholder }
@@ -202,7 +202,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "branchname" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.branchname }
+									rules={ validationRulesBeneficiariesAdd.branchname }
 									errors={ formState.errors.branchname }
 									label={ language.beneficiariesAdd.listDataBranchNameLabel }
 									placeholder={ language.beneficiariesAdd.listDataBranchNamePlaceholder }
@@ -213,7 +213,7 @@ function BeneficiariesAddInner() {
 									name={ "branchcity" }
 									control={ control }
 									component={"BranchCity"}
-									rules={ rulesBeneficiariesAdd.branchcity }
+									rules={ validationRulesBeneficiariesAdd.branchcity }
 									errors={ formState.errors.branchname }
 									label={ language.beneficiariesAdd.listDataBranchCityLabel }
 									placeholder={ language.beneficiariesAdd.listDataBranchCityPlaceholder }
@@ -230,7 +230,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "address" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.address }
+									rules={ validationRulesBeneficiariesAdd.address }
 									errors={ formState.errors.address }
 									label={ language.beneficiariesAdd.listDataThaiAddressLabel }
 									placeholder={ language.beneficiariesAdd.listDataThaiAddressPlaceholder }
@@ -241,7 +241,7 @@ function BeneficiariesAddInner() {
 									name={ "state" }
 									control={ control }
 									component={"Province"}
-									rules={ rulesBeneficiariesAdd.state }
+									rules={ validationRulesBeneficiariesAdd.state }
 									errors={ formState.errors.state }
 									label={ language.beneficiariesAdd.listDataProvinceLabel }
 									placeholder={ language.beneficiariesAdd.listDataProvincePlaceholder }
@@ -252,7 +252,7 @@ function BeneficiariesAddInner() {
 									name={ "city" }
 									control={ control }
 									component={"District"}
-									rules={ rulesBeneficiariesAdd.city }
+									rules={ validationRulesBeneficiariesAdd.city }
 									errors={ formState.errors.city }
 									label={ language.beneficiariesAdd.listDataDistrictLabel }
 									placeholder={ language.beneficiariesAdd.listDataDistrictPlaceholder }
@@ -262,7 +262,7 @@ function BeneficiariesAddInner() {
 								<Forms.TextInput
 									name={ "postcode" }
 									control={ control }
-									rules={ rulesBeneficiariesAdd.postcode }
+									rules={ validationRulesBeneficiariesAdd.postcode }
 									errors={ formState.errors.postcode }
 									label={ language.beneficiariesAdd.listDataPostCodeLabel }
 									placeholder={ language.beneficiariesAdd.listDataPostCodePlaceholder }
