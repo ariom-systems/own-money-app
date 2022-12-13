@@ -10,7 +10,7 @@ import { Notice } from '../../components/common/Notice'
 
 import { AuthContext } from '../../data/Context'
 import { keychainSave, parseToken } from '../../data/Actions'
-
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import * as Forms from '../../components/common/Forms'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 
@@ -102,6 +102,18 @@ const LoginScreen = ({ navigation }) => {
 			}
 		})
 	}
+	
+	React.useEffect(() => {
+		const readLang = async () => {
+			try {
+				const storedLang = await AsyncStorage.getItem('com.ariom.ownmoney.lang')
+				if(storedLang != null) { 
+					authDispatch({ type: 'SET_LANG', payload: { lang: storedLang }})
+				}
+			} catch (e) { console.log("loading error: ", e) }
+		}
+		readLang()
+	},[])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {

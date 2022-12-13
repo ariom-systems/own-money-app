@@ -34,13 +34,18 @@ const transactionsGrouped = selector({
 	}
 })
 
-const handleRefresh = (transactions) => {
-	const datetime = [transactions.created_date, transactions.created_time]
+const handleRefresh = (transactions, uid) => {
+	const oldest = transactions.slice(-1)[0]
+	const datetime = [oldest.created_date, oldest.created_time]
+	const timestamp = new Date(datetime.join('T')).getTime() / 1000
 
-	const timestamp = new Date(datetime.join('T')).getTime()
-	console.log(timestamp)
-	//api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))
-	//api.get(buildDataPath('transactions', auth.uid, 'list', { from: data.transactionTimestamp, count: 11 }))
+	api.get(buildDataPath('transactions', uid, 'list', { from: timestamp, count: 10 }))
+	.then(response => {
+		console.log(response.data)
+		//setTransactions(addExtraRecordData(response.data))
+		//resolve('✅ Loaded Recent Transactions')
+	})
+	.catch(error => { reject('🚫 ' + error) })
 }
 
 const TransactionsList = ({ navigation }) => {
@@ -82,7 +87,7 @@ const TransactionsList = ({ navigation }) => {
 							maxToRenderPerBatch={10}
 							removeClippedSubviews={true}
 							refreshing={loading}
-							onEndReached={handleRefresh(transactions)}
+							onEndReached={handleRefresh(transactions, auth.uid)}
 							onEndReachedThreshold={0.001}
 							stickySectionHeadersEnabled={false}
 							/>
@@ -110,7 +115,7 @@ const ListFooterItem = () => {
 	return (
 		<HStack justifyContent={"center"} py={"8"} alignItems={"center"}>
 			{ loading.status == true && <Spinner size={"lg"} /> }
-			<Button onPress={handleRefresh(transactions)}>
+			<Button onPress={handleRefresh(transactions, auth.uid)}>
 				{ loading.status == true ? language.transactionsList.labelLoading : language.transactionsList.labelLoadMore }
 			</Button>
 		</HStack>

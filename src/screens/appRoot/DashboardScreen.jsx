@@ -1,13 +1,12 @@
 import React from 'react'
 import { ImageBackground, Platform, StyleSheet } from 'react-native'
-import { Box, Button, Divider, Heading, HStack, ScrollView, Text, VStack } from 'native-base'
-import HeaderItem from '../../components/dashboard/HeaderItem'
-import ListItem from '../../components/dashboard/ListItem'
+import { Box, Button, Divider, Heading, SectionList, ScrollView, Text, VStack } from 'native-base'
+import StaticSectionList from '../../components/dashboard/StaticSectionList'
 
-import { AuthContext, DataContext } from '../../data/Context'
+import { AuthContext } from '../../data/Context'
 import { formatCurrency, groupTransactionsByDate } from '../../data/Actions'
 
-import * as Recoil from 'recoil'
+import { selector, useRecoilState, useRecoilValue } from 'recoil'
 import { userState } from '../../data/recoil/user'
 import { transactionList } from '../../data/recoil/transactions'
 import { globalState } from '../../data/recoil/system'
@@ -16,38 +15,25 @@ import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
 
 import LocalizedStrings from 'react-native-localization'
+import ExchangeRate from '../../components/common/ExchangeRate'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
+const dashboardTransactions = selector({
+	key: 'dashboardTransactions',
+	get: ({get}) => {
+		let unsorted = get(transactionList)
+		const listData = unsorted.slice(0, 10)
+		return groupTransactionsByDate(unsorted)
+	}
+})
+
 const DashboardScreen = ({ navigation }) => {
 	const { auth } = React.useContext(AuthContext)
-	const globals = Recoil.useRecoilValue(globalState)
-	const transactions = Recoil.useRecoilValue(transactionList)
-	const user = Recoil.useRecoilValue(userState)
-
- 	const [ transferList , setTransferList ] = React.useState([])
+	const transactions = useRecoilValue(dashboardTransactions)
+	const user = useRecoilValue(userState)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-	
-	let formatted = formatCurrency(globals.rate, "th-TH", "THB")
-	let rateValue = formatted.symbol + formatted.value
-	let rateAsOf = new Date().toLocaleString('en-GB').split(',')[0]
-	
-	React.useEffect(() => {
-		const listData = transactions.slice(0, 10)
-		let grouped = groupTransactionsByDate(listData)
-		let output = []
-		grouped.forEach(section => {
-			output.push(<HeaderItem key={section.header} header={section.header}/>)
-			section.data.forEach(item => {
-				output.push(<ListItem key={item.transaction_number} data={item} />)
-				if(item !== section.data[section.data.length - 1]) {
-					output.push(<Divider key={Math.random()} />)
-				}
-			})
-		})
-		setTransferList(output)
-	}, [transactions])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -79,28 +65,12 @@ const DashboardScreen = ({ navigation }) => {
 
 	return (
 		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<ScrollView>
+			<ScrollView nestedScrollEnabled={false} keyboardShouldPersistTaps={"handled"}>
 				<VStack px={"2.5%"} py={"5%"} space={"4"}>
 					<Box justifItems={"flex-start"}>
-						<Box p={"5%"} backgroundColor={"white"} rounded={"lg"}>
+						<Box p={"5%"} backgroundColor={"white"} rounded={"10"}>
 							<Heading>{ language.dashboard.greeting } {user.firstname} {user.lastname}!</Heading>
-							<Box backgroundColor={"gray.200"} borderRadius={"8"} p={"4"} my={"4"}>
-								<HStack justifyContent={"space-between"} borderBottomColor={"coolGray.400"} borderBottomWidth={"1"} pb={"2"}>
-									<Heading fontSize={"lg"}>{ language.dashboard.currentRate }</Heading>
-									<Heading fontSize={"lg"}>{rateAsOf}</Heading>
-								</HStack>
-								<HStack justifyContent={"center"} alignItems={"center"} py={"4"}>
-									<VStack alignItems={"center"}>
-										<AuSVG size={{width: 40, height: 40}} />
-										<Text>{ language.dashboard.audCode }</Text>
-									</VStack>
-									<Text fontSize={"4xl"} textAlign={"center"} mx={"4"}>$1 = {rateValue}</Text>
-									<VStack alignItems={"center"}>
-										<ThSVG size={{width: 40, height: 40}} />
-										<Text>{ language.dashboard.thbCode }</Text>
-									</VStack>
-								</HStack>
-							</Box>
+							<ExchangeRate size={"lg"} nb={{my: "4"}} />
 							<Box backgroundColor={"primary.200"} borderRadius={"8"} p={"4"} mt={"4"}>
 								<Heading fontSize={"lg"}>{ language.dashboard.yourPointsTitle }</Heading>
 								<Box pt={"4"} pb={"8"}>
@@ -113,12 +83,11 @@ const DashboardScreen = ({ navigation }) => {
 							</Box>
 						</Box>
 					</Box>
-					<Box backgroundColor={"white"} rounded={"lg"}>
+					<Box backgroundColor={"white"} rounded={"10"}>
 						<Heading p={"4"} fontSize={"xl"}>{ language.dashboard.recentTransfersTitle }</Heading>
-						<Box>
-							{transferList}
-						</Box>
 					</Box>
+					<StaticSectionList
+						sections={transactions} sectionProps={{ mb: "4", roundedTop: "10", roundedBottom: "10" }} />
 					<Box w={"100%"} alignItems={"center"} justifItems={"flex-start"}>
 						<Button size={"lg"} w={"75%"} onPress={() => navigation.navigate('Transactions', {screen: 'TransactionsList'})}>{ language.dashboard.buttonViewTransactions }</Button>
 					</Box>

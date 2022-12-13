@@ -1,8 +1,5 @@
 import React from 'react'
-import { Platform } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
-
-//ui
+import { ImageBackground, Platform } from 'react-native'
 import { Box, Button, Factory, FormControl, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, 
 	Popover, Pressable,	Text, VStack } from 'native-base'
 import StepIndicator from 'react-native-step-indicator'
@@ -11,7 +8,8 @@ Ionicon.loadFont()
 const NBIonicon = Factory(Ionicon)
 import { AuSVG } from '../../../assets/img/AuSVG'
 import { ThSVG } from '../../../assets/img/ThSVG'
-
+import { useNavigation } from '@react-navigation/native'
+	
 //forms
 import { ErrorMessage } from '../../../components/common/Forms'
 import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
@@ -19,6 +17,8 @@ import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-fo
 //data
 import { useRecoilState, useRecoilValue, selector } from 'recoil'
 //import { transfersAtom } from '../../../data/recoil/Atoms'
+import { audObj } from '../../../data/recoil/transfer'
+import { globalState } from '../../../data/recoil/system'
 import { AuthContext, DataContext, TransferContext } from '../../../data/Context'
 import { formatCurrency, valueIsBetween } from '../../../data/Actions'
 import { api } from '../../../config'
@@ -27,29 +27,16 @@ import { useAspect } from '../../../data/Hooks'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
+import ExchangeRate from '../../../components/common/ExchangeRate'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
-let language = new LocalizedStrings({...auStrings, ...thStrings})
-let labels = [
-	language.transferProgress.labelAmount,
-	language.transferProgress.labelBeneficiary,
-	language.transferProgress.labelReview,
-	language.transferProgress.labelFinish
-]
+let language = new LocalizedStrings({...auStrings, ...thStrings}), labels = []
 
-export default TransferStepOne = () => {
+const TransferStepOne = () => {
 	const methods = useForm({
 		mode: 'all',
-		criteriaMode: 'all',
-		defaultValues: {
-			aud: '',
-			thb: '',
-			remaining: '',
-			fee: '',
-			rate: ''
-		}
+		criteriaMode: 'all'
 	})
-
 	return (
 		<FormProvider {...methods}>
 			<TransferStepOneInner />
@@ -57,13 +44,227 @@ export default TransferStepOne = () => {
 	)
 }
 
+export default TransferStepOne
+
 const TransferStepOneInner = () => {
 	const navigation = useNavigation()
 	const { control, handleSubmit, watch, reset, setValue, getValues, formState } = useFormContext()
 	const { auth } = React.useContext(AuthContext)
-	const { data , dataDispatch } = React.useContext(DataContext)
-	//const [ transfers, setTransfers ] = useRecoilState(transfersAtom)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const globals = useRecoilValue(globalState)
+
+	React.useEffect(() => {
+		if(language.getLanguage() !== auth.lang) {
+			language.setLanguage(auth.lang)
+			navigation.setOptions()
+			labels = [
+				language.transferProgress.labelAmount,
+				language.transferProgress.labelBeneficiary,
+				language.transferProgress.labelReview,
+				language.transferProgress.labelFinish
+			]
+			forceUpdate()
+		}
+	}, [language, auth, labels])
+
+	const onSubmit = submitted => {
+
+	}
+	const onError = error => console.log(error)
+
+	const handleCancel = () => {
+	// 	transferDispatch({ type: 'RESTART' })
+	// 	navigation.navigate('TransferStepOne')
+	}
+
+	return (
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
+			<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
+				<Box mt={"5%"} mx={"2.5%"} py={"4"} backgroundColor={"white"}>
+					<StepIndicator
+						stepCount={4}
+						currentPosition={0} //transfers.step
+						labels={labels} />
+				</Box>
+				<VStack space={"4"} w={"100%"} alignItems={"center"}>
+					<Text textAlign={"center"}>{ language.transferStepOne.titleTop }</Text>
+					<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
+						<ExchangeRate size={"sm"} />
+					</HStack>
+					<FormControl isInvalid={ (formState.errors.aud || formState.errors.thb) ? true : false} >
+						<VStack space={"4"} px={"4"}>
+							<InputGroup>
+								<InputLeftAddon
+									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+									children={
+										<Text
+											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+											key={Math.random()}
+											fontSize={"lg"}>$</Text>
+									}
+									w={"15%"} />
+								<Controller
+									control={control}
+									name={'aud'}
+									rules={{
+										pattern: {
+											value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
+											message: language.transferStepOne.errorMessageInvalidFormat
+										}
+									}}
+									render={({ field: { value, onChange, onBlur }}) => (
+										<Input
+											_focus={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+											fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
+											value={value}
+											onChangeText={onChange}
+											onChange={(e) => {
+												//let newTHB = formatFloat(e.nativeEvent.text) * getValues("rate")
+												//handleLimitChange(e.nativeEvent.text)
+												//setValue('thb', formatCurrency(newTHB, "th-TH", "THB").value, { shouldValidate: true})
+											}}
+											onBlur={() => {
+												//onBlur()
+												//forceUpdate()
+											}}
+											//onEndEditing={() => forceUpdate()}
+										/>
+									)}
+								/>
+								<InputRightAddon
+									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+									w={"25%"}
+									children={
+										<HStack>
+											<AuSVG />
+											<Text
+												color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+												mx={"2"}>AUD</Text>
+										</HStack>
+									} />
+							</InputGroup>
+							<InputGroup>
+								<InputLeftAddon
+									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+									children={
+										<Text
+											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+											key={Math.random()}
+											fontSize={"lg"}>฿</Text>
+									}
+									w={"15%"} />
+								<Controller
+									control={control}
+									name={'thb'}
+									rules={{
+										pattern: {
+											value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
+											message: language.transferStepOne.errorMessageInvalidFormat
+										}
+									}}
+									render={({ field: { value, onChange, onBlur }}) => (
+										<Input
+											_focus={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+											fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
+											value={value}
+											onChangeText={onChange}
+											onChange={(e) => {
+												//let newAUD = formatFloat(e.nativeEvent.text) / getValues("rate")
+												//handleLimitChange(newAUD)
+												//setValue('aud', formatCurrency(newAUD, "en-AU", "AUD").value, { shouldValidate: true})		
+											}}
+											onBlur={() => {
+												//onBlur()
+												//forceUpdate()
+											}}
+											//onEndEditing={() => forceUpdate()}
+										/>
+									)}
+								/>
+								<InputRightAddon
+									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
+									w={"25%"}
+									children={
+										<HStack>
+											<ThSVG />
+											<Text
+												color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
+												mx={"2"}>THB</Text>
+										</HStack>
+									} />
+							</InputGroup>
+							{(formState.errors.aud || formState.errors.thb ) && (
+								<ErrorMessage message={formState.errors.aud.message} />
+							)}
+						</VStack>
+					</FormControl>
+					<Box w={"100%"}>
+						<VStack mx={"5%"} p={"4"} space={"2"} backgroundColor={"white"} rounded={"md"}>
+							<HStack justifyContent={"space-between"}>
+								<Text>{ language.transferStepOne.labelDailyLimit }:</Text>
+								<Text>{ /* limitFormatted.get() */ }</Text>
+							</HStack>
+							<Controller
+								control={control}
+								name={"remaining"}
+								rules={{
+									validate: v => parseInt(v) > 0 || language.transferStepOne.errorMessageLimitExceeded	
+								}}
+								render={({ field: { value }}) => (
+									<VStack space={"2"}>
+										<HStack justifyContent={"space-between"}>
+											<Text>{ language.transferStepOne.labelBalanceRemaining }:</Text>
+											<Text color={ formState.errors.remaining ? "danger.600" : "black" }>
+												{/* { formatCurrency(transfers.limit_remaining, "en-AU", "AUD").full } */}
+											</Text>
+										</HStack>
+										{(formState.errors.remaining) && (
+											<Text color={"danger.600"}>{formState.errors.remaining.message}</Text>
+										)}
+									</VStack>
+								)}
+								>
+							</Controller>
+							{ /* aud.get() !== 0 && (
+							<>
+								<HStack justifyContent={"space-between"}>
+									<Text>{ language.transferStepOne.labelFee }:</Text>
+									<Text>{  formatCurrency(fee.get(), "en-AU", "AUD").full }</Text>
+								</HStack>
+								<HStack justifyContent={"space-between"}>
+									<Text>{ language.transferStepOne.labelYourRate }:</Text>
+									<Text>{ formatCurrency(rate.get(), "th-TH", "THB").full }</Text>
+								</HStack>
+							</>
+							) */ }
+						</VStack>
+					</Box>
+
+					<HStack space={"4"} w={"100%"} justifyContent={"center"}>
+						<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
+						<Button
+							isDisabled={(
+								formState.errors.aud ||
+								formState.errors.thb ||
+								formState.errors.remaining ||
+								getValues('aud') == "" ||
+								getValues('thb') == ""
+							) ? true : false }
+							_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}
+							alignSelf={"center"}
+							w={"40%"}
+							onPress={handleSubmit(onSubmit, onError)} >
+							<Text fontSize={"lg"} color={"#FFFFFF"}>{ language.transferStepOne.buttonNext }</Text>
+						</Button>
+					</HStack>
+				</VStack>
+			</Box>
+		</ImageBackground>
+	)
+}
+
 
 	//On Load actions
 	// React.useEffect(() => {
@@ -91,26 +292,27 @@ function valueIsBetween(input, conditions) {
 }
 */
 
-	const onSubmit = submitted => {
-		// let subAUD = formatFloat(submitted.aud)
-		// let subTHB = formatFloat(submitted.thb)
-		// let subFee = formatFloat(submitted.fee)
-		// let subRate = formatFloat(submitted.rate)
-		// let remaining = {
-		// 	max: data.userMeta.daily_limit.max,
-		// 	remaining: submitted.remaining.toFixed(2)
-		// }
-		//dataDispatch({ type: 'UPDATE_REMAINING', payload: { data: remaining } })
-		// transferDispatch({ type: 'SET_STEP_ONE', payload: {
-		// 	aud: formatCurrency(subAUD, "en-AU", "AUD").value,
-		// 	thb: formatCurrency(subTHB, "th-TH", "THB").value,
-		// 	fee: formatCurrency(subFee, "en-AU", "AUD").value,
-		// 	rate: formatCurrency(subRate, "th-TH", "THB").value,
-		// }})
-		// transferDispatch({ type: 'GO_TO', payload: { step: 1 }})
-		// navigation.navigate('TransferStepTwo')
-	}
-	const onError = error => console.log(error)
+//const onSubmit = submitted => {
+	// let subAUD = formatFloat(submitted.aud)
+	// let subTHB = formatFloat(submitted.thb)
+	// let subFee = formatFloat(submitted.fee)
+	// let subRate = formatFloat(submitted.rate)
+	// let remaining = {
+	// 	max: data.userMeta.daily_limit.max,
+	// 	remaining: submitted.remaining.toFixed(2)
+	// }
+	//dataDispatch({ type: 'UPDATE_REMAINING', payload: { data: remaining } })
+	// transferDispatch({ type: 'SET_STEP_ONE', payload: {
+	// 	aud: formatCurrency(subAUD, "en-AU", "AUD").value,
+	// 	thb: formatCurrency(subTHB, "th-TH", "THB").value,
+	// 	fee: formatCurrency(subFee, "en-AU", "AUD").value,
+	// 	rate: formatCurrency(subRate, "th-TH", "THB").value,
+	// }})
+	// transferDispatch({ type: 'GO_TO', payload: { step: 1 }})
+	// navigation.navigate('TransferStepTwo')
+//}
+
+
 	// const limit = useAspect(data.userMeta.daily_limit.max)
 	// const limitFormatted = useAspect(formatCurrency(limit.get(), "en-AU", "AUD").full)
 	// const remaining = useAspect(data.userMeta.daily_limit.remaining)
@@ -173,19 +375,6 @@ function valueIsBetween(input, conditions) {
 	// 	forceUpdate()
 	// }, [rate.get()])
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
-			navigation.setOptions()
-			labels = [
-				language.transferProgress.labelAmount,
-				language.transferProgress.labelBeneficiary,
-				language.transferProgress.labelReview,
-				language.transferProgress.labelFinish
-			]
-			forceUpdate()
-		}
-	}, [language, auth, labels])
 
 	// const handleLimitChange = (change) => {
 	// 	if(!isNaN(change)) {
@@ -247,206 +436,3 @@ function valueIsBetween(input, conditions) {
 	// 		})
 	// 	}
 	// }
-	
-
-	const handleCancel = () => {
-	// 	transferDispatch({ type: 'RESTART' })
-
-	// 	navigation.navigate('TransferStepOne')
-	}
-
-	return (
-		<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
-			<Box mt={"5%"} mx={"2.5%"} py={"4"} backgroundColor={"white"}>
-				<StepIndicator
-					stepCount={4}
-					currentPosition={0} //transfers.stepß
-					labels={labels} />
-			</Box>
-			<VStack space={"4"} w={"100%"} alignItems={"center"}>
-				<Text textAlign={"center"}>{ language.transferStepOne.titleTop }</Text>
-				<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
-					<Text>{ language.transferStepOne.currentRate }: { language.transferStepOne.currencyCodeAUD } $1.00 = ฿{parseFloat(data.globals.rate).toFixed(2)} { language.transferStepOne.currencyCodeTHB }</Text>
-					<Popover trigger={triggerProps => { return (
-						<Pressable {...triggerProps}><NBIonicon color={"coolGray.400"} name={"information-circle-outline"} fontSize={"md"}/></Pressable>
-					) }} >
-						<Popover.Content>
-							<Popover.Arrow />
-							<Popover.Body>
-								{ language.transferStepOne.popoverToolTip }
-							</Popover.Body>
-						</Popover.Content>
-					</Popover>
-				</HStack>
-				<FormControl isInvalid={ (formState.errors.aud || formState.errors.thb) ? true : false} >
-					<VStack space={"4"} px={"4"}>
-						<InputGroup>
-							<InputLeftAddon
-								_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-								children={
-									<Text
-										color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-										key={Math.random()}
-										fontSize={"lg"}>$</Text>
-								}
-								w={"15%"} />
-							<Controller
-								control={control}
-								name={'aud'}
-								rules={{
-									pattern: {
-										value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
-										message: language.transferStepOne.errorMessageInvalidFormat
-									}
-								}}
-								render={({ field: { value, onChange, onBlur }}) => (
-									<Input
-										_focus={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-										color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-										fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
-										value={value}
-										onChangeText={onChange}
-										onChange={(e) => {
-											//let newTHB = formatFloat(e.nativeEvent.text) * getValues("rate")
-											//handleLimitChange(e.nativeEvent.text)
-											//setValue('thb', formatCurrency(newTHB, "th-TH", "THB").value, { shouldValidate: true})
-										}}
-										onBlur={() => {
-											//onBlur()
-											//forceUpdate()
-										}}
-										//onEndEditing={() => forceUpdate()}
-									/>
-								)}
-							/>
-							<InputRightAddon
-								_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-								w={"25%"}
-								children={
-									<HStack>
-										<AuSVG />
-										<Text
-											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-											mx={"2"}>AUD</Text>
-									</HStack>
-								} />
-						</InputGroup>
-						<InputGroup>
-							<InputLeftAddon
-								_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-								children={
-									<Text
-										color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-										key={Math.random()}
-										fontSize={"lg"}>฿</Text>
-								}
-								w={"15%"} />
-							<Controller
-								control={control}
-								name={'thb'}
-								rules={{
-									pattern: {
-										value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
-										message: language.transferStepOne.errorMessageInvalidFormat
-									}
-								}}
-								render={({ field: { value, onChange, onBlur }}) => (
-									<Input
-										_focus={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-										color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-										fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
-										value={value}
-										onChangeText={onChange}
-										onChange={(e) => {
-											//let newAUD = formatFloat(e.nativeEvent.text) / getValues("rate")
-											//handleLimitChange(newAUD)
-											//setValue('aud', formatCurrency(newAUD, "en-AU", "AUD").value, { shouldValidate: true})		
-										}}
-										onBlur={() => {
-											//onBlur()
-											//forceUpdate()
-										}}
-										//onEndEditing={() => forceUpdate()}
-									/>
-								)}
-							/>
-							<InputRightAddon
-								_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-								w={"25%"}
-								children={
-									<HStack>
-										<ThSVG />
-										<Text
-											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-											mx={"2"}>THB</Text>
-									</HStack>
-								} />
-						</InputGroup>
-						{(formState.errors.aud || formState.errors.thb ) && (
-							<ErrorMessage message={formState.errors.aud.message} />
-						)}
-					</VStack>
-				</FormControl>
-				<Box w={"100%"}>
-					<VStack mx={"5%"} p={"4"} space={"2"} backgroundColor={"white"} rounded={"md"}>
-						<HStack justifyContent={"space-between"}>
-							<Text>{ language.transferStepOne.labelDailyLimit }:</Text>
-							<Text>{ /* limitFormatted.get() */ }</Text>
-						</HStack>
-						<Controller
-							control={control}
-							name={"remaining"}
-							rules={{
-								 validate: v => parseInt(v) > 0 || language.transferStepOne.errorMessageLimitExceeded	
-							}}
-							render={({ field: { value }}) => (
-								<VStack space={"2"}>
-									<HStack justifyContent={"space-between"}>
-										<Text>{ language.transferStepOne.labelBalanceRemaining }:</Text>
-										<Text color={ formState.errors.remaining ? "danger.600" : "black" }>
-											{/* { formatCurrency(transfers.limit_remaining, "en-AU", "AUD").full } */}
-										</Text>
-									</HStack>
-									{(formState.errors.remaining) && (
-										<Text color={"danger.600"}>{formState.errors.remaining.message}</Text>
-									)}
-								</VStack>
-							)}
-							>
-						</Controller>
-						{ /* aud.get() !== 0 && (
-						<>
-							<HStack justifyContent={"space-between"}>
-								<Text>{ language.transferStepOne.labelFee }:</Text>
-								<Text>{  formatCurrency(fee.get(), "en-AU", "AUD").full }</Text>
-							</HStack>
-							<HStack justifyContent={"space-between"}>
-								<Text>{ language.transferStepOne.labelYourRate }:</Text>
-								<Text>{ formatCurrency(rate.get(), "th-TH", "THB").full }</Text>
-							</HStack>
-						</>
-						) */ }
-					</VStack>
-				</Box>
-
-				<HStack space={"4"} w={"100%"} justifyContent={"center"}>
-					<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
-					<Button
-						isDisabled={(
-							formState.errors.aud ||
-							formState.errors.thb ||
-							formState.errors.remaining ||
-							getValues('aud') == "" ||
-							getValues('thb') == ""
-						) ? true : false }
-						_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}
-						alignSelf={"center"}
-						w={"40%"}
-						onPress={handleSubmit(onSubmit, onError)} >
-						<Text fontSize={"lg"} color={"#FFFFFF"}>{ language.transferStepOne.buttonNext }</Text>
-					</Button>
-				</HStack>
-			</VStack>
-		</Box>
-	)
-}

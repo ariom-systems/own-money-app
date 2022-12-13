@@ -2,6 +2,7 @@ import React from 'react'
 import { Avatar, HStack, Pressable, Text, VStack } from 'native-base'
 import { useNavigation } from '@react-navigation/native'
 
+import { AuthContext } from '../../data/Context'
 import * as Recoil from 'recoil'
 import { loadingState } from '../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
@@ -14,10 +15,12 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 const ListSwipeItem = (props) => {
 	let { id, status, initials, fullname } = props.data.item
 	let index = props.data.index
+	const { auth } = React.useContext(AuthContext)
 	const beneficiaries = Recoil.useRecoilValue(beneficiaryList)
 	const setBeneficiary = Recoil.useSetRecoilState(beneficiaryObj)
 	const setLoading = Recoil.useSetRecoilState(loadingState)
 	const navigation = useNavigation()
+	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	const handlePress = (item) => {
 		setBeneficiary(item)
@@ -33,6 +36,13 @@ const ListSwipeItem = (props) => {
 	} else {
 		corners = "none"
 	}
+
+	React.useEffect(() => {
+		if(language.getLanguage() !== auth.lang) {
+			language.setLanguage(auth.lang)
+			forceUpdate()
+		}
+	}, [language, auth])
 
 	return (
 		<Pressable key={ index } onPress={() => handlePress({...props.data.item, index: props.data.index }) }>

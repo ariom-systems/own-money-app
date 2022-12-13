@@ -88,44 +88,7 @@ const TransactionsDetail = ({route, navigation }) => {
 		break
 	}
 
-	const transactionData = [
-		{
-			title: (
-				<Box alignItems={"center"}>
-					{headerIconType}
-					<Text fontSize={"xl"} bold>{statusCode}</Text>
-				</Box>
-			),
-			data: []
-		},
-		{
-			title: (<Heading size={"sm"}>{ language.transactionsDetail.listHeaderRecipient }</Heading>),
-			data: [
-				{ label: language.transactionsDetail.listDataAccountNameLabel, value: transaction.fullname },
-				{ label: language.transactionsDetail.listDataAccountNumberLabel, value: transaction.accountnumber },
-				{ label: language.transactionsDetail.listDataBankNameLabel, value: transaction.bankname }
-			]
-		},
-		{
-			title: (<Heading size={"sm"}>{ language.transactionsDetail.listHeaderAmounts }</Heading>),
-			data: [
-				{ label: language.transactionsDetail.listDataSendAmountLabel, value: amountSend},
-				{ label: language.transactionsDetail.listDataYourRateLabel, value: rate},
-				{ label: language.transactionsDetail.listDataFeeLabel, value: fee},
-				{ label: language.transactionsDetail.listDataTotalToPayLabel, value: amountToPay},
-				{ label: language.transactionsDetail.listDataReceivableAmountLabel, value: amountReceived}
-			]
-		},
-		{
-			title: (<Heading size={"sm"}>{ language.transactionsDetail.listHeaderDetails }</Heading>),
-			data: [
-				{ label: language.transactionsDetail.listDataTransactionNumberLabel, value: transaction.transaction_number},
-				{ label: language.transactionsDetail.listDataStatusLabel, value: (<Box py={"2"}><Badge colorScheme={badgeType} variant={"outline"}>{statusCode}</Badge></Box>) },
-				{ label: language.transactionsDetail.listDataDateCreatedLabel, value: createdDate},
-				{ label: language.transactionsDetail.listDataDateCompletedLabel, value: completedDate},
-			]
-		}
-	]
+	
 
 	return (
 		<Box w={"100%"} pt={ Platform.OS !== 'ios' ? "0" : "0" } flex={"1"} mb={"74"}>

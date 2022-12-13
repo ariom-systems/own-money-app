@@ -244,7 +244,6 @@
 			"currentRate": "อัตราแลกเปลี่ยน:",
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
-			"popoverToolTip": "อัตราแลกเปลี่ยนนี้ สำหรับยอดโอนเกิน $500",
 			"labelDailyLimit": "ลิมิตต่อวัน:",
 			"labelBalanceRemaining": "(balance remaining)",
 			"labelFee": "ค่าธรรมเนียม",
@@ -470,6 +469,15 @@
 			"statusInactiveTitle": "x  x",
 			"transferCompleteMessage": "x Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you! x",
 			"transferCompleteTitle": "x Success! x"
+		},
+		"components": {
+			"exchangeRateCardTitle": "อัตราแลกเปลี่ยน",
+			"exchangeRateCardToolTip": "อัตราแลกเปลี่ยนนี้ สำหรับยอดโอนเกิน $500",
+			"exchangeRateCardAud": "AUD",
+			"exchangeRateCardThb": "THB",
+			"statusBadgeCompleted": "สมบูรณ์",
+			"statusBadgeCancelled": "ยกเลิก",
+			"statusBadgeWaitForPayment": "รอการชำระเงิน"
 		}
 	}
 }

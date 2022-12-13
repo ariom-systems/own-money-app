@@ -66,7 +66,7 @@ const LoadingScreen = () => {
 
 		const loadTransactions = new Promise((resolve, reject) => {
 			const today = new Date(Date.parse(new Date())).getTime() / 1000
-			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))		
+			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today, count: 10 }))
 				.then(response => {
 					setTransactions(addExtraRecordData(response.data))
 					resolve('✅ Loaded Recent Transactions')

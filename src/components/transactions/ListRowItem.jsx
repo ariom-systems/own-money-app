@@ -29,7 +29,7 @@ const ListRowItem = (props) => {
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
 			language.setLanguage(auth.lang)
-			navigation.setOptions()
+			//navigation.setOptions()
 			forceUpdate()
 		}
 	}, [language, auth])

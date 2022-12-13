@@ -245,7 +245,6 @@
 			"currentRate": "Current rate",
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
-			"popoverToolTip": "This rate is only applicable to amounts over AUD $500.00",
 			"labelDailyLimit": "Your Daily Limit:",
 			"labelBalanceRemaining": "(balance remaining)",
 			"labelFee": "Fee",
@@ -471,6 +470,15 @@
 			"statusInactiveTitle": "",
 			"transferCompleteMessage": "Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you!",
 			"transferCompleteTitle": "Success!"
+		},
+		"components": {
+			"exchangeRateCardTitle": "Current Rate",
+			"exchangeRateCardToolTip": "This rate is only applicable to amounts over AUD $500.00",
+			"exchangeRateCardAud": "AUD",
+			"exchangeRateCardThb": "THB",
+			"statusBadgeCompleted": "Completed",
+			"statusBadgeCancelled": "Cancelled",
+			"statusBadgeWaitForPayment": "Waiting for payment"
 		}
 	}
 }
