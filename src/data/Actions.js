@@ -322,7 +322,12 @@ export function groupArrayObjects(input, key, delimeter = ' ', part = 0) {
  * @returns {object}
 */
 export function formatCurrency(input, countryCode, currency) {
-	const intlObj = new Intl.NumberFormat(countryCode, { style: 'currency', currency: currency})
+	const intlObj = new Intl.NumberFormat(countryCode, {
+		style: 'currency',
+		currency: currency,
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 4
+	})
 	let rawNumberObj
 	if(typeof input !== 'undefined') {
 		let rawInput = null
@@ -331,7 +336,7 @@ export function formatCurrency(input, countryCode, currency) {
 		} else {
 			rawInput = Number(input)
 		}
-		rawNumberObj = intlObj.formatToParts(rawInput)
+		rawNumberObj = intlObj.formatToParts(toFixedWithoutRounding(rawInput))
 	} else {
 		rawNumberObj = intlObj.formatToParts("0.00")
 	}
@@ -347,6 +352,13 @@ export function formatCurrency(input, countryCode, currency) {
 	return amountObj
 }
 
+
+/**
+ * 
+ */
+function toFixedWithoutRounding(input) {
+	return parseFloat(input.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
+}
 
 /**
  * Iterates through an array of transaction or beneficiary records and adds extra record properties using existing

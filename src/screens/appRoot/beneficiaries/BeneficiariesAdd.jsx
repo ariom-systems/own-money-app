@@ -13,7 +13,7 @@ import { Notice } from '../../../components/common/Notice'
 
 import * as Recoil from 'recoil'
 import { loadingState } from '../../../data/recoil/system'
-import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 import { validationRulesBeneficiariesAdd } from '../../../config'
 
 import LocalizedStrings from 'react-native-localization'

@@ -3,31 +3,27 @@ import { ImageBackground, Platform } from 'react-native'
 import { Box, Button, Factory, FormControl, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, 
 	Popover, Pressable,	Text, VStack } from 'native-base'
 import StepIndicator from 'react-native-step-indicator'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon = Factory(Ionicon)
-import { AuSVG } from '../../../assets/img/AuSVG'
-import { ThSVG } from '../../../assets/img/ThSVG'
 import { useNavigation } from '@react-navigation/native'
-	
+import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 //forms
-import { ErrorMessage } from '../../../components/common/Forms'
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
+import * as Forms from '../../../components/common/Forms'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 
-//data
-import { useRecoilState, useRecoilValue, selector } from 'recoil'
+//data 
+import { useRecoilState, useRecoilValue, atom, selector } from 'recoil'
 //import { transfersAtom } from '../../../data/recoil/Atoms'
 import { audObj } from '../../../data/recoil/transfer'
 import { globalState } from '../../../data/recoil/system'
 import { AuthContext, DataContext, TransferContext } from '../../../data/Context'
 import { formatCurrency, valueIsBetween } from '../../../data/Actions'
-import { api } from '../../../config'
+import { api, validationRulesTransferStepOne } from '../../../config'
 import { buildDataPath } from '../../../data/Actions'
 import { useAspect } from '../../../data/Hooks'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
 import ExchangeRate from '../../../components/common/ExchangeRate'
+import { color } from 'react-native-reanimated'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings}), labels = []
@@ -48,10 +44,9 @@ export default TransferStepOne
 
 const TransferStepOneInner = () => {
 	const navigation = useNavigation()
-	const { control, handleSubmit, watch, reset, setValue, getValues, formState } = useFormContext()
 	const { auth } = React.useContext(AuthContext)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-	const globals = useRecoilValue(globalState)
+	const { control, handleSubmit, setValue, getValues, formState } = useFormContext()
+	
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -77,6 +72,11 @@ const TransferStepOneInner = () => {
 	// 	navigation.navigate('TransferStepOne')
 	}
 
+	let hasErrors
+	if(formState.errors.aud || formState.errors.thb) { hasErrors = true } else { hasErrors = false }
+
+
+
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
@@ -91,77 +91,72 @@ const TransferStepOneInner = () => {
 					<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
 						<ExchangeRate size={"sm"} />
 					</HStack>
-					<FormControl isInvalid={ (formState.errors.aud || formState.errors.thb) ? true : false} >
-						<VStack space={"4"} px={"4"}>
+
+					<CurrencyConverter />
+
+					{/* <Forms.TextInput
+						name={ "aud" }
+						control={ control }
+						rules={ validationRulesTransferStepOne.aud }
+						errors={ formState.errors.aud }
+						placeholder={"0.00"}
+						required={true}
+						addonLeft={addonLeftAUD}
+						addonRight={addonRightAUD}
+						onChange={(aud) => {
+							setAud(aud)
+							setValue('thb', thb, { shouldValidate: true})
+							console.log("aud1", aud)
+							console.log("thb1", thb)
+						}}
+						inputAttributes={{
+							fontSize: "lg",
+							w: "60%",
+							rounded: "none",
+							_focus: (hasErrors ? { borderColor: "danger.600"} : { borderColor: "coolGray.300"}),
+							borderColor: (hasErrors ? "danger.600" : "coolGray.300"),
+							color: (hasErrors ? "danger.600" : "black")
+						}}
+					/>
+
+					<Forms.TextInput
+						name={ "thb" }
+						control={ control }
+						rules={ validationRulesTransferStepOne.thb }
+						errors={ formState.errors.thb }
+						placeholder={"0.00"}
+						required={true}
+						addonLeft={addonLeftTHB}
+						addonRight={addonRightTHB}
+						onChange={(thb) => {
+							setThb(thb)
+							setValue('aud', aud, { shouldValidate: true})
+							console.log("aud2", aud)
+							console.log("thb2", thb)
+						}}
+						inputAttributes={{
+							fontSize: "lg",
+							w: "60%",
+							rounded: "none",
+							_focus: (hasErrors ? { borderColor: "danger.600"} : { borderColor: "coolGray.300"}),
+							borderColor: (hasErrors ? "danger.600" : "coolGray.300"),
+							color: (hasErrors ? "danger.600" : "black")
+						}}
+					/> */}
+					
+					{ /*
+
+
+
+
+					
 							<InputGroup>
-								<InputLeftAddon
-									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-									children={
-										<Text
-											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-											key={Math.random()}
-											fontSize={"lg"}>$</Text>
-									}
-									w={"15%"} />
-								<Controller
-									control={control}
-									name={'aud'}
-									rules={{
-										pattern: {
-											value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
-											message: language.transferStepOne.errorMessageInvalidFormat
-										}
-									}}
-									render={({ field: { value, onChange, onBlur }}) => (
-										<Input
-											_focus={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-											fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
-											value={value}
-											onChangeText={onChange}
-											onChange={(e) => {
-												//let newTHB = formatFloat(e.nativeEvent.text) * getValues("rate")
-												//handleLimitChange(e.nativeEvent.text)
-												//setValue('thb', formatCurrency(newTHB, "th-TH", "THB").value, { shouldValidate: true})
-											}}
-											onBlur={() => {
-												//onBlur()
-												//forceUpdate()
-											}}
-											//onEndEditing={() => forceUpdate()}
-										/>
-									)}
-								/>
-								<InputRightAddon
-									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-									w={"25%"}
-									children={
-										<HStack>
-											<AuSVG />
-											<Text
-												color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-												mx={"2"}>AUD</Text>
-										</HStack>
-									} />
-							</InputGroup>
-							<InputGroup>
-								<InputLeftAddon
-									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-									children={
-										<Text
-											color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-											key={Math.random()}
-											fontSize={"lg"}>฿</Text>
-									}
-									w={"15%"} />
+								
 								<Controller
 									control={control}
 									name={'thb'}
 									rules={{
-										pattern: {
-											value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/,
-											message: language.transferStepOne.errorMessageInvalidFormat
-										}
+										
 									}}
 									render={({ field: { value, onChange, onBlur }}) => (
 										<Input
@@ -183,28 +178,19 @@ const TransferStepOneInner = () => {
 										/>
 									)}
 								/>
-								<InputRightAddon
-									_light={(formState.errors.aud || formState.errors.thb) && { borderColor: "danger.600" }}
-									w={"25%"}
-									children={
-										<HStack>
-											<ThSVG />
-											<Text
-												color={(formState.errors.aud || formState.errors.thb) && "danger.600"}
-												mx={"2"}>THB</Text>
-										</HStack>
-									} />
+								
 							</InputGroup>
 							{(formState.errors.aud || formState.errors.thb ) && (
 								<ErrorMessage message={formState.errors.aud.message} />
 							)}
 						</VStack>
 					</FormControl>
-					<Box w={"100%"}>
+					 */}
+					 { /*<Box w={"100%"}>
 						<VStack mx={"5%"} p={"4"} space={"2"} backgroundColor={"white"} rounded={"md"}>
 							<HStack justifyContent={"space-between"}>
 								<Text>{ language.transferStepOne.labelDailyLimit }:</Text>
-								<Text>{ /* limitFormatted.get() */ }</Text>
+								<Text>{ /* limitFormatted.get() </Text>
 							</HStack>
 							<Controller
 								control={control}
@@ -217,7 +203,7 @@ const TransferStepOneInner = () => {
 										<HStack justifyContent={"space-between"}>
 											<Text>{ language.transferStepOne.labelBalanceRemaining }:</Text>
 											<Text color={ formState.errors.remaining ? "danger.600" : "black" }>
-												{/* { formatCurrency(transfers.limit_remaining, "en-AU", "AUD").full } */}
+												{/* { formatCurrency(transfers.limit_remaining, "en-AU", "AUD").full }
 											</Text>
 										</HStack>
 										{(formState.errors.remaining) && (
@@ -227,7 +213,7 @@ const TransferStepOneInner = () => {
 								)}
 								>
 							</Controller>
-							{ /* aud.get() !== 0 && (
+							 { aud.get() !== 0 && (
 							<>
 								<HStack justifyContent={"space-between"}>
 									<Text>{ language.transferStepOne.labelFee }:</Text>
@@ -238,10 +224,10 @@ const TransferStepOneInner = () => {
 									<Text>{ formatCurrency(rate.get(), "th-TH", "THB").full }</Text>
 								</HStack>
 							</>
-							) */ }
+							) 
 						</VStack>
 					</Box>
-
+*/ }
 					<HStack space={"4"} w={"100%"} justifyContent={"center"}>
 						<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
 						<Button

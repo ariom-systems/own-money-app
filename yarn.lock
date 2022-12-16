@@ -3453,6 +3453,11 @@
   dependencies:
     "browserslist" "^4.21.4"
 
+"core-js@^3.18.1":
+  "integrity" "sha512-21491RRQVzUn0GGM9Z1Jrpr6PNPxPi+Za8OM9q4tksTSnlbXXGKK1nXNg/QvwFYettXvSX6zWKCtHHfjN4puyA=="
+  "resolved" "https://registry.npmjs.org/core-js/-/core-js-3.26.1.tgz"
+  "version" "3.26.1"
+
 "core-util-is@~1.0.0":
   "integrity" "sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ=="
   "resolved" "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz"
@@ -7539,6 +7544,13 @@
   dependencies:
     "react-native-flipper" "^0.110.0"
     "recoil" "^0.4.1"
+
+"react-recoil-form@^0.3.2":
+  "integrity" "sha512-ZvQQCvm5yodvBGT9Pw76soDfR1Jv1sgCL+QQvZOnSdO+JWbCYZ5pqh4wg4r34I3fzTsLj6QqdWpq1z5MsgU/1w=="
+  "resolved" "https://registry.npmjs.org/react-recoil-form/-/react-recoil-form-0.3.2.tgz"
+  "version" "0.3.2"
+  dependencies:
+    "core-js" "^3.18.1"
 
 "react-refresh@^0.4.0":
   "integrity" "sha512-Hwln1VNuGl/6bVwnd0Xdn1e84gT/8T9aYNL+HAKDArLCS7LWjwr7StE30IEYbIkx0Vi3vs+coQxe+SQDbGbbpA=="

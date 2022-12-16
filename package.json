@@ -46,7 +46,8 @@
     "react-native-touch-id": "github:joe-sam/react-native-touch-id",
     "react-native-vector-icons": "^9.2.0",
     "react-navigation-focus-render": "^0.0.1",
-    "react-recoil-flipper-client": "^1.0.1"
+    "react-recoil-flipper-client": "^1.0.1",
+    "react-recoil-form": "^0.3.2"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
