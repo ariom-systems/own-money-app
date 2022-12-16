@@ -1,153 +1,74 @@
 import React from 'react'
+import { ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { Avatar, Box, Button, Divider, FlatList, HStack, Pressable, ScrollView, Spacer, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-import StepIndicator from 'react-native-step-indicator'
-Ionicon.loadFont()
-import { api } from '../../../config'
-import { buildDataPath } from '../../../data/Actions'
-import { AuthContext, DataContext, TransferContext } from '../../../data/Context'
+import { Box, Button, Divider, FlatList, HStack, ScrollView, Text, VStack } from 'native-base'
+
+import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
+import FlatListItem from '../../../components/transfers/FlatListItem'
+
+import { AuthContext } from '../../../data/Context'
+import { useRecoilState, useRecoilValue, useSetRecoilState, useResetRecoilState, atom } from 'recoil'
+import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
+import { stepAtom, stepTwoButtonAtom } from '../../../data/recoil/transfer'
 
 import LocalizedStrings from 'react-native-localization'
+import StaticFlatList from '../../../components/transfers/StaticFlatList'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-let labels = [
-	language.transferProgress.labelAmount,
-	language.transferProgress.labelBeneficiary,
-	language.transferProgress.labelReview,
-	language.transferProgress.labelFinish
-]
-
 export default TransferStepTwo = () => {
 	const navigation = useNavigation()
 	const { auth } = React.useContext(AuthContext)
-	const { data } = React.useContext(DataContext)
-	const { transfer, transferDispatch } = React.useContext(TransferContext)
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const resetBeneficiary = useResetRecoilState(beneficiaryObj)
+	const setStep = useSetRecoilState(stepAtom)
+	const [ buttonState, setButtonState ] = useRecoilState(stepTwoButtonAtom)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-	const renderSeparator = () => <Divider />
-
-	ListItem.contextType = TransferContext
-	ListItemBeneficiary.contextType = DataContext
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
 			language.setLanguage(auth.lang)
 			navigation.setOptions()
-			labels = [
-				language.transferProgress.labelAmount,
-				language.transferProgress.labelBeneficiary,
-				language.transferProgress.labelReview,
-				language.transferProgress.labelFinish
-			]
 			forceUpdate()
 		}
-	}, [language, auth, labels])
+	}, [language, auth])
+
+	const handleNext = () => {
+		setStep(2)
+		navigation.navigate('TransferStepThree')
+	}
+
+	const handlePrevious = () => {
+		resetBeneficiary()
+		setStep(0)
+		navigation.goBack()
+	}
 
 	return (
-		
-		<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
-			<VStack justifyContent={"space-between"} flexGrow={"1"}>
-				<StepIndicator
-					stepCount={4}
-					currentPosition={transfer.step}
-					labels={labels} />
-				<Box p={"2"}>
-					<Text w={"100%"} textAlign={"center"}>{language.transferSteptwo.titleTop }</Text>
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
+			<ScrollView>
+				<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
+					<TransferStepIndicator />
+					<VStack justifyContent={"space-between"} flexGrow={"1"}>
+						<Box w={"100%"} p={"2"} mb={"4"}>
+							<Text textAlign={"center"}>{language.transferSteptwo.titleTop }</Text>
+						</Box>
+						<Box borderColor={"primary.600"} borderWidth={"1"} rounded={"lg"}>
+							<StaticFlatList data={beneficiaries} listProps={{ mb: "4", roundedTop: "10", roundedBottom: "10" }} />
+						</Box>
+						<HStack w={"100%"} space={"4"} mt={"4"} alignItems={"center"}>
+							<Button flex={"1"} onPress={()=> handlePrevious()}>
+								<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferSteptwo.buttonPrevious }</Text>
+							</Button>
+							<Button flex={"1"} onPress={()=> handleNext()} isDisabled={buttonState}
+								_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}>
+									<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferSteptwo.buttonNext }</Text>
+							</Button>	
+						</HStack>
+					</VStack>
 				</Box>
-				<Box h={"70%"} borderColor={"primary.600"} borderWidth={"1"} rounded={"lg"}>
-					<FlatList
-						flexGrow={"0"}
-						data={data.beneficiaries}
-						renderItem={item => <ListItem data={item} auth={auth} />}
-						ItemSeparatorComponent={renderSeparator}
-						keyExtractor={item => item.id}
-						getItemLayout={(item, index) => {
-							return { length: 60, offset: 60 * index, index }
-						}}
-						initialNumToRender={20}
-						maxToRenderPerBatch={20}
-						removeClippedSubviews={false}
-						showsVerticalScrollIndicator={true}
-					/>
-				</Box>
-				<HStack w={"100%"} space={"4"} mt={"4"} alignItems={"center"}>
-					<Button flex={"1"} onPress={()=> {
-						transferDispatch({ type: 'GO_TO', payload: { step: 0 }})
-						navigation.goBack()
-					}}>
-						<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferSteptwo.buttonPrevious }</Text>
-					</Button>
-					<Button
-						isDisabled={ transfer.stepTwo.beneficiary == "" ? true : false }
-						_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}
-						flex={"1"}
-						onPress={()=> {
-							transferDispatch({ type: 'GO_TO', payload: { step: 2 }})
-							navigation.navigate('TransferStepThree')
-						}}>
-							<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferSteptwo.buttonNext }</Text>
-					</Button>	
-				</HStack>
-			</VStack>
-		</Box>
+			</ScrollView>
+		</ImageBackground>
 	)
-}
-
-class ListItem extends React.PureComponent {
-	constructor(props) {
-		super(props)
-	}
-
-	static contextType = TransferContext
-
-	handlePress(data, auth) {
-		let transfer = this.context
-		let receiverData = {}
-		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		api.post(buildDataPath('beneficiaries', auth.uid, 'view', { id: data.item.id } ), ["accountnumber", "branchname"])
-		.then(response => {
-			let newData = (({ accountnumber, branchname }) => ({ accountnumber, branchname }))(response.data)
-			let oldData = data.item
-			receiverData = {...oldData, ...newData}
-		})
-		.then(result => {
-			transfer.transferDispatch({ type: 'SET_STEP_TWO', payload: { data: receiverData } })
-		})
-		.catch(error => console.log('fetch error: ', error))
-	}
-
-	render() {
-		let transfer = this.context
-		const data = this.props.data
-		const auth = this.props.auth
-		return (
-			<Pressable onPress={() => this.handlePress(data, auth)}>
-				<HStack alignItems={"center"} px={"4"}>
-					<ListItemBeneficiary data={data} />
-					<Spacer />
-					{ transfer.transfer.stepTwo.beneficiary.fullname != data.item.fullname ? (
-						<Ionicon name="ellipse-outline" size={36} color={"#CCC"} />
-					) : (
-						<Ionicon name="checkmark-circle" size={36} color={"#16A34A"} />
-					)}
-				</HStack>
-			</Pressable>
-		)
-	}
-}
-
-class ListItemBeneficiary extends React.PureComponent {
-	static contextType = DataContext
-	render() {
-		const data = this.props.data
-		return (
-			<HStack key={data.item.id} alignItems={"center"} py={"3"} space={"3"}>
-				<Avatar size={"32px"} backgroundColor={ data.item.status == 'Verified' ? '#8B6A27' : 'light.600' }>{data.item.initials}</Avatar>
-				<Text bold>{data.item.fullname}</Text>
-			</HStack>
-		)
-	}
-
 }

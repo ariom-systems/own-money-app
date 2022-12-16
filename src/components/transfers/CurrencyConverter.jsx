@@ -12,46 +12,24 @@ import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
 
 import { useRecoilState, useRecoilValue, atom, selector } from 'recoil'
+import { audAtom, thbSelector} from '../../data/recoil/transfer'
 import { globalState } from '../../data/recoil/system'
 
-const formStateAtom = atom({
-	key: 'formstate',
-	default: {}
-})
-
-const audAtom = atom({
-	key: 'aud',
-	default: 0
-})
-
-const thbSelector = selector({
-	key: 'thb',
-	get: ({get}) => {
-		const [aud, globals] = [get(audAtom), get(globalState)]
-		return aud * globals.rate
-	},
-	set: ({get, set}, newThbValue) => {
-		const globals = get(globalState)
-		const newAudValue = newThbValue / globals.rate
-		set(audAtom, newAudValue)
-	}
-})
-
 const CurrencyConverter = () => {
-	const { control, setValue, watch, formState } = useFormContext()
-	let hasErrors = false
-	if(formState.errors.aud || formState.errors.thb) { hasErrors = true } else { hasErrors = false }
+	const { control, setValue, formState } = useFormContext()
 	const [ aud, setAud ] = useRecoilState(audAtom)
 	const [ thb, setThb ] = useRecoilState(thbSelector)
 	const globals = useRecoilValue(globalState)
-	const [ formstate, setFormstate ] = useRecoilState(formStateAtom)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
-	React.useEffect(() => {
-		console.log("aud", aud, "thb", thb)
-	}, [aud, thb])
-
-
+	let [hasErrors, errorMsg ] = [false, ""]
+	if(formState.errors.aud || formState.errors.thb) {
+		hasErrors = true
+		if(typeof formState.errors.aud != 'undefined') {
+			errorMsg = formState.errors.aud.message
+		} else if(typeof formState.errors.thb != 'undefined') {
+			errorMsg = formState.errors.thb.message
+		}
+	} else { hasErrors = false }
 	return (
 		<VStack>
 			<FormControl isInvalid={ (hasErrors) ? true : false} >
@@ -71,9 +49,11 @@ const CurrencyConverter = () => {
 									value={value}
 									onChangeText={onChange}
 									onChange={(e) => {
+
 										let newThb = e.nativeEvent.text * globals.rate
 										setAud(e.nativeEvent.text) //updates the atom/selector (correct values in real-time)
 										setValue('thb', formatCurrency(newThb, "th-TH", "THB").value, { shouldValidate: true})
+										//setValue('thb', formatCurrency(thb, "th-TH", "THB").value, { shouldValidate: true})
 									}}
 								/>
 							)}
@@ -98,13 +78,14 @@ const CurrencyConverter = () => {
 										let newAud = e.nativeEvent.text / globals.rate
 										setThb(e.nativeEvent.text) //updates the atom/selector (correct values in real-time)
 										setValue('aud', formatCurrency(newAud, "en-AU", "AUD").value, { shouldValidate: true})
+										//setValue('aud', formatCurrency(aud, "en-AU", "AUD").value, { shouldValidate: true})
 									}}
 								/>
 							)}
 						/>
 						<TextInputRight value={"THB"} hasErrors={hasErrors} icon={<ThSVG />} />
 					</InputGroup>
-					{/* { hasErrors && <ErrorMessage message={formState.errors.aud.message} /> } */}
+					{ hasErrors && <ErrorMessage message={errorMsg} /> }
 				</VStack>
 			</FormControl>
 		</VStack>

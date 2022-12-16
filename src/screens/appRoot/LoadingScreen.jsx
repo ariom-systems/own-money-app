@@ -48,6 +48,7 @@ const LoadingScreen = () => {
 					newObj = {...response.data, daily_limit_max: daily_limit.max, daily_limit_remaining: daily_limit.remaining, logins: logins }
 					delete newObj.daily_limit
 					setUser((initial) => ({...initial, ...newObj}))
+					authDispatch({ type: 'SET_LANG', payload: { lang: newObj.lang }})
 					resolve('✅ Loaded User Data')
 			 	})
 				.catch(error => { reject('🚫 ' + error) })
@@ -112,26 +113,6 @@ const LoadingScreen = () => {
 			
 		}
 	})
-
-	//TODO: Is this really necessary? doesn't the API do this for us?
-	//Disabling for now, will have to test this out.
-	// React.useEffect(() => {
-	// 	let [lastResetStr, lastLoginStr, oneDay] = [parseFloat(globals.lastDailyLimitReset), parseFloat(user.logins.slice(-1)[0]), 1000 * 60 * 60 * 24]
-	// 	let timeDiff = (lastLoginStr - lastResetStr) * 1000
-	// 	let [daily_limit, limit_max] = [user.daily_limit_remaining, user.daily_limit_max]
-	// 	if((timeDiff - oneDay) > 0) {
-	// 		let newLimit = JSON.stringify({max: limit_max, remaining: daily_limit})
-	// 		api.put(buildDataPath('user', auth.uid, 'edit'), {daily_limit: newLimit})
-	// 		setUser((prev) => ({
-	// 			...prev,
-	// 			daily_limit_max: limit_max,
-	// 			daily_limit_remaining: daily_limit
-	// 		}))
-	// 	}
-	// 	return () => {
-	// 		navigation.navigate('AppTabs')
-	// 	}
-	// }, [globals, user])
 
 	const handleLogout = async (reason) => {
 		const reset = await keychainReset('token') //shutup vscode, await DOES do something here

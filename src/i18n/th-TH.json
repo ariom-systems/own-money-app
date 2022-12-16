@@ -240,12 +240,14 @@
 			"labelFinish": "เสร็จสิ้น"
 		},
 		"transferStepOne": {
-			"titleTop": "กรอกยอดที่ต้องการโอน",
+			"instructionTop": "กรอกยอดที่ต้องการโอน",
 			"currentRate": "อัตราแลกเปลี่ยน:",
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
-			"labelDailyLimit": "ลิมิตต่อวัน:",
-			"labelBalanceRemaining": "(balance remaining)",
+			"headingTransferDetails": "รายละเอียดการโอน",
+			"labelDailyLimit": "ขีดจำกัดรายวันของคุณ",
+			"labelRemainingLimit": "วงเงินคงเหลือ",
+			"labelLimitAfterTransfer": "วงเงินหลังโอน",
 			"labelFee": "ค่าธรรมเนียม",
 			"labelYourRate": "อัตราแลกเปลี่ยน",
 			"errorMessageInvalidFormat": "กรุณากรอกยอดเงินให้ถูกต้อง",

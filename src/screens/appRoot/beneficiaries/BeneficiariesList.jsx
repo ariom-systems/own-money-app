@@ -1,7 +1,7 @@
 import React from 'react'
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
-import { Box, Center, Divider, Fab, Factory, StatusBar, VStack } from 'native-base'
+import { Center, Divider, Fab, StatusBar, VStack } from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
@@ -11,16 +11,14 @@ import ListSwipeHiddenItem from '../../../components/beneficiaries/ListSwipeHidd
 import { AuthContext} from '../../../data/Context'
 import { Notice } from '../../../components/common/Notice'
 
-import * as Recoil from 'recoil'
+import { useRecoilState } from 'recoil'
 import { loadingState } from '../../../data/recoil/system'
-import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
-
-const NBIonicon = Factory(Ionicon)
+import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 
 const BeneficiariesList = ({navigation}) => {
 	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
-	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 
 	React.useEffect(() => {
 		const unsubscribe = navigation.addListener('focus', () => {

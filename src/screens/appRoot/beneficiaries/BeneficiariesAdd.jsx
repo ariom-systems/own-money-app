@@ -2,27 +2,24 @@ import React from 'react'
 import { ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useForm, FormProvider, useFormContext } from 'react-hook-form'
-import { Box, Button, Center, Factory, HStack, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-import { AuthContext } from '../../../data/Context'
-import * as Forms from '../../../components/common/Forms'
-import { buildDataPath, sortByParam, atomAddNewItem, addObjectExtraData, stringifyArray } from '../../../data/Actions'
-import { api, beneficiaryColumns } from '../../../config'
-import { Notice } from '../../../components/common/Notice'
+import { Box, Button, Center, HStack, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
 
-import * as Recoil from 'recoil'
+import * as Forms from '../../../components/common/Forms'
+import { Notice } from '../../../components/common/Notice'
+import LoadingOverlay from '../../../components/common/LoadingOverlay'
+
+import { buildDataPath, sortByParam, addObjectExtraData, stringifyArray } from '../../../data/Actions'
+import { api, beneficiaryColumns } from '../../../config'
+import { AuthContext } from '../../../data/Context'
+import { useRecoilState } from 'recoil'
 import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 import { validationRulesBeneficiariesAdd } from '../../../config'
 
 import LocalizedStrings from 'react-native-localization'
-import LoadingOverlay from '../../../components/common/LoadingOverlay';
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
-
-const NBIonicon = Factory(Ionicon)
 
 export default function BeneficiariesAdd() {
 	const methods = useForm({
@@ -42,8 +39,8 @@ export default function BeneficiariesAdd() {
 function BeneficiariesAddInner() {
 	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
-	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 

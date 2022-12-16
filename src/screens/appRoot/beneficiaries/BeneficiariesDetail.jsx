@@ -9,12 +9,11 @@ import DetailHeaderItem from '../../../components/beneficiaries/DetailHeaderItem
 import AlertModal from '../../../components/common/AlertModal'
 
 import { mapSectionDataFromTemplate } from '../../../data/Actions'
-import * as Recoil from 'recoil'
+import { AuthContext } from '../../../data/Context'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { loadingState } from '../../../data/recoil/system'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { BeneficiaryBlank } from '../../../data/templates/BeneficiariesDetailSectionList'
-
-import { AuthContext } from '../../../data/Context'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
@@ -27,8 +26,8 @@ const icon = <NBIonicon name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"
 
 export default function BeneficiariesDetail({ route, navigation }) {
 	const { auth } = React.useContext(AuthContext)
-	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
-	const setLoading = Recoil.useSetRecoilState(loadingState)
+	const beneficiary = useRecoilValue(beneficiaryObj)
+	const setLoading = useSetRecoilState(loadingState)
 
 	const sections = mapSectionDataFromTemplate(beneficiary, BeneficiaryBlank)
 
@@ -61,7 +60,7 @@ export default function BeneficiariesDetail({ route, navigation }) {
 	}
 
 	const handleDelete = () => {
-		//navigation.navigate('BeneficiariesDelete', { id: id })
+		navigation.navigate('BeneficiariesDelete')
 	}
 
 	return (

@@ -14,19 +14,15 @@ export const LanguageToggle = () => {
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	React.useEffect(() => {
-
 		setSelected(auth.lang)
 	}, [auth])
 
-	
-
 	const handleLanguageChange = (lang) => {
-		console.log("lang", lang)
 		setSelected(lang)
 		authDispatch({ type: 'SET_LANG', payload: { lang: lang }})
 		if(auth.token !== 'undefined') {
 			api.setHeader('Authorization', 'Bearer ' + auth.token)
-			api.post(Config.BASEURL + '/changelang', { lang: lang }).then(response => { console.log("response", response.data) })
+			api.post(Config.BASEURL + '/changelang', { lang: lang })
 		}
 		forceUpdate()
 	}

@@ -2,27 +2,24 @@ import React from 'react'
 import { ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { useForm, FormProvider, useFormContext } from 'react-hook-form'
-import { Box, Button, Center, Factory, HStack, ScrollView, Spacer, Spinner, StatusBar, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-import { AuthContext } from '../../../data/Context'
+import { Box, Button, Center, HStack, ScrollView, Spacer, Spinner, StatusBar, VStack } from 'native-base'
+
 import * as Forms from '../../../components/common/Forms'
-import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData } from '../../../data/Actions'
-import { api } from '../../../config'
 import { Notice } from '../../../components/common/Notice'
 
-import * as Recoil from 'recoil'
+
+import { api } from '../../../config'
+import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData } from '../../../data/Actions'
+import { AuthContext } from '../../../data/Context'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState } from '../../../data/recoil/system'
-
 import { validationRulesBeneficiariesEdit } from '../../../config'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
-
-const NBIonicon = Factory(Ionicon)
 
 export default function BeneficiariesEdit() {
 	const methods = useForm({
@@ -39,9 +36,9 @@ export default function BeneficiariesEdit() {
 function BeneficiariesEditInner() {
 	const navigation = useNavigation()
 	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = Recoil.useRecoilState(beneficiaryList)
-	const beneficiary = Recoil.useRecoilValue(beneficiaryObj)
-	const [ loading, setLoading ] = Recoil.useRecoilState(loadingState)
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const beneficiary = useRecoilValue(beneficiaryObj)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 

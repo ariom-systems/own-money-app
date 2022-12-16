@@ -241,12 +241,14 @@
 			"labelFinish": "Finish"
 		},
 		"transferStepOne": {
-			"titleTop": "Enter the amount to transfer",
+			"instructionTop": "Enter the amount to transfer",
 			"currentRate": "Current rate",
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
-			"labelDailyLimit": "Your Daily Limit:",
-			"labelBalanceRemaining": "(balance remaining)",
+			"headingTransferDetails": "Transfer Details",
+			"labelDailyLimit": "Your daily limit",
+			"labelRemainingLimit": "Remaining limit",
+			"labelLimitAfterTransfer": "Limit after transfer",
 			"labelFee": "Fee",
 			"labelYourRate": "Your Rate",
 			"errorMessageInvalidFormat": "Invalid format! Please only use positive and valid money values.",

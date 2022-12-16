@@ -4,15 +4,11 @@ import { Box, Button, Divider, Heading, SectionList, ScrollView, Text, VStack } 
 import StaticSectionList from '../../components/dashboard/StaticSectionList'
 
 import { AuthContext } from '../../data/Context'
-import { formatCurrency, groupTransactionsByDate } from '../../data/Actions'
+import { groupTransactionsByDate } from '../../data/Actions'
 
 import { selector, useRecoilState, useRecoilValue } from 'recoil'
 import { userState } from '../../data/recoil/user'
 import { transactionList } from '../../data/recoil/transactions'
-import { globalState } from '../../data/recoil/system'
-
-import { AuSVG } from '../../assets/img/AuSVG'
-import { ThSVG } from '../../assets/img/ThSVG'
 
 import LocalizedStrings from 'react-native-localization'
 import ExchangeRate from '../../components/common/ExchangeRate'
@@ -86,8 +82,7 @@ const DashboardScreen = ({ navigation }) => {
 					<Box backgroundColor={"white"} rounded={"10"}>
 						<Heading p={"4"} fontSize={"xl"}>{ language.dashboard.recentTransfersTitle }</Heading>
 					</Box>
-					<StaticSectionList
-						sections={transactions} sectionProps={{ mb: "4", roundedTop: "10", roundedBottom: "10" }} />
+					<StaticSectionList sections={transactions} sectionProps={{ mb: "4", roundedTop: "10", roundedBottom: "10" }} />
 					<Box w={"100%"} alignItems={"center"} justifItems={"flex-start"}>
 						<Button size={"lg"} w={"75%"} onPress={() => navigation.navigate('Transactions', {screen: 'TransactionsList'})}>{ language.dashboard.buttonViewTransactions }</Button>
 					</Box>

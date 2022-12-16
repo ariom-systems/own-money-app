@@ -354,10 +354,22 @@ export function formatCurrency(input, countryCode, currency) {
 
 
 /**
+ * Polyfill to bypass Intl.NumberFormat automatically rounding numbers up, which is not ideal
+ * considering we're primarily dealing with currency to 2 decimal places and we live in an
+ * age of electronic transfers NOT cash and coins.
  * 
+ * @category Data
+ * 
+ * @param {string|int}		[input]		The input value to format
+ * 
+ * @returns {int|float}
  */
 function toFixedWithoutRounding(input) {
-	return parseFloat(input.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
+	if(!isNaN(input)) {
+		return parseFloat(input.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
+	} else { 
+		return 0
+	}
 }
 
 /**
@@ -460,8 +472,6 @@ export function groupTransactionsByDate(input) {
  * @returns {object|array}
  */
 export function mapSectionDataFromTemplate(data, template) {
-	// console.log("data", data)
-	// console.log("template", template)
 	if(Object.keys(data).length !== 0) {
 		let mappedTemplate = template.map((section, index) => {
 			let obj = {}, title = section.title
@@ -552,4 +562,37 @@ export function stringifyArray(input) {
 		return {...accumulator, [value]: ''}
 	}, {})
 	return JSON.stringify(output)
+}
+
+
+/**
+ * 
+ */
+export function modifyTransferVariables(input, ruleset, candidate = null) {
+	let modifiedValue = 0
+	if(candidate != null) { modifiedValue = Number(candidate) }
+	ruleset.filter((element, index) => {
+		let condition = element.conditions, upperLimit = Number.MAX_SAFE_INTEGER, lowerLimit = 0
+		if('max' in condition) { upperLimit = condition.max }
+		if('min' in condition) { lowerLimit = condition.min }
+		if(!input == "" || !Number(input) == 0 || input == "0") {
+			if(Number(input) > lowerLimit && Number(input) < upperLimit) {
+				switch(element.function) {
+					case 'add':
+						modifiedValue = Number(candidate) + Number(element.value)
+					break;
+					case 'subtract':
+						modifiedValue = Number(candidate) - Number(element.value)
+					break;
+					case 'set':
+						modifiedValue = element.value
+					break;
+					case 'passthrough': 
+						modifiedValue = candidate
+					break;
+				}
+			}
+		}
+	})
+	return modifiedValue
 }
