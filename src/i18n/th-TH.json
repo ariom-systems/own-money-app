@@ -241,7 +241,7 @@
 		},
 		"transferStepOne": {
 			"instructionTop": "กรอกยอดที่ต้องการโอน",
-			"currentRate": "อัตราแลกเปลี่ยน:",
+			"currentRate": "อัตราปัจจุบัน",
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
 			"headingTransferDetails": "รายละเอียดการโอน",
@@ -249,7 +249,7 @@
 			"labelRemainingLimit": "วงเงินคงเหลือ",
 			"labelLimitAfterTransfer": "วงเงินหลังโอน",
 			"labelFee": "ค่าธรรมเนียม",
-			"labelYourRate": "อัตราแลกเปลี่ยน",
+			"labelYourRate": "อัตราของคุณ",
 			"errorMessageInvalidFormat": "กรุณากรอกยอดเงินให้ถูกต้อง",
 			"errorMessageLimitExceeded": "ยอดเงินเกินลิมิตต่อวัน หากต้องการโอนมากกว่าลิมิตต่อวันกรุณาติดต่อเจ้าหน้าที่",
 			"buttonNext": "ต่อไป"
@@ -270,7 +270,7 @@
 			"listDataAccountNumberLabel": "เลขบัญชี",
 			"listDataBankNameLabel": "ธนาคาร",
 			"listDataAmountToSendLabel": "ยอดเงินโอน",
-			"listDataYourRateLabel": "อัตราแลกเปลี่ยน",
+			"listDataYourRateLabel": "อัตราของคุณ",
 			"listDataFeesLabel": "ค่าธรรมเนียม",
 			"listDataTotalToPayLabel": "ยอดที่ต้องชำระ",
 			"listDataReceivableAmountLabel": "ยอดเงินที่จะได้รับ",

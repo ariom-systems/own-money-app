@@ -61,3 +61,8 @@ export const stepTwoButtonAtom = atom({
 	key: 'stepTwoButton',
 	default: true
 })
+
+export const stepThreeButtonAtom = atom({
+	key: 'stepThreeButton',
+	default: true
+})

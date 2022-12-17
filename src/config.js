@@ -166,3 +166,7 @@ export const validationRulesTransferStepOne = {
 	aud: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: language.transferStepOne.errorMessageInvalidFormat }},
 	thb: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: language.transferStepOne.errorMessageInvalidFormat }}
 }
+
+export const validationRulesTransferStepThree = {
+	purpose: { required: language.transferStepthree.errorMessageSelectReason }
+}

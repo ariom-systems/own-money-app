@@ -1,12 +1,14 @@
 import React from 'react'
 import { Box, Factory, FormControl, Heading, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Text } from 'native-base'
 import { useController } from 'react-hook-form'
-import * as SelectControl from '../../components/beneficiaries/SelectControls'
+import { Controlled as BeneficiaryControl } from '../../components/beneficiaries/SelectControls'
+import { Controlled as TransferControl } from '../../components/transfers/SelectControls'
+
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 const NBIonicon = Factory(Ionicon)
 
-export const ErrorMessage = ({ message, icon }) => {
+export const ErrorMessage = ({ message, icon = "alert-circle-outline"}) => {
 	return (
 		<FormControl.ErrorMessage w={"90%"} leftIcon={<NBIonicon alignSelf={"flex-start"} mt={"0.5"} name={icon} />}>
 			{message}
@@ -71,30 +73,28 @@ export const TextInput = (props) => {
 
 
 export const SelectInput = (props) => {
-	const { name, control, component, rules = {}, errors, label, placeholder } = props
-
-	const {
-		field,
-		fieldState: { isTouched, isDirty },
-		formState: { touchedFields, dirtyFields }
-	} = useController({
-		name,
-		control,
-		rules: rules
-	})
+	const { name, control, component, rules = {}, errors, label, placeholder, required, context, labelStyles = null, blockStyles = null } = props
+	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields } } = useController({ name, control, rules: rules })
+	const contextProps = {
+		component: component,
+		placeholder:  placeholder,
+		onValueChange:  field.onChange,
+		onBlur:  field.onBlur,
+		value:  field.value,
+		name:  field.name
+	}
+	let selectElement = null
+	switch(context) {
+	 	case 'Beneficiaries': selectElement = <BeneficiaryControl {...contextProps} />; break;
+		case 'Transfers': selectElement = <TransferControl {...contextProps} />; break;
+	}
 
 	return (
-		<FormControl px={"4"} isRequired isInvalid={ errors ? true : false}>
+		<FormControl px={"4"} isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
 			<HStack>
-				<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ label }</FormControl.Label>
+				<FormControl.Label><Text {...labelStyles}>{ label }</Text></FormControl.Label>
 			</HStack>
-			<SelectControl.Controlled
-				component={component}
-				placeholder={ placeholder }
-				onValueChange={ field.onChange }
-				onBlur={ field.onBlur }
-				value={ field.value } 
-				name={ field.name } />
+			{ selectElement }
 			{ errors && (
 				<ErrorMessage message={ errors.message } />
 			)}

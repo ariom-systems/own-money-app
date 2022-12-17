@@ -271,7 +271,7 @@
 			"listDataAccountNumberLabel": "Account Number",
 			"listDataBankNameLabel": "Bank Name",
 			"listDataAmountToSendLabel": "Amount To Send",
-			"listDataYourRateLabel": "Current Rate",
+			"listDataYourRateLabel": "Your Rate",
 			"listDataFeesLabel": "Fees",
 			"listDataTotalToPayLabel": "Total To Pay",
 			"listDataReceivableAmountLabel": "Receivable Amount",

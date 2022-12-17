@@ -1,20 +1,21 @@
 import React from 'react'
-import { ImageBackground, Platform } from 'react-native'
+import { ImageBackground } from 'react-native'
 import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
 
 import { useNavigation } from '@react-navigation/native'
 
+//components
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 import TransferDetails from '../../../components/transfers/TransferDetails'
 import ExchangeRate from '../../../components/common/ExchangeRate'
 
 //data
+import { AuthContext } from '../../../data/Context'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { AuthContext } from '../../../data/Context'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -76,7 +77,6 @@ const TransferStepOneInner = () => {
 	},[formState, aud])
 
 	const onSubmit = (submitted) => {
-		console.log(submitted)
 		navigation.navigate('TransferStepTwo')
 		setStep(1)
 	}

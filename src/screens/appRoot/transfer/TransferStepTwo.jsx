@@ -1,18 +1,21 @@
 import React from 'react'
 import { ImageBackground } from 'react-native'
+import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
+
 import { useNavigation } from '@react-navigation/native'
-import { Box, Button, Divider, FlatList, HStack, ScrollView, Text, VStack } from 'native-base'
 
+//components
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
-import FlatListItem from '../../../components/transfers/FlatListItem'
+import StaticFlatList from '../../../components/transfers/StaticFlatList'
 
+//data
 import { AuthContext } from '../../../data/Context'
-import { useRecoilState, useRecoilValue, useSetRecoilState, useResetRecoilState, atom } from 'recoil'
-import { beneficiaryObj, beneficiaryList } from '../../../data/recoil/beneficiaries'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 import { stepAtom, stepTwoButtonAtom } from '../../../data/recoil/transfer'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
-import StaticFlatList from '../../../components/transfers/StaticFlatList'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -20,10 +23,9 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 export default TransferStepTwo = () => {
 	const navigation = useNavigation()
 	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
-	const resetBeneficiary = useResetRecoilState(beneficiaryObj)
+	const beneficiaries = useRecoilValue(beneficiaryList)
 	const setStep = useSetRecoilState(stepAtom)
-	const [ buttonState, setButtonState ] = useRecoilState(stepTwoButtonAtom)
+	const buttonState = useRecoilValue(stepTwoButtonAtom)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	React.useEffect(() => {
@@ -40,7 +42,6 @@ export default TransferStepTwo = () => {
 	}
 
 	const handlePrevious = () => {
-		resetBeneficiary()
 		setStep(0)
 		navigation.goBack()
 	}

@@ -207,6 +207,7 @@ function BeneficiariesEditInner() {
 									label={ language.beneficiariesEdit.listDataAccountTypeLabel }
 									placeholder={ language.beneficiariesEdit.listDataAccountTypePlaceholder }
 									required={true}
+									context={"Beneficiaries"}
 								/>
 
 								<Forms.SelectInput
@@ -218,6 +219,7 @@ function BeneficiariesEditInner() {
 									label={ language.beneficiariesEdit.listDataBankNameLabel }
 									placeholder={ language.beneficiariesEdit.listDataBankNamePlaceholder }
 									required={true}
+									context={"Beneficiaries"}
 								/>
 
 								<Forms.TextInput
@@ -239,6 +241,7 @@ function BeneficiariesEditInner() {
 									label={ language.beneficiariesEdit.listDataBranchCityLabel }
 									placeholder={ language.beneficiariesEdit.listDataBranchCityPlaceholder }
 									required={true}
+									context={"Beneficiaries"}
 								/>
 								
 							</VStack>
@@ -268,6 +271,7 @@ function BeneficiariesEditInner() {
 									label={ language.beneficiariesEdit.listDataProvinceLabel }
 									placeholder={ language.beneficiariesEdit.listDataProvincePlaceholder }
 									required={true}
+									context={"Beneficiaries"}
 								/>
 
 								<Forms.SelectInput
@@ -279,6 +283,7 @@ function BeneficiariesEditInner() {
 									label={ language.beneficiariesEdit.listDataDistrictLabel }
 									placeholder={ language.beneficiariesEdit.listDataDistrictPlaceholder }
 									required={true}
+									context={"Beneficiaries"}
 								/>
 
 								<Forms.TextInput
