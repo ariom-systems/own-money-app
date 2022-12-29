@@ -70,6 +70,11 @@
 			"pinPadButtonBack": "Back",
 			"pinPadButtonDelete": "Delete"
 		},
+		"termsAndConditions": {
+			"labelAccept": "I agree to terms and conditions.",
+			"buttonSubmit": "Proceed",
+			"errorMessageAccept": "You must agree before submitting. Please scroll down."
+		},
 		"loading": {
 			"title": "Welcome",
 			"subtitle": "Loading, Please wait."
@@ -313,6 +318,7 @@
 		},
 		"transactionsDetail": {
 			"buttonBack": "Back",
+			"listHeaderStatus": "Status",
 			"listHeaderRecipient": "Recipient",
 			"listHeaderAmounts": "Amounts",
 			"listHeaderDetails": "Details",
@@ -327,19 +333,16 @@
 			"listDataTransactionNumberLabel": "Transaction Number",
 			"listDataStatusLabel": "Status",
 			"listDataDateCreatedLabel": "Created",
-			"listDataDateCompletedLabel": "Completed"
-		},
-		"transactionStatus": {
-			"completed": "Completed",
-			"cancelled": "Cancelled",
-			"open": "Open",
-			"overdue": "Overdue"
+			"listDataDateCompletedLabel": "Completed",
+			"listDataDateProcessedLabel": "Completed"
+
 		},
 		"profileDetails": {
 			"listDataHeaderPersonalDetails": "Personal Details",
 			"listDataHeaderContactDetails": "Contact Details",
 			"listDataHeaderAddressDetails": "Address Details",
 			"listDataHeaderAccountInfo": "Account Info",
+			"listDataHeaderIdentityInfo": "Identity Info",
 			"listDataFirstNameLabel": "First Name",
 			"listDataMiddleNameLabel": "Middle Name",
 			"listDataLastNameLabel": "Last Name",
@@ -357,6 +360,20 @@
 			"listDataDateRegisteredLabel": "Date Registered",
 			"listDataDateVerifiedLabel": "Date Verified",
 			"listDataAccountStatusLabel": "Account Status",
+			"listDataIdentityOneLabel": "Proof of Identity (1)",
+			"listDataIdentityOneSublabelUploaded": "Uploaded",
+			"listDataIdentityOneSublabelType": "Type",
+			"listDataIdentityOneSublabelNumber": "Number",
+			"listDataIdentityOneSublabelExpiry": "Expiry",
+			"listDataIdentityOneSublabelIssuer": "Issuer",
+			"listDataIdentityOneSublabelFile": "File",
+			"listDataIdentityTwoLabel": "Proof of Identity (2)",
+			"listDataIdentityTwoSublabelUploaded": "Uploaded",
+			"listDataIdentityTwoSublabelType": "Type",
+			"listDataIdentityTwoSublabelNumber": "Number",
+			"listDataIdentityTwoSublabelExpiry": "Expiry",
+			"listDataIdentityTwoSublabelIssuer": "Issuer",
+			"listDataIdentityTwoSublabelFile": "File",
 			"statusVerifyIdentity": "Please verify your identity",
 			"statusUpdateDetails": "Please update your details",
 			"buttonUpdateProfile": "Update Profile"
@@ -458,8 +475,8 @@
 			"pinResetTitle": "PIN Code Reset",
 			"profileUpdatedMessage": "Your profile details have been updated.",
 			"profileUpdatedTitle": "Updated",
-			"redirectToTermsConditionsMessage": "",
-			"redirectToTermsConditionsTitle": "",
+			"redirectToTermsConditionsMessage": "Please read and confirm you accept the Terms and Conditions.",
+			"redirectToTermsConditionsTitle": "Terms and conditions",
 			"registerIncompleteMessage": "",
 			"registerIncompleteTitle": "",
 			"resetRequestedMessage": "Thanks, if there is an account associated with the email address you have entered, we will send a link to that email where you can reset your password.",
@@ -468,8 +485,9 @@
 			"serverErrorTitle": "Technical Issue",
 			"sessionExpiredMessage": "Your session expired. Please log in again.",
 			"sessionExpiredTitle": "Session Expired",
-			"statusInactiveMessage": "",
-			"statusInactiveTitle": "",
+			"statusVerifyIdentityMessage": "In order to send money, you need to complete your profile and provide us with proof of your identity.",
+			"statusVerifyIdentityTitle": "Please Verify Your Identity",
+			"statusVerifyIdentityButton": "Update Profile",
 			"transferCompleteMessage": "Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you!",
 			"transferCompleteTitle": "Success!"
 		},
@@ -480,7 +498,11 @@
 			"exchangeRateCardThb": "THB",
 			"statusBadgeCompleted": "Completed",
 			"statusBadgeCancelled": "Cancelled",
-			"statusBadgeWaitForPayment": "Waiting for payment"
+			"statusBadgeWaitForPayment": "Waiting for payment",
+			"buttonLabelProcessing": "Processing",
+			"buttonLabelSaving": "Saving",
+			"buttonLabelLoading": "Loading",
+			"buttonLabelDeleting": "Deleting"
 		}
 	}
 }

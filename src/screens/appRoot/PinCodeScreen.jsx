@@ -1,27 +1,31 @@
 import React from 'react'
+
+//components
 import { Button, Factory, HStack, Pressable, Text, VStack } from 'native-base'
 import PINCode, { hasUserSetPinCode, deleteUserPinCode } from '@haskkor/react-native-pincode'
 import TouchID from 'react-native-touch-id'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import AlertModal from '../../components/common/AlertModal'
-import { keychainSave, keychainReset, log } from '../../data/Actions'
-import { AuthContext } from '../../data/Context'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
+Ionicon.loadFont()
+MaterialCommunity.loadFont()
+const NBIonicon = Factory(Ionicon)
+const NBMaterial = Factory(MaterialCommunity)
 
-import * as Recoil from 'recoil';
-import { globalState } from '../../data/recoil/system'
+//data
+import { AuthContext } from '../../data/Context'
+import { keychainSave, keychainReset, log } from '../../data/Actions'
+import { useResetRecoilState } from 'recoil'
+import { userState } from '../../data/recoil/user'
+import { globalState, noticeState } from '../../data/recoil/system'
+import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
-
-Ionicon.loadFont()
-MaterialCommunity.loadFont()
-
-const NBIonicon = Factory(Ionicon)
-const NBMaterial = Factory(MaterialCommunity)
 
 const PinCodeScreen = ({ navigation }) => {
 
@@ -32,6 +36,9 @@ const PinCodeScreen = ({ navigation }) => {
 	const [ key, setKey ] = React.useState(0)
 	const [ biometry, setBiometry ] = React.useState(null)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions ] = 
+		[useResetRecoilState(userState), useResetRecoilState(globalState), useResetRecoilState(noticeState), 
+			useResetRecoilState(beneficiaryList), useResetRecoilState(beneficiaryObj)]
 
 	const onClose1 = () => setShow1(false)
 	const onClose2 = () => setShow2(false)
@@ -117,6 +124,11 @@ const PinCodeScreen = ({ navigation }) => {
 
 	const handleLogout = async () => {
 		const reset = await keychainReset('token')
+		resetUser()
+		resetGlobals()
+		resetNotices()
+		resetBeneficiaries()
+		resetBeneficiary()
 		if (reset === true) {
 			authDispatch({ type: 'LOGOUT' })
 		}

@@ -7,12 +7,5 @@ export const transactionObj = atom({
 
 export const transactionList = atom({
 	key: 'transactionList',
-	default: [],
-	effects_UNSTABLE: [
-		({ setSelf, onSet}) => {
-			onSet((newVal, oldVal) => {
-				//console.log("transactionList onSet", newVal.length, oldVal.length)
-			})
-		}
-	]
+	default: []
 })

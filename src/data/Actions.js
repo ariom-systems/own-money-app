@@ -1,6 +1,5 @@
 import * as Keychain from "react-native-keychain"
 import { Buffer } from 'buffer'
-import { log } from 'console'
 
 
 /**
@@ -134,7 +133,7 @@ export const buildDataPath = (endpoint, uid, action, args = {}) => {
 			if(args['id'] !== undefined) { path = path + `/${args['id']}` }
 			if(action == 'list') {
 				if(args['from'] !== undefined) { path = path + `/${args['from']}` } //TODO: do these need a fail condition?
-				if(args['count'] !== undefined) { path = path + `/${args['count']}` } //TODO: do these need a fail condition?
+				if(args['to'] !== undefined) { path = path + `/${args['to']}` } //TODO: do these need a fail condition?
 			}
 		break
 	}
@@ -175,42 +174,6 @@ export function sortByParam(input, key) {
 		}
 		return result
 	}
-	// if(key != "fullname") {
-	// 	input = input.sort((a, b) => {
-	// 		if(a[key] < b[key]) return -1
-	// 		if(a[key] > b[key]) return 1
-	// 		return 0
-	// 	})
-	// 	return input
-	// } else {
-	// 	const compareStrings = (x, y) => {
-	// 		if(x < y) return -1
-	// 		if(x > y) return 1
-	// 		return 0
-	// 	}
-
-	// 	const compareFn = (a, b) => {
-			
-	// 	}
-		
-	// 	input = input.sort((a, b) => {
-	// 		console.log("a", a[key])
-	// 		console.log("b", b[key])
-	// 		const splitA = a[key].split(" ")
-	// 		const splitB = b[key].split(" ")
-	// 		const lastA = splitA[splitA.length - 1]
-	// 		const lastB = splitB[splitB.length - 1]
-
-
-
-	// 		return lastA === lastB ?
-	// 			compareStrings(splitA[0], splitB[0]) :
-	// 			compareStrings(lastA, lastB)
-	// 	})
-	// }
-	
-
-
 }
 
 /**
@@ -308,71 +271,6 @@ export function groupArrayObjects(input, key, delimeter = ' ', part = 0) {
 
 
 /**
- * Formats an input number to a localised currency as specified by a locale. This function is
- * a little more complicated than we'd like however the limiting factor is this app is built
- * on React Native 0.70.4 and uses the Hermes engine which (as of November 2022) has no support
- * for ECMA-402 (Intl). Gotta make do with what is available to us.
- * 
- * @category Data
- * 
- * @param {string}		[input]			The numerical value to convert into a localised currency.
- * @param {string}		[currencyCode]	A string representation of the country code/region to convert to. e.g "en-AU" or "th-TH"
- * @param {string}		[currency]		The three letter currency code. e.g "AUD", "THB"
- * 
- * @returns {object}
-*/
-export function formatCurrency(input, countryCode, currency) {
-	const intlObj = new Intl.NumberFormat(countryCode, {
-		style: 'currency',
-		currency: currency,
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 4
-	})
-	let rawNumberObj
-	if(typeof input !== 'undefined') {
-		let rawInput = null
-		if(typeof input === 'string') {
-			rawInput = Number(input.replace(/[^0-9\.-]+/g, ""))
-		} else {
-			rawInput = Number(input)
-		}
-		rawNumberObj = intlObj.formatToParts(toFixedWithoutRounding(rawInput))
-	} else {
-		rawNumberObj = intlObj.formatToParts("0.00")
-	}
-	let amountObj = { symbol: '', value: []}
-	rawNumberObj.map(({type, value}) => {
-		switch(type) {
-			case 'currency': amountObj.symbol = value.replace('A',''); break
-			default: amountObj.value.push(value); break
-		}
-	})
-	amountObj.value = amountObj.value.reduce((string, part) => string + part)
-	amountObj.full = amountObj.symbol + amountObj.value
-	return amountObj
-}
-
-
-/**
- * Polyfill to bypass Intl.NumberFormat automatically rounding numbers up, which is not ideal
- * considering we're primarily dealing with currency to 2 decimal places and we live in an
- * age of electronic transfers NOT cash and coins.
- * 
- * @category Data
- * 
- * @param {string|int}		[input]		The input value to format
- * 
- * @returns {int|float}
- */
-function toFixedWithoutRounding(input) {
-	if(!isNaN(input)) {
-		return parseFloat(input.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
-	} else { 
-		return 0
-	}
-}
-
-/**
  * Iterates through an array of transaction or beneficiary records and adds extra record properties using existing
  * record data. Examples include separating datetime strings into dates and times, as well as
  * computing initials from firstname and last name.
@@ -404,18 +302,21 @@ export function addExtraRecordData(input) {
  */
 export function addObjectExtraData(input) {
 	if(input.hasOwnProperty('created_date')) {
+		let datetime = input.created_date
 		let [ cr_date, cr_time ] = input.created_date.split(" ")
-		input = { ...input, created_date: cr_date, created_time: cr_time }
+		input = { ...input, created_date: cr_date, created_time: cr_time, created_datetime: datetime }
 	}
 
 	if(input.hasOwnProperty('processed_date')) {
+		let datetime = input.processed_date
 		let [ pr_date, pr_time ] = input.processed_date.split(" ")
-		input = { ...input, processed_date: pr_date, processed_time: pr_time }
+		input = { ...input, processed_date: pr_date, processed_time: pr_time, processed_datetime: datetime }
 	}
 
 	if(input.hasOwnProperty('completed_date')) {
+		let datetime = input.completed_date
 		let [ co_date, co_time ] = input.completed_date.split(" ")
-		input = { ...input, completed_date: co_date, completed_time: co_time }
+		input = { ...input, completed_date: co_date, completed_time: co_time, completed_datetime: datetime }
 	}
 
 	if(input.hasOwnProperty('transfer_amount')) {
@@ -472,25 +373,56 @@ export function groupTransactionsByDate(input) {
  * @returns {object|array}
  */
 export function mapSectionDataFromTemplate(data, template) {
+	//check if input data is a valid object
 	if(Object.keys(data).length !== 0) {
+		//map the input data values over the top of the template. first by section
 		let mappedTemplate = template.map((section, index) => {
 			let obj = {}, title = section.title
+			//then by individual item
 			let mappedSection = section.data.map((item, index2) => {
+				//loop through the data, extracting the property name and value
 				for(const [key, value] of Object.entries(data)) {
+					//match the data property name to the template property name and copy the value.
+					//this should run for every property in the template...
 					if(key === item.key) {
 						item.value = value
 					}
+					//ignore everything else and repeat
 				}
 				return item
 			})
+			let sectionData = mappedSection.filter(mappedItem => mappedItem.value != "0000-00-00 00:00:00")
 			obj.title = title
-			obj.data = mappedSection
+			obj.data = sectionData
 			return obj
 		})
 		return mappedTemplate
 	} else {
 		return template
 	}
+}
+
+
+/**
+ * Iterates over an object, removing properties with date values of "0000-00-00 00:00:00".
+ * 
+ * @category Data
+ * 
+ * @param {object}		[input]			Object to iterate over
+ * 
+ * @returns	{object}
+ * 
+ */
+export function removeEmptyDateEntries(input) {
+	output = input.map(obj => {
+		for (const property in obj) {
+			if (obj[property] == "0000-00-00 00:00:00") {
+				delete obj[property]
+			}
+		}
+		return obj
+	})
+	return output
 }
 
 
@@ -519,10 +451,21 @@ export function atomReplaceItemAtIndex(atom, indexToReplace, newItem) {
 }
 
 
+/**
+ * Removes an item within an array at a specified. 
+ * Used for updating Recoil atoms
+ * 
+ * @category Data
+ * 
+ * @param {array} 		[atom]				The list to remove the item from
+ * @param {int} 		[indexToRemove]		The position of the item to remove
+ * 
+ * @returns {array}
+ */
 export function atomRemoveItemAtIndex(atom, indexToRemove) {
 	let newAtom = [...atom]
-	console.log("newAtom", newAtom)
-	//don't combined the 2 lines below! they produce different results otherwise. splice returns the removed item
+	//don't combined the lines below! they produce different results otherwise.
+	//splice on its own performs the removal, whereas receiveing a value from splice returns just the removed item
 	newAtom.splice(indexToRemove, 1)
 	return newAtom
 }
@@ -535,7 +478,7 @@ export function atomRemoveItemAtIndex(atom, indexToRemove) {
  * 
  * @param {array}		[atom]				The list to add the item to
  * @param {object}		[newItem]			The payload data to add
- * @param {string}		[reorderKey]				The name of the object property to reorder the list by
+ * @param {string}		[reorderKey]		The name of the object property to reorder the list by
  * 
  * @returns {array}
  */
@@ -566,11 +509,26 @@ export function stringifyArray(input) {
 
 
 /**
+ * Takes in an input value and a set of modifiers and performs a series of comparisons
+ * against each modifier. Each modifier consist of a range (min and max value), an operation to perform, 
+ * and optionally a secondary value to apply to the input value.
  * 
+ * The purpose of this function allows the upstream API to change the rules and values of exchange rates and
+ * fees on the server without having to update the mobile app every time a change is needed. The app itself
+ * will store no data regarding fees and exchange rates.
+ * 
+ * @category Data
+ * 
+ * @param {string|int}		[input]			The initial input value to modify
+ * @param {object}			[modifier]		A modifier object that may contain min, max, function, and value properties
+ * @param {string|int}		[secondary]		(Optional) An additional input to use in the calculation of the output value
+ * 
+ * @returns {string|int}		
+ *
  */
-export function modifyTransferVariables(input, ruleset, candidate = null) {
+export function modifyTransferVariables(input, ruleset, secondary = null) {
 	let modifiedValue = 0
-	if(candidate != null) { modifiedValue = Number(candidate) }
+	if(secondary != null) { modifiedValue = Number(secondary) }
 	ruleset.filter((element, index) => {
 		let condition = element.conditions, upperLimit = Number.MAX_SAFE_INTEGER, lowerLimit = 0
 		if('max' in condition) { upperLimit = condition.max }
@@ -579,20 +537,122 @@ export function modifyTransferVariables(input, ruleset, candidate = null) {
 			if(Number(input) > lowerLimit && Number(input) < upperLimit) {
 				switch(element.function) {
 					case 'add':
-						modifiedValue = Number(candidate) + Number(element.value)
+						modifiedValue = Number(secondary) + Number(element.value)
 					break;
 					case 'subtract':
-						modifiedValue = Number(candidate) - Number(element.value)
+						modifiedValue = Number(secondary) - Number(element.value)
 					break;
 					case 'set':
 						modifiedValue = element.value
 					break;
 					case 'passthrough': 
-						modifiedValue = candidate
+						modifiedValue = secondary
 					break;
 				}
 			}
 		}
 	})
 	return modifiedValue
+}
+
+
+/**
+ * Formats an input number to a localised currency as specified by a locale. This function is
+ * a little more complicated than we'd like however the limiting factor is this app is built
+ * on React Native 0.70.4 and uses the Hermes engine which (as of November 2022) has no support
+ * for ECMA-402 (Intl). Gotta make do with what is available to us.
+ * 
+ * @category i18n
+ * 
+ * @param {string}		[input]			The numerical value to convert into a localised currency.
+ * @param {string}		[currencyCode]	A string representation of the country code/region to convert to. e.g "en-AU" or "th-TH"
+ * @param {string}		[currency]		The three letter currency code. e.g "AUD", "THB"
+ * 
+ * @returns {object}
+*/
+export function formatCurrency(input, countryCode, currency) {
+	const intlObj = new Intl.NumberFormat(countryCode, {
+		style: 'currency',
+		currency: currency,
+		minimumFractionDigits: 2,
+		maximumFractionDigits: 4
+	})
+	let rawNumberObj
+	if (typeof input !== 'undefined') {
+		let rawInput = null
+		if (typeof input === 'string') {
+			rawInput = Number(input.replace(/[^0-9\.-]+/g, ""))
+		} else {
+			rawInput = Number(input)
+		}
+		rawNumberObj = intlObj.formatToParts(toFixedWithoutRounding(rawInput))
+	} else {
+		rawNumberObj = intlObj.formatToParts("0.00")
+	}
+	let amountObj = { symbol: '', value: [] }
+	rawNumberObj.map(({ type, value }) => {
+		switch (type) {
+			case 'currency': amountObj.symbol = value.replace('A', ''); break
+			default: amountObj.value.push(value); break
+		}
+	})
+	amountObj.value = amountObj.value.reduce((string, part) => string + part)
+	amountObj.full = amountObj.symbol + amountObj.value
+	return amountObj
+}
+
+
+/**
+ * Polyfill to bypass Intl.NumberFormat automatically rounding numbers up, which is not ideal
+ * considering we're primarily dealing with currency to 2 decimal places and we live in an
+ * age of electronic transfers NOT cash and coins.
+ * 
+ * @category i18n
+ * 
+ * @param {string|int}		[input]		The input value to format
+ * 
+ * @returns {int|float}
+ */
+function toFixedWithoutRounding(input) {
+	if (!isNaN(input)) {
+		return parseFloat(input.toString().match(/^-?\d+(?:\.\d{0,2})?/)[0])
+	} else {
+		return 0
+	}
+}
+
+
+/**
+ * Formats values of an input object to their 'localized' variants, using a template object stored in 
+ * config, and the current user interface lang. Used for converting dates, numbers, and currency to 
+ * local readable formats.
+ * 
+ * @category i18n
+ * 
+ * @param {object}		[input]				Input object to iterate over each property and modify values
+ * @param {object}		[template]			Template object of property names, action names, and formating options
+ * @param {string}		[lang]				The current UI language (either 'en-AU' or 'th-TH')
+ * 
+ * @returns {object}
+ *  
+ */
+export function localiseObjectData(input, template, lang) {
+	const localiseFormats = template
+	for (const property in input) {
+		if (property in localiseFormats) {
+			let rule = localiseFormats[property], value = input[property], newValue
+			switch (rule.type) {
+				case 'currency':
+					newValue = formatCurrency(value, rule.options[0], rule.options[1]).full
+					input[property] = newValue + ' ' + rule.options[1]
+					break
+				case 'date':
+					if (value != '0000-00-00 00:00:00') {
+						let newValue = new Date(Date.parse(value.replace(' ', 'T')))
+						input[property] = newValue.toLocaleString(lang, rule.options)
+					}
+					break
+			}
+		}
+	}
 }

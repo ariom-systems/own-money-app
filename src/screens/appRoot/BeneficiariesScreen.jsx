@@ -2,6 +2,7 @@ import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
+//Screens
 import BeneficiariesList from './beneficiaries/BeneficiariesList'
 import BeneficiariesDetail from './beneficiaries/BeneficiariesDetail'
 import BeneficiariesEdit from './beneficiaries/BeneficiariesEdit'
@@ -12,7 +13,7 @@ const Stack = createNativeStackNavigator()
 
 const BeneficiariesScreen = () => {
 
-	return (		
+	return (
 		<Stack.Navigator>
 			<Stack.Screen options={{ headerShown: false, unmountOnBlur: true }} name="BeneficiariesList" component={BeneficiariesList} />
 			<Stack.Screen options={{ headerShown: false }} name="BeneficiariesDetail" component={BeneficiariesDetail} />

@@ -69,6 +69,11 @@
 			"pinPadButtonBack": "ย้อนกลับ",
 			"pinPadButtonDelete": "ลบ"
 		},
+		"termsAndConditions": {
+			"labelAccept": "ฉันยอมรับข้อตกลงและเงื่อนไข",
+			"buttonSubmit": "ดำเนินต่อ",
+			"errorMessageAccept": "คุณต้องยอมรับก่อนที่จะส่ง"
+		},
 		"loading": {
 			"title": "ยินดีต้อนรับ",
 			"subtitle": "กำลังโหลด กรุณารอสักครู่"
@@ -312,6 +317,7 @@
 		},
 		"transactionsDetail": {
 			"buttonBack": "ย้อนกลับ",
+			"listHeaderStatus": "สถานะ",
 			"listHeaderRecipient": "ผู้รับปลายทาง",
 			"listHeaderAmounts": "ยอดโอน",
 			"listHeaderDetails": "รายละเอียด",
@@ -326,19 +332,15 @@
 			"listDataTransactionNumberLabel": "เลขใบเสร็จ",
 			"listDataStatusLabel": "สถานะ",
 			"listDataDateCreatedLabel": "เวลาที่ทำรายการ",
-			"listDataDateCompletedLabel": "เวลาที่ปลายทางได้รับเงิน"
-		},
-		"transactionStatus": {
-			"completed": "ทำรายการสำเร็จ",
-			"cancelled": "ยกเลิก",
-			"open": "รายการถูกสร้าง",
-			"overdue": "ไม่ได้ชำระเงิน"
+			"listDataDateCompletedLabel": "เวลาที่ปลายทางได้รับเงิน",
+			"listDataDateProcessedLabel": "วันที่ของกระบวนการ"
 		},
 		"profileDetails": {
 			"listDataHeaderPersonalDetails": "ข้อมูลส่วนตัว",
 			"listDataHeaderContactDetails": "ข้อมูลการติดต่อ",
 			"listDataHeaderAddressDetails": "ที่อยู่",
 			"listDataHeaderAccountInfo": "ข้อมูลบัญชีปลายทาง",
+			"listDataHeaderIdentityInfo": "Identity Info",
 			"listDataFirstNameLabel": "ชื่อ",
 			"listDataMiddleNameLabel": "ชื่อกลาง",
 			"listDataLastNameLabel": "นามสกุล",
@@ -356,6 +358,21 @@
 			"listDataDateRegisteredLabel": "วันที่สมัครสมาชิก",
 			"listDataDateVerifiedLabel": "วันที่ผ่านการอนุมัติ",
 			"listDataAccountStatusLabel": "สถานะสมาชิก",
+			"listDataIdentityOneLabel": "Proof of Identity (1)",
+			"listDataIdentityOneSublabelUploaded": "Uploaded",
+			"listDataIdentityOneSublabelType": "Type",
+			"listDataIdentityOneSublabelNumber": "Number",
+			"listDataIdentityOneSublabelExpiry": "Expiry",
+			"listDataIdentityOneSublabelIssuer": "Issuer",
+			"listDataIdentityOneSublabelFile": "File",
+
+			"listDataIdentityTwoLabel": "Proof of Identity (2)",
+			"listDataIdentityTwoSublabelUploaded": "Uploaded",
+			"listDataIdentityTwoSublabelType": "Type",
+			"listDataIdentityTwoSublabelNumber": "Number",
+			"listDataIdentityTwoSublabelExpiry": "Expiry",
+			"listDataIdentityTwoSublabelIssuer": "Issuer",
+			"listDataIdentityTwoSublabelFile": "File",
 			"statusVerifyIdentity": "กรุณายืนยันตัวตน",
 			"statusUpdateDetails": "กรุณาอัพเดทข้อมูลส่วนตัว",
 			"buttonUpdateProfile": "อัพเดทข้อมูลส่วนตัว"
@@ -457,8 +474,8 @@
 			"pinResetTitle": "เปลี่ยน PIN Code",
 			"profileUpdatedMessage": "แก้ไขข้อมูลสำเร็จ",
 			"profileUpdatedTitle": "แก้ไขข้อมูลสำเร็จ",
-			"redirectToTermsConditionsMessage": "x  x",
-			"redirectToTermsConditionsTitle": "x  x",
+			"redirectToTermsConditionsMessage": "โปรดอ่านและยืนยันว่าคุณยอมรับข้อกำหนดและเงื่อนไข",
+			"redirectToTermsConditionsTitle": "ข้อกำหนดและเงื่อนไข",
 			"registerIncompleteMessage": "x  x",
 			"registerIncompleteTitle": "x  x",
 			"resetRequestedMessage": "ระบบได้ทำการส่่งลิ้งสำหรับตั้งรหัสผ่านใหม่ไปยังอีเมลของท่าน กรุณาเช็คอีเมลและกดลิ้งเพื่อตั้งรหัสผ่านใหม่",
@@ -467,8 +484,9 @@
 			"serverErrorTitle": "เกิดความขัดข้องทางเทคนิค",
 			"sessionExpiredMessage": "ออกจากระบบอัตโนมัติ กรุณาล็อคอินใหม่อีกครั้ง",
 			"sessionExpiredTitle": "ล็อคอินหมดเวลา",
-			"statusInactiveMessage": "x  x",
-			"statusInactiveTitle": "x  x",
+			"statusVerifyIdentityMessage": "In order to send money, you need to complete your profile and provide us with proof of your identity.",
+			"statusVerifyIdentityTitle": "Please Verify Your Identity",
+			"statusVerifyIdentityButton": "Update Profile",
 			"transferCompleteMessage": "x Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you! x",
 			"transferCompleteTitle": "x Success! x"
 		},
@@ -479,7 +497,11 @@
 			"exchangeRateCardThb": "THB",
 			"statusBadgeCompleted": "สมบูรณ์",
 			"statusBadgeCancelled": "ยกเลิก",
-			"statusBadgeWaitForPayment": "รอการชำระเงิน"
+			"statusBadgeWaitForPayment": "รอการชำระเงิน",
+			"buttonLabelProcessing": "กำลังประมวลผล",
+			"buttonLabelSaving": "ประหยัด",
+			"buttonLabelLoading": "กำลังโหลด",
+			"buttonLabelDeleting": "กำลังลบ"
 		}
 	}
 }

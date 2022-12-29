@@ -1,21 +1,21 @@
 import React from 'react'
-import { ImageBackground } from 'react-native'
-import { Box, Button, Checkbox, Divider, FormControl, Heading, HStack, Select, ScrollView, Text, VStack } from 'native-base'
-
-import { useNavigation } from '@react-navigation/native'
 
 //components
+import { ImageBackground } from 'react-native'
+import { Box, Button, Checkbox, Divider, FormControl, Heading, HStack, Select, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import ReviewListHeader from '../../../components/transfers/ReviewListHeader'
+import ReviewListItem from '../../../components/transfers/ReviewListItem'
 import { Notice } from '../../../components/common/Notice'
 import * as Forms from '../../../components/common/Forms'
+import { useNavigation } from '@react-navigation/native'
 
 //data
 import { AuthContext } from '../../../data/Context'
-import { Controller, FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { Controller, FormProvider, set, useForm, useFormContext } from 'react-hook-form'
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepThreeButtonAtom } from '../../../data/recoil/transfer'
-import { globalState } from '../../../data/recoil/system'
+import { globalState, loadingState } from '../../../data/recoil/system'
 import { userState } from '../../../data/recoil/user'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { api, validationRulesTransferStepThree } from '../../../config'
@@ -23,7 +23,6 @@ import { buildDataPath, formatCurrency } from '../../../data/Actions'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import ReviewListItem from '../../../components/transfers/ReviewListItem'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -72,6 +71,7 @@ const TransferStepThreeInner = () => {
 	const { control, handleSubmit, getValues, formState} = useFormContext()
 	const [aud, thb, fee, rate ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(feeSelector), useRecoilValue(rateSelector) ]
 	const globals = useRecoilValue(globalState)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const user = useRecoilValue(userState)
 	const beneficiary = useRecoilValue(beneficiaryObj)
 	const setStep = useSetRecoilState(stepAtom)
@@ -85,40 +85,51 @@ const TransferStepThreeInner = () => {
 			navigation.setOptions()
 			forceUpdate()
 		}
+
 	}, [language, auth])
 
+	React.useEffect(() => {
+		console.log("loading", loading)
+	},[loading])
+
 	const onSubmit = (submitted) => {
-		console.log(submitted)
+		setLoading((prev) => ({ ...prev, status: true }))
+		api.setHeader('Authorization', 'Bearer ' + auth.token)
+		setTimeout(() => {
+
+			// api.post(buildDataPath('transactions', auth.uid, 'add'), JSON.stringify(submitted))
+			// .then(response => {
+			// 	if(response.ok == true) {
+			// 		if(response.data == true) {
+			// 			const returnPayload = JSON.stringify({"daily_limit" : data.userMeta.daily_limit})
+			// 			api.put(buildDataPath('meta', auth.uid, 'edit', { endpoint: 'users' }), returnPayload)
+			// 			.then(response => {
+			// 				if (response.ok == true && response.data == true) {
+			// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'transferComplete' }})
+			// 					transferDispatch({ type: 'SET_STEP_THREE', payload: { data: submitted }})
+			// 					transferDispatch({ type: 'GO_TO', payload: { step: 3 }})
+			// 					setIsLoading(false)
+			// 					navigation.navigate('TransferStepFour')
+			// 				} else {
+			// 					scrollRef.current.scrollTo({x:0, y:0, animated: false})
+			// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
+			// 					console.log('🚫',response)
+			// 					setIsDisabled(true)
+			// 				}
+			// 			})
+			// 		} else {
+			// 			scrollRef.current.scrollTo({x:0, y:0, animated: false})
+			// 			authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
+			// 			console.log('🚫',response)
+			// 			setIsDisabled(true)
+			// 		}
+			// 	}
+			// })
+			// setLoading((prev) => ({ ...prev, status: false }))
+		
+		}, 1000)
 		// setIsLoading(true)
-		// api.setHeader('Authorization', 'Bearer ' + auth.token)
-		// api.post(buildDataPath('transactions', auth.uid, 'add'), JSON.stringify(submitted))
-		// .then(response => {
-		// 	if(response.ok == true) {
-		// 		if(response.data == true) {
-		// 			const returnPayload = JSON.stringify({"daily_limit" : data.userMeta.daily_limit})
-		// 			api.put(buildDataPath('meta', auth.uid, 'edit', { endpoint: 'users' }), returnPayload)
-		// 			.then(response => {
-		// 				if (response.ok == true && response.data == true) {
-		// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'transferComplete' }})
-		// 					transferDispatch({ type: 'SET_STEP_THREE', payload: { data: submitted }})
-		// 					transferDispatch({ type: 'GO_TO', payload: { step: 3 }})
-		// 					setIsLoading(false)
-		// 					navigation.navigate('TransferStepFour')
-		// 				} else {
-		// 					scrollRef.current.scrollTo({x:0, y:0, animated: false})
-		// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
-		// 					console.log('🚫',response)
-		// 					setIsDisabled(true)
-		// 				}
-		// 			})
-		// 		} else {
-		// 			scrollRef.current.scrollTo({x:0, y:0, animated: false})
-		// 			authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
-		// 			console.log('🚫',response)
-		// 			setIsDisabled(true)
-		// 		}
-		// 	}
-		// })
+		
 	}
 
 	const onError = (error) => { console.log(error) }
@@ -179,62 +190,35 @@ const TransferStepThreeInner = () => {
 							placeholder={ language.transferStepthree.listDataPurposeOfTransferPlaceholder }
 							required={true}
 							context={"Transfers"}
-							labelStyles={{ fontSize: "md", color: "coolGray.500", flexGrow: "1"}}
+							labelStyles={{ fontSize: "md", color: "coolGray.500", flexGrow: "1", mb: "2"}}
 							blockStyles={{ mb: "4"}}
 						/>
 
-						
-						{/* <FormControl px={"4"} py={"2"} isRequired isInvalid={formState.errors.purpose ? true : false }>
-							<Text fontSize={"md"} color={"coolGray.500"} mb={"2"}>{  }</Text>
-							<Controller
-								control={control}
-								rules={{
-									
-								}}
-								name={"purpose"}
-								render={({ field: { value, onChange }}) => (
-									<SelectControlPurpose
-										placeholder={}
-										value={value}
-										onValueChange={onChange}
-									/>
-								)}
-							/>
-							{formState.errors.purpose && (
-								<ErrorMessage message={formState.errors.purpose.message} />
-							)}
-						</FormControl> */}
-						<FormControl px={"4"} py={"2"} isRequired isInvalid={formState.errors.termandconditions ? true : false }>
-							<Controller
-								control={control}
-								rules={{
-									required: language.transferStepthree.errorMessageAcceptTerms
-								}}
-								name={"termandconditions"}
-								render={({ field: { value, onChange }}) => (
-									<HStack pb={"2"}>
-										<Checkbox
-											accessibilityLabel={language.transferStepthree.listDataTermsStatement}
-											onChange={onChange}
-											isChecked={value}
-											value={value}
-										/>
-										<Text fontSize={"xs"} mt={"-0.5"} ml={"2"} w={"90%"} color={formState.errors.termandconditions ? "danger.600" : "black"}>
-											{ language.transferStepthree.listDataTermsStatement }
-										</Text>
-									</HStack>
-								)}
-							/>
-							{formState.errors.termandconditions && (
-								<ErrorMessage message={formState.errors.termandconditions.message} />
-							)}
-						</FormControl>
+						<Forms.CheckInput
+							name={"termandconditions"}
+							control={control}
+							rules={ validationRulesTransferStepThree.termsandconditions }
+							errors={ formState.errors.termandconditions }
+							label={ language.transferStepthree.listDataTermsStatement }
+							labelStyles={{ fontSize: "xs", mt: "-0.5", ml: "2", w: "90%" }}
+							blockStyles={{ paddingBottom: "4"}}
+						/>
+
 					</VStack>
 					<HStack w={"100%"} space={"4"} my={"4"} alignItems={"center"}>
-						<Button flex={"1"} onPress={()=> handlePrev() }>
+						<Button
+							isDisabled={loading.status}
+							onPress={()=> handlePrev() }
+							flex={"1"}
+						>
 							<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferStepthree.buttonPrevious }</Text>
 						</Button>
-						<Button isLoadingText={"Submitting"} flex={"1"} onPress={handleSubmit(onSubmit, onError)}>
+						<Button
+							isLoading={loading.status}
+							isLoadingText={(<Text fontSize={"17"} color={"#FFFFFF"}>{ language.components.buttonLabelProcessing }</Text>)}
+							flex={"1"}
+							onPress={handleSubmit(onSubmit, onError)}
+						>
 							<Text fontSize={"17"} color={"#FFFFFF"}>{language.transferStepthree.buttonNext }</Text>
 						</Button>
 					</HStack>

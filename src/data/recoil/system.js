@@ -17,3 +17,8 @@ export const loadingState = atom({
 		text: "loading"
 	}
 })
+
+export const noticeState = atom({
+	key: 'notices',
+	default: []
+})

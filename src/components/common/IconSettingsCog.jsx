@@ -13,5 +13,5 @@ export default IconSettingsCog = ({props}) => {
 		fontSize={"2xl"}
 		mr={"2"}
 		color={"#000"} 
-		onPress={() => navigation.getParent('AppRoot').navigate('Settings')} />
+		onPress={() => navigation.openDrawer()} />
 }

@@ -1,24 +1,24 @@
 import React from 'react'
-import { ImageBackground } from 'react-native'
-import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
-
-import { useNavigation } from '@react-navigation/native'
 
 //components
+import { ImageBackground } from 'react-native'
+import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 import TransferDetails from '../../../components/transfers/TransferDetails'
 import ExchangeRate from '../../../components/common/ExchangeRate'
+import { useNavigation } from '@react-navigation/native'
 
 //data
 import { AuthContext } from '../../../data/Context'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector } from '../../../data/recoil/transfer'
+import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
+import AlertBanner from '../../../components/common/AlertBanner'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -52,7 +52,7 @@ const TransferStepOneInner = () => {
 	const { handleSubmit, setValue, getValues, reset, formState } = useFormContext()
 	const [ step, setStep ] = useRecoilState(stepAtom)
 	const [ aud, setAud ] = useRecoilState(audAtom)
-	const [ buttonState, setButtonState ] = React.useState(true)
+	const [ buttonState, setButtonState ] = useRecoilState(stepOneButtonAtom)
 	const setThb = useSetRecoilState(thbSelector)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
@@ -94,8 +94,8 @@ const TransferStepOneInner = () => {
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<ScrollView>
-				<Box mx={"2.5%"} mt={"5%"} p={"5%"} backgroundColor={"white"} rounded={"2xl"}>
-
+				<AlertBanner m={"2.5%"} mb={"0"} />
+				<Box m={"2.5%"} p={"5%"} backgroundColor={"white"} rounded={"8"}>
 					<TransferStepIndicator />
 
 					<VStack space={"4"} w={"100%"} alignItems={"center"}>
@@ -111,7 +111,7 @@ const TransferStepOneInner = () => {
 							<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
 							<Button
 								isDisabled={buttonState}
-								_disabled={{ backgroundColor:"primary.500", borderColor:"primary.600", borderWidth:1 }}
+								_disabled={{ style: "subtle" }}
 								alignSelf={"center"}
 								w={"40%"}
 								onPress={handleSubmit(onSubmit, onError)} >

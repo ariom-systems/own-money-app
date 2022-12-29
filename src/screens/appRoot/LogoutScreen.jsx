@@ -1,16 +1,16 @@
 import React from 'react'
+
+//components
 import { ImageBackground } from 'react-native'
 import { Center, Heading, HStack, Spinner, StatusBar, Text, VStack } from 'native-base'
-import { AuthContext, DataContext, TransferContext } from '../../data/Context'
+
+//data
+import { AuthContext } from '../../data/Context'
 
 const LogoutScreen = () => {
 	const { authDispatch } = React.useContext(AuthContext)
-	const { dataDispatch } = React.useContext(DataContext)
-	const { transferDispatch } = React.useContext(TransferContext)
 
 	React.useEffect(() => {
-		dataDispatch({ type: 'UNLOAD_DATA' })
-		transferDispatch({ type: 'UNLOAD_DATA' })
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'logout' }})
 		authDispatch({ type: 'LOGOUT'})
 	},[])

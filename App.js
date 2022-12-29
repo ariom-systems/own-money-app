@@ -4,10 +4,12 @@ import 'react-native-gesture-handler'
 import { ActivityIndicator, useColorScheme, LogBox, Image, ImageBackground } from 'react-native'
 
 //Navigation
+import { navigationRef } from './src/data/handlers/Navigation'
 import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer'
 import { useFlipper } from '@react-navigation/devtools'
+import AppTabs from './src/components/navigators/AppTabs'
 
 //Screens - splash
 import SplashScreen from './src/screens/SplashScreen';
@@ -18,18 +20,14 @@ import LoginScreen from './src/screens/authRoot/LoginScreen'
 import RegisterScreen from './src/screens/authRoot/RegisterScreen'
 
 //Screens - authenticated
-import BeneficiariesScreen from './src/screens/appRoot/BeneficiariesScreen'
-import DashboardScreen from './src/screens/appRoot/DashboardScreen'
 import LoadingScreen from './src/screens/appRoot/LoadingScreen'
 import PinCodeScreen from './src/screens/appRoot/PinCodeScreen'
-import ProfileScreen from './src/screens/appRoot/ProfileScreen'
 import SettingsScreen from './src/screens/appRoot/SettingsScreen'
-import TransactionsScreen from './src/screens/appRoot/TransactionsScreen'
-import TransferScreen from './src/screens/appRoot/TransferScreen'
+import TermsAndConditionsScreen from './src/screens/appRoot/TermsAndConditionsScreen'
 
 //Context
-import { AuthContext, AuthProvider, DataProvider, TransferProvider } from './src/data/Context'
-import { NativeBaseProvider, extendTheme } from 'native-base'
+import { AuthContext, AuthProvider } from './src/data/Context'
+import { NativeBaseProvider, extendTheme, Text } from 'native-base'
 
 //Other
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
@@ -37,7 +35,6 @@ import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
 import { initialCheckConnection } from './src/data/handlers/Connection'
 
 import * as Hooks from './src/data/Hooks';
-import * as TabOptions from './src/components/common/TabOptions'
 import LogoutScreen from './src/screens/appRoot/LogoutScreen';
 
 //Recoil
@@ -63,11 +60,7 @@ export default function App() {
             <RecoilFlipperClient />
             <NativeBaseProvider theme={NativeBaseTheme}>
                 <AuthProvider>
-                    <DataProvider>
-                        <TransferProvider>
-                            <RootNavigator />
-                        </TransferProvider>
-                    </DataProvider>
+                    <RootNavigator />
                 </AuthProvider>
             </NativeBaseProvider>
         </RecoilRoot>
@@ -76,7 +69,6 @@ export default function App() {
 
 //Root navigation container. To separate Splash screen from the rest of the app.
 const RootNavigator = ({navigation}) => {
-    const navigationRef = useNavigationContainerRef()
     useFlipper(navigationRef)
     return (
         <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
@@ -158,8 +150,8 @@ const AppNavigator = ({navigation}) => {
                 <AppStack.Navigator id="AppRoot">
                     <AppStack.Screen options={{ headerShown: false }} name={'PinCode'} component={ PinCodeScreen } />
                     <AppStack.Screen options={{ headerShown: false }} name={'Loading'} component={ LoadingScreen } />
-                    <AppStack.Screen options={{ title: language.screens.settings, headerBackTitle: language.settings.headerBack }} name='Settings' component={ SettingsScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'AppTabs'} component={ AppTabs } />
+                    <AppStack.Screen options={{ headerShown: false }} name={'TermsAndConditions'} component={ TermsAndConditionsScreen } />
+                    <AppStack.Screen options={{ headerShown: false }} name={'AppDrawer'} component={ AppDrawer } />
                     <AppStack.Screen options={{ headerShown: false }} name={'LogoutScreen'} component={ LogoutScreen } />
                 </AppStack.Navigator>
             )}
@@ -167,25 +159,25 @@ const AppNavigator = ({navigation}) => {
     )
 }
 
-const Tabs = createBottomTabNavigator()
-const AppTabs = ({navigation}) => {
-    const { auth } = React.useContext(AuthContext)
-    const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-
-    React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
-			forceUpdate()
-		}
-	}, [language, auth])
-
+const Drawer = createDrawerNavigator()
+const AppDrawer = ({navigation}) => {
     return (
-        <Tabs.Navigator>
-            <Tabs.Screen options={{...TabOptions.Dashboard(navigation), title: language.screens.dashboard }} name='Dashboard' component={ DashboardScreen } />
-            <Tabs.Screen options={{...TabOptions.Beneficiaries(navigation), title: language.screens.beneficiaries }} name='Beneficiaries' component={ BeneficiariesScreen } />
-            <Tabs.Screen options={{...TabOptions.Transfer(navigation), title: language.screens.transfer }} name='Transfer' component={ TransferScreen } />
-            <Tabs.Screen options={{...TabOptions.Transactions(navigation), title: language.screens.transactions }} name='Transactions' component={ TransactionsScreen } />
-            <Tabs.Screen options={{...TabOptions.Profile(navigation), title: language.screens.profile }} name='Your Profile' component={ ProfileScreen } />
-        </Tabs.Navigator>
+        <Drawer.Navigator
+            drawerContent={(props) => <DrawerComponent {...props} />}
+            screenOptions={{
+                drawerPosition: 'right',
+                drawerStyle: { width: '90%'}
+            }}
+        >
+            <Drawer.Screen options={{ headerShown: false }} name={'AppTabs'} component={AppTabs} />
+        </Drawer.Navigator>
+    )
+}
+
+const DrawerComponent = (props) => {
+    return (
+        <DrawerContentScrollView>
+            <SettingsScreen />
+        </DrawerContentScrollView>
     )
 }

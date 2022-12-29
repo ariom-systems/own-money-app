@@ -1,14 +1,17 @@
 import React from 'react'
+
+//components
 import { StatusBar } from 'native-base'
 import LoadingOverlay from '../../../components/common/LoadingOverlay'
+import { useNavigation } from '@react-navigation/native';
 
+//data
+import { AuthContext} from '../../../data/Context'
 import { api } from '../../../config'
 import { buildDataPath, atomRemoveItemAtIndex } from '../../../data/Actions'
-import { AuthContext} from '../../../data/Context'
 import { useRecoilState, useRecoilValue, useResetRecoilState } from 'recoil'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState } from '../../../data/recoil/system'
-import { useNavigation } from '@react-navigation/native';
 
 export default function BeneficiariesDelete() {
 	const navigation = useNavigation()

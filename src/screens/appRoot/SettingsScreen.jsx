@@ -1,25 +1,37 @@
 import React, { useContext, useState, useEffect } from 'react'
+
+//components
 import { Box, Center, Divider, Factory, Heading, HStack, Pressable, StatusBar, Text, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
-import { hasUserSetPinCode } from '@haskkor/react-native-pincode'
-import Config from 'react-native-config'
-import { AuthContext, DataContext } from '../../data/Context'
-import { keychainReset } from '../../data/Actions'
+const NBIonicon = Factory(Ionicon)
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 
+//data
+import { AuthContext } from '../../data/Context'
+import Config from 'react-native-config'
+import { hasUserSetPinCode } from '@haskkor/react-native-pincode'
+import { keychainReset } from '../../data/Actions'
+import { useResetRecoilState } from 'recoil'
+import { userState } from '../../data/recoil/user'
+import { globalState, noticeState } from '../../data/recoil/system'
+import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
+import { transactionList, transactionObj } from '../../data/recoil/transactions'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const NBIonicon = Factory(Ionicon)
-
 function SettingsScreen({navigation}) {
 	const { auth, authDispatch } = useContext(AuthContext)
-	const { data, dataDispatch } = useContext(DataContext)
 	const [ hasPin, setHasPin ] = useState(false)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions, resetTransaction] =
+		[ useResetRecoilState(userState), useResetRecoilState(globalState),
+			useResetRecoilState(noticeState), useResetRecoilState(beneficiaryList),
+			useResetRecoilState(beneficiaryObj), useResetRecoilState(transactionList), useResetRecoilState(transactionObj)]
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -30,6 +42,13 @@ function SettingsScreen({navigation}) {
 
 	const handleLogout = async () => {	
 		const reset = await keychainReset('token')
+		resetUser()
+		resetGlobals()
+		resetNotices()
+		resetBeneficiaries()
+		resetBeneficiary()
+		resetTransactions()
+		resetTransaction()
 		if(reset === true) {
 			navigation.navigate('LogoutScreen')
 		}

@@ -1,17 +1,14 @@
 import React from 'react'
-import { Factory, FormControl, Input, InputGroup, VStack } from 'native-base'
+import { FormControl, Input, InputGroup, VStack } from 'native-base'
 import { Controller, useFormContext } from 'react-hook-form'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon  = Factory(Ionicon)
-import { formatCurrency, formatFloat } from '../../data/Actions'
-import { ErrorMessage, TextInputLeft, TextInputRight } from '../common/Forms'
-import { validationRulesTransferStepOne } from '../../config'
 
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
+import { ErrorMessage, TextInputLeft, TextInputRight } from '../common/Forms'
 
-import { useRecoilState, useRecoilValue, atom, selector } from 'recoil'
+import { formatCurrency } from '../../data/Actions'
+import { validationRulesTransferStepOne } from '../../config'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { audAtom, thbSelector} from '../../data/recoil/transfer'
 import { globalState } from '../../data/recoil/system'
 
@@ -53,7 +50,6 @@ const CurrencyConverter = () => {
 										let newThb = e.nativeEvent.text * globals.rate
 										setAud(e.nativeEvent.text) //updates the atom/selector (correct values in real-time)
 										setValue('thb', formatCurrency(newThb, "th-TH", "THB").value, { shouldValidate: true})
-										//setValue('thb', formatCurrency(thb, "th-TH", "THB").value, { shouldValidate: true})
 									}}
 								/>
 							)}
@@ -78,7 +74,6 @@ const CurrencyConverter = () => {
 										let newAud = e.nativeEvent.text / globals.rate
 										setThb(e.nativeEvent.text) //updates the atom/selector (correct values in real-time)
 										setValue('aud', formatCurrency(newAud, "en-AU", "AUD").value, { shouldValidate: true})
-										//setValue('aud', formatCurrency(aud, "en-AU", "AUD").value, { shouldValidate: true})
 									}}
 								/>
 							)}

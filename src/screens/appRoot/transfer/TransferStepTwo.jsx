@@ -1,12 +1,11 @@
 import React from 'react'
-import { ImageBackground } from 'react-native'
-import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
-
-import { useNavigation } from '@react-navigation/native'
 
 //components
+import { ImageBackground } from 'react-native'
+import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import StaticFlatList from '../../../components/transfers/StaticFlatList'
+import { useNavigation } from '@react-navigation/native'
 
 //data
 import { AuthContext } from '../../../data/Context'

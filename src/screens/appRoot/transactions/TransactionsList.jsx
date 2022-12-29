@@ -1,27 +1,27 @@
 import React from 'react'
+
+//components
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
-
 import { Button, Center, Divider, HStack, SectionList, Spinner, StatusBar, VStack } from 'native-base'
-
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
-
-
-import { AuthContext } from '../../../data/Context'
+import AlertBanner from '../../../components/common/AlertBanner'
 import { Notice } from '../../../components/common/Notice'
-
-import { buildDataPath, formatCurrency, groupTransactionsByDate } from '../../../data/Actions'
-import { api } from '../../../config'
-
 import ListHeaderItem from '../../../components/transactions/ListHeaderItem'
 import ListRowItem from '../../../components/transactions/ListRowItem'
 
-import { selector, useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
+//data
+import { AuthContext } from '../../../data/Context'
+import { buildDataPath, groupTransactionsByDate } from '../../../data/Actions'
+import { api } from '../../../config'
+import { selector, useRecoilValue, useRecoilState } from 'recoil'
 import { transactionList } from '../../../data/recoil/transactions'
-import { loadingState } from '../../../data/recoil/system'
+import { noticeState, loadingState } from '../../../data/recoil/system'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
+import { useNavigation } from '@react-navigation/native'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -41,18 +41,20 @@ const handleRefresh = (transactions, uid) => {
 
 	api.get(buildDataPath('transactions', uid, 'list', { from: timestamp, count: 10 }))
 	.then(response => {
-		console.log(response.data)
+		//console.log(response.data)
 		//setTransactions(addExtraRecordData(response.data))
 		//resolve('✅ Loaded Recent Transactions')
 	})
 	.catch(error => { reject('🚫 ' + error) })
 }
 
-const TransactionsList = ({ navigation }) => {
+const TransactionsList = () => {
+	const navigation = useNavigation()
 	const { auth } = React.useContext(AuthContext)
 	const groupedList = useRecoilValue(transactionsGrouped)
 	const [ transactions, setTransactions ] = useRecoilState(transactionList)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const notices = useRecoilValue(noticeState)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	React.useEffect(() => {
@@ -64,18 +66,17 @@ const TransactionsList = ({ navigation }) => {
 	}, [language, auth])
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<StatusBar barStyle={"dark-content"}/>
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex="1" w={"100%"} px={"2.5%"} justifyContent={"flex-start"}>
-					{ (auth.status !== null && auth.status !== "") && (
-						<Notice nb={{w:"100%", mb: "4"}} />
-					)}
 					<FocusRender>
 						<SectionList
-							sections={groupedList}
+							sections={groupedList.map((section, index) => ({...section, index}))}
 							renderItem={(item, index) => <ListRowItem data={item} />}
-							renderSectionHeader={({section: {header}}) => <ListHeaderItem date={header} />}
+							renderSectionHeader={({section}) => {							
+								return <ListHeaderItem date={section.header} index={section.index} />
+							}}
 							ListFooterComponent={() => <ListFooterItem />}
 							ItemSeparatorComponent={() => <Divider />}
 							keyExtractor={item => item.transaction_number}
@@ -83,13 +84,14 @@ const TransactionsList = ({ navigation }) => {
 								return { length: 80, offset: 80 * index, index }
 							}}
 							showsVerticalScrollIndicator={false}
-							initialNumToRender={10}
-							maxToRenderPerBatch={10}
-							removeClippedSubviews={true}
-							refreshing={loading}
-							onEndReached={handleRefresh(transactions, auth.uid)}
-							onEndReachedThreshold={0.001}
+							// initialNumToRender={10}
+							// maxToRenderPerBatch={10}
+							// removeClippedSubviews={true}
+							// refreshing={loading}
+							// onEndReached={handleRefresh(transactions, auth.uid)}
+							// onEndReachedThreshold={0.001}
 							stickySectionHeadersEnabled={false}
+							ListHeaderComponent={notices ? <AlertBanner w={"100%"} my={"2.5%"} /> : null}
 							/>
 					</FocusRender>
 				</VStack>

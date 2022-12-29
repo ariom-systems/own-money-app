@@ -19,6 +19,12 @@ target 'OwnMoney' do
     'Debug' => '$(PODS_ROOT)/../../.env.development',
     'Release' => '$(PODS_ROOT)/../../.env.production',
   }
+  
+  project 'OwnMoney',
+    'OwnMoney.dev' => :debug,
+    'Debug' => :debug,
+    'OwnMoney' => :release,
+    'Release' => :release
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -63,7 +69,7 @@ end
 
   def apply_flipper_fix(installer)
     installer.pods_project.targets.each do |target|
-      if target.name == 'React-Core-1aa923ac'
+      if target.name.start_with?('React-Core')
         target.build_configurations.each do |config|
           if config.debug?
             puts "Enabling Flipper for build configuration '#{config.name}'"

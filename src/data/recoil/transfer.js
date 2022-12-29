@@ -57,6 +57,11 @@ export const selectedBeneficiaryAtom = atom({
 	default: {}
 })
 
+export const stepOneButtonAtom = atom({
+	key: 'stepOneButton',
+	default: true
+})
+
 export const stepTwoButtonAtom = atom({
 	key: 'stepTwoButton',
 	default: true
@@ -64,5 +69,10 @@ export const stepTwoButtonAtom = atom({
 
 export const stepThreeButtonAtom = atom({
 	key: 'stepThreeButton',
+	default: true
+})
+
+export const stepFourButtonAtom = atom({
+	key: 'stepFourButton',
 	default: true
 })

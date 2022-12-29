@@ -1,23 +1,34 @@
 import React from 'react';
-import { Platform } from 'react-native'
-import { CommonActions } from '@react-navigation/native';
-import { Box, Heading, Text, Button, VStack, SectionList, Badge } from 'native-base'
-import { CheckCircleIcon, InfoIcon, WarningIcon, WarningOutlineIcon } from 'native-base';
 
-import { AuthContext, DataContext } from '../../../data/Context'
-import { formatCurrency, log } from '../../../data/Actions';
+//components
+import { ImageBackground } from 'react-native'
+import { Box, Button, Center, Divider, HStack, Pressable, SectionList, Spacer, StatusBar, VStack } from 'native-base'
+import DetailHeaderItem from '../../../components/transactions/DetailHeaderItem'
+import DetailRowItem from '../../../components/transactions/DetailRowItem'
+import StatusBanner from '../../../components/transactions/StatusBanner'
+import { useNavigation } from '@react-navigation/native'
 
+//data
+import { AuthContext} from '../../../data/Context'
+import { mapSectionDataFromTemplate } from '../../../data/Actions'
+import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { transactionObj } from '../../../data/recoil/transactions'
+import { TransactionTemplate } from '../../../config'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const TransactionsDetail = ({route, navigation }) => {
-	
+const TransactionsDetail = () => {
+	const navigation = useNavigation()
 	const { auth } = React.useContext(AuthContext)
-	const { data } = React.useContext(DataContext)
-	const { transactionNumber } = route.params
+	const transaction = useRecoilValue(transactionObj)
+	const resetTransaction = useResetRecoilState(transactionObj)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+
+	const sections = mapSectionDataFromTemplate(transaction, TransactionTemplate)
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -26,102 +37,42 @@ const TransactionsDetail = ({route, navigation }) => {
 			forceUpdate()
 		}
 	}, [language, auth])
-	
-	let transaction = null
-	const groups = data.transactions.find((group) => {
-		group.data.some((item) => {
-			if(transaction == null) {
-				if(item.transaction_number === transactionNumber) {
-					transaction = item
-				}
-			}
-		})
-	})
 
-	const amountSend = formatCurrency(transaction.transfer_amount, 'en-AU', 'AUD').full
-	const amountReceived = formatCurrency(transaction.received_amount, 'th-TH', 'THB').full
-	const rate = formatCurrency(transaction.today_rate, 'th-TH', 'THB').full
-	const fee = formatCurrency(transaction.fee_AUD, 'en-AU', 'AUD').full
-	const amountToPay = formatCurrency(Number(transaction.transfer_amount) + Number(transaction.fee_AUD), 'en-AU', 'AUD').full
-
-	const dateOptions = {
-		weekday: 'long',
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-		hour: '2-digit',
-		minute:'2-digit',
-		second: '2-digit',
-		numberingSystem: language.getLanguage() == 'th-TH' ? 'thai' : 'latn'
+	const handleBack = () => {
+		navigation.goBack()
+		resetTransaction()
 	}
-
-	const createdDate = new Date(transaction.created_date.replace(' ', 'T')).toLocaleString(language.getLanguage(), dateOptions)
-	
-	let completedDate
-	if(transaction.status !== "Completed") {
-		completedDate = undefined
-	} else {
-		completedDate = new Date(transaction.completed_date.replace(' ', 'T')).toLocaleString(language.getLanguage(), dateOptions)
-	}
-
-	let badgeType, headerIconType, statusCode
-	switch(transaction.status) {
-		case 'Completed':
-			badgeType = 'success'
-			headerIconType = <CheckCircleIcon size={"5xl"} color={"success.600"} />
-			statusCode = language.transactionStatus.completed
-		break
-		case 'Cancelled':
-			badgeType = 'danger'
-			headerIconType = <WarningIcon size={"5xl"} color={"error.600"} />
-			statusCode = language.transactionStatus.cancelled
-		break
-		case 'Open':
-			badgeType = 'default'
-			headerIconType = <InfoIcon size={"5xl"} color={"info.600"} />
-			statusCode = language.transactionStatus.open
-		break
-		case 'Overdue':
-			badgeType = 'warning'
-			headerIconType = <WarningOutlineIcon size={"5xl"} color={"warning.600"} />
-			statusCode = language.transactionStatus.overdue
-		break
-	}
-
-	
 
 	return (
-		<Box w={"100%"} pt={ Platform.OS !== 'ios' ? "0" : "0" } flex={"1"} mb={"74"}>
-			<Box>
-				<Box padding={"4"}>
-					<Button onPress={() => {navigation.dispatch(CommonActions.goBack())}}>Back</Button>
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
+			<StatusBar barStyle={"dark-content"} />
+			<Center flex={1} justifyContent={"center"}>
+				<Box w={"100%"} p={"4"} bgColor={"warmGray.200"} zIndex={"2"}>
+					<HStack alignItems={"center"} space={"3"} flexDir={"row"}>
+						<Button flex={"1"} onPress={() => handleBack(navigation)}>{language.transactionsDetail.buttonBack}</Button>
+					</HStack>
 				</Box>
-				<SectionList
-					backgroundColor={"white"}
-					sections={transactionData}
-					keyExtractor={(item, index) => item + index }
-					renderItem={(item) => {
-						if(item.item.value !== undefined) {
-							return (<Box px={"4"}> 
-								<VStack
-									borderTopWidth={item.index == 0 ? "0" : "1"}
-									borderTopColor={"coolGray.200"}
-									py={"2"}>
-									<Text fontSize={"xs"} color={"coolGray.500"}>{item.item.label}</Text>
-									<Text>{item.item.value}</Text>
-								</VStack>
-							</Box>)		
-						} else {
-							return (<></>)
-						}
-					}}
-					renderSectionHeader={({section: { title }}) => (
-						<Box px={"2"} py={"4"} backgroundColor={"coolGray.100"}>
-							{title}
-						</Box>
-					)} />
-			</Box>
-		</Box>
+				<VStack flex="1" w={"100%"} px={"2.5%"} justifyContent={"flex-start"}>
+					<SectionList
+						sections={sections}
+						keyExtractor={(item, index) => item + index }
+						renderItem={(item, index) => {
+							if(item.section.title == "Status") {
+								return <StatusBanner status={transaction.status} />
+							} else { 
+								return <DetailRowItem data = { item } key = { index } nb = {{ bgColor: "white" } } /> 
+							}}}
+						renderSectionHeader={({ section: { title } }) => {
+							if (title != "Status") {
+								return <DetailHeaderItem title={title} nb={{ mt: "4" }} />
+							}}}
+						stickySectionHeadersEnabled={false}
+						showsVerticalScrollIndicator={false}
+						ItemSeparatorComponent={() => <Divider />}
+					/>
+				</VStack>
+			</Center>
+		</ImageBackground>
 	)
 }
 

@@ -72,6 +72,7 @@ PODS:
     - FlipperKit/FlipperKitNetworkPlugin
   - fmt (6.2.1)
   - glog (0.3.5)
+  - hermes-engine (0.70.4)
   - libevent (2.1.12)
   - OpenSSL-Universal (1.1.1100)
   - RCT-Folly (2021.07.22.00):
@@ -85,6 +86,12 @@ PODS:
     - DoubleConversion
     - fmt (~> 6.2.1)
     - glog
+  - RCT-Folly/Futures (2021.07.22.00):
+    - boost
+    - DoubleConversion
+    - fmt (~> 6.2.1)
+    - glog
+    - libevent
   - RCTRequired (0.70.4)
   - RCTTypeSafety (0.70.4):
     - FBLazyVector (= 0.70.4)
@@ -262,6 +269,17 @@ PODS:
     - React-logger (= 0.70.4)
     - React-perflogger (= 0.70.4)
     - React-runtimeexecutor (= 0.70.4)
+  - React-hermes (0.70.4):
+    - DoubleConversion
+    - glog
+    - hermes-engine
+    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly/Futures (= 2021.07.22.00)
+    - React-cxxreact (= 0.70.4)
+    - React-jsi (= 0.70.4)
+    - React-jsiexecutor (= 0.70.4)
+    - React-jsinspector (= 0.70.4)
+    - React-perflogger (= 0.70.4)
   - React-jsi (0.70.4):
     - boost (= 1.76.0)
     - DoubleConversion
@@ -300,6 +318,8 @@ PODS:
     - RCTTypeSafety
     - React-Core
     - ReactCommon/turbomodule/core
+  - react-native-webview (11.26.0):
+    - React-Core
   - React-perflogger (0.70.4)
   - React-RCTActionSheet (0.70.4):
     - React-Core/RCTActionSheetHeaders (= 0.70.4)
@@ -444,6 +464,8 @@ DEPENDENCIES:
   - FlipperKit/FlipperKitUserDefaultsPlugin (= 0.174.0)
   - FlipperKit/SKIOSNetworkPlugin (= 0.174.0)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
+  - hermes-engine (from `../node_modules/react-native/sdks/hermes/hermes-engine.podspec`)
+  - libevent (~> 2.1.12)
   - OpenSSL-Universal (= 1.1.1100)
   - RCT-Folly (from `../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec`)
   - RCTRequired (from `../node_modules/react-native/Libraries/RCTRequired`)
@@ -457,6 +479,7 @@ DEPENDENCIES:
   - React-Core/RCTWebSocket (from `../node_modules/react-native/`)
   - React-CoreModules (from `../node_modules/react-native/React/CoreModules`)
   - React-cxxreact (from `../node_modules/react-native/ReactCommon/cxxreact`)
+  - React-hermes (from `../node_modules/react-native/ReactCommon/hermes`)
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
@@ -467,6 +490,7 @@ DEPENDENCIES:
   - react-native-flipper (from `../node_modules/react-native-flipper`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
+  - react-native-webview (from `../node_modules/react-native-webview`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -520,6 +544,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
+  hermes-engine:
+    :podspec: "../node_modules/react-native/sdks/hermes/hermes-engine.podspec"
   RCT-Folly:
     :podspec: "../node_modules/react-native/third-party-podspecs/RCT-Folly.podspec"
   RCTRequired:
@@ -540,6 +566,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/React/CoreModules"
   React-cxxreact:
     :path: "../node_modules/react-native/ReactCommon/cxxreact"
+  React-hermes:
+    :path: "../node_modules/react-native/ReactCommon/hermes"
   React-jsi:
     :path: "../node_modules/react-native/ReactCommon/jsi"
   React-jsiexecutor:
@@ -558,6 +586,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
+  react-native-webview:
+    :path: "../node_modules/react-native-webview"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -622,6 +652,7 @@ SPEC CHECKSUMS:
   FlipperKit: b353b63cb4048a5747529412524407d6efa68336
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
+  hermes-engine: 3623325e0d0676a45fbc544d72c57dd79fce7446
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
   OpenSSL-Universal: ebc357f1e6bc71fa463ccb2fe676756aff50e88c
   RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
@@ -634,6 +665,7 @@ SPEC CHECKSUMS:
   React-Core: f42a10403076c1114f8c50f063ddafc9eea92fff
   React-CoreModules: 1ed78c63dad96f40b123d4d4ca455e09ccd8aaed
   React-cxxreact: 7d30af80adb5fe6a97646a06540c19e61736aa15
+  React-hermes: 185ce251487bcb812c34ce33b1ab6412419b43a3
   React-jsi: 9b2b4ac1642b72bffcd74550f0caa0926b3f8a4d
   React-jsiexecutor: 4a893fc8f683b91befcaf56c44ad8be4506b6828
   React-jsinspector: 1d5a9e84e419a57cabc23249aec3d837d1b03a80
@@ -643,6 +675,7 @@ SPEC CHECKSUMS:
   react-native-flipper: b269b4d4e1ec04f7f443f5edf15100a13e760bf0
   react-native-netinfo: f80db8cac2151405633324cb645c60af098ee461
   react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-perflogger: 5e41b01b35d97cc1b0ea177181eb33b5c77623b6
   React-RCTActionSheet: 48949f30b24200c82f3dd27847513be34e06a3ae
   React-RCTAnimation: 96af42c97966fcd53ed9c31bee6f969c770312b6
@@ -669,6 +702,6 @@ SPEC CHECKSUMS:
   Yoga: 1f02ef4ce4469aefc36167138441b27d988282b1
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: fd6c3f15b8d39e388a4b60326c25ded60409f0f5
+PODFILE CHECKSUM: 815a041dbea9d62bd1ef08832aac40718e36e38b
 
 COCOAPODS: 1.11.3

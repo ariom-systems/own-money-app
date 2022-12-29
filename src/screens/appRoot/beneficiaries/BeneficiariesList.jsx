@@ -1,23 +1,27 @@
 import React from 'react'
+
+//components
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
 import { Center, Divider, Fab, StatusBar, VStack } from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
+import { Notice } from '../../../components/common/Notice'
+import AlertBanner from '../../../components/common/AlertBanner'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import ListSwipeItem from '../../../components/beneficiaries/ListSwipeItem'
 import ListSwipeHiddenItem from '../../../components/beneficiaries/ListSwipeHiddenItem'
 
+//data
 import { AuthContext} from '../../../data/Context'
-import { Notice } from '../../../components/common/Notice'
-
-import { useRecoilState } from 'recoil'
-import { loadingState } from '../../../data/recoil/system'
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { noticeState, loadingState } from '../../../data/recoil/system'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 
 const BeneficiariesList = ({navigation}) => {
 	const { auth } = React.useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const notices = useRecoilValue(noticeState)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
 
 	React.useEffect(() => {
@@ -31,10 +35,8 @@ const BeneficiariesList = ({navigation}) => {
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<StatusBar barStyle={"dark-content"}/>
 			<Center flex={1} justifyContent={"center"}>
-				<VStack flex="1" w={"100%"} px={"2.5%"} py={"5%"} justifyContent={"flex-start"}>
-					{ (auth.status !== null && auth.status !== "") && (
-						<Notice nb={{w:"100%", mb: "4"}} />
-					)}
+				
+				<VStack flex="1" w={"100%"} p={"2.5%"} justifyContent={"flex-start"}>
 					<FocusRender>
 						<SwipeListView
 							data={beneficiaries}
@@ -52,6 +54,7 @@ const BeneficiariesList = ({navigation}) => {
 							initialNumToRender={20}
 							maxToRenderPerBatch={20}
 							removeClippedSubviews={false}
+							ListHeaderComponent={notices ? <AlertBanner w={"100%"} mb={"2.5%"} /> : null}
 							/>
 					</FocusRender>
 					<Fab

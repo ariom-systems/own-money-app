@@ -1,21 +1,23 @@
 import React from 'react'
+
+//components
 import { ImageBackground } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
-import { useForm, FormProvider, useFormContext } from 'react-hook-form'
 import { Box, Button, Center, HStack, ScrollView, Spacer, Spinner, StatusBar, VStack } from 'native-base'
-
+import { useForm, FormProvider, useFormContext } from 'react-hook-form'
 import * as Forms from '../../../components/common/Forms'
 import { Notice } from '../../../components/common/Notice'
 
-
+//data
+import { AuthContext } from '../../../data/Context'
 import { api } from '../../../config'
 import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData } from '../../../data/Actions'
-import { AuthContext } from '../../../data/Context'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState } from '../../../data/recoil/system'
 import { validationRulesBeneficiariesEdit } from '../../../config'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')

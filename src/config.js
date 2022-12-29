@@ -168,5 +168,152 @@ export const validationRulesTransferStepOne = {
 }
 
 export const validationRulesTransferStepThree = {
-	purpose: { required: language.transferStepthree.errorMessageSelectReason }
+	purpose: { required: language.transferStepthree.errorMessageSelectReason },
+	termsandconditions: { required: language.transferStepthree.errorMessageAcceptTerms }
+}
+
+export const validationRulesTermsAndConditions = {
+	accept: { required: language.termsAndConditions.errorMessageAccept }
+}
+
+export const BeneficiaryTemplate = [
+	{
+		title: language.beneficiariesDetail.listDataHeaderPersonalDetails,
+		data: [
+			{ key: "firstname", label: language.beneficiariesDetail.listDataLabelFirstName, value: "" },
+			{ key: "lastname", label: language.beneficiariesDetail.listDataLabelLastName, value: "" },
+			{ key: "thainame", label: language.beneficiariesDetail.listDataLabelThaiName, value: "" },
+			{ key: "phone", label: language.beneficiariesDetail.listDataLabelPhone, value: "" }
+		]
+	},
+	{
+		title: language.beneficiariesDetail.listDataHeaderBankDetails,
+		data: [
+			{ key: "accountnumber", label: language.beneficiariesDetail.listDataLabelAccountNumber, value: "" },
+			{ key: "accounttype", label: language.beneficiariesDetail.listDataLabelAccountType, value: "" },
+			{ key: "bankname", label: language.beneficiariesDetail.listDataLabelBankName, value: "" },
+			{ key: "bankbranch", label: language.beneficiariesDetail.listDataLabelBankBranch, value: "" },
+			{ key: "bankcity", label: language.beneficiariesDetail.listDataLabelBankCity, value: "" }
+		]
+	},
+	{
+		title: language.beneficiariesDetail.listDataHeaderAddressDetails,
+		data: [
+			{ key: "thaiaddress", label: language.beneficiariesDetail.listDataLabelThaiAddress, value: "" },
+			{ key: "province", label: language.beneficiariesDetail.listDataLabelProvince, value: "" },
+			{ key: "district", label: language.beneficiariesDetail.listDataLabelDistrict, value: "" },
+			{ key: "postcode", label: language.beneficiariesDetail.listDataLabelPostCode, value: "" },
+			{ key: "country", label: language.beneficiariesDetail.listDataLabelCountry, value: "" }
+		]
+	}
+]
+
+export const TransactionTemplate = [
+	{
+		title: language.transactionsDetail.listHeaderStatus,
+		data: [
+			{ key: "status", label: language.transactionsDetail.listHeaderStatus, value: ""}
+		]
+	},
+	{
+		title: language.transactionsDetail.listHeaderRecipient,
+		data: [
+			{ key: "fullname", label: language.transactionsDetail.listDataAccountNameLabel, value: "" },
+			{ key: "accountnumber", label: language.transactionsDetail.listDataAccountNumberLabel, value: "" },
+			{ key: "bankname", label: language.transactionsDetail.listDataBankNameLabel, value: "" }
+		]
+	},
+	{
+		title: language.transactionsDetail.listHeaderAmounts,
+		data: [
+			{ key: "transfer_amount", label: language.transactionsDetail.listDataSendAmountLabel, value: "" },
+			{ key: "rate", label: language.transactionsDetail.listDataYourRateLabel, value: "" },
+			{ key: "fee_AUD", label: language.transactionsDetail.listDataFeeLabel, value: "" },
+			{ key: "amount_paid", label: language.transactionsDetail.listDataTotalToPayLabel, value: "" },
+			{ key: "received_amount", label: language.transactionsDetail.listDataReceivableAmountLabel, value: "" }
+		]
+	},
+	{
+		title: language.transactionsDetail.listHeaderDetails,
+		data: [
+			{ key: "created_datetime", label: language.transactionsDetail.listDataDateCreatedLabel, value: "" },
+			{ key: "completed_datetime", label: language.transactionsDetail.listDataDateCompletedLabel, value: "" },
+			{ key: "processed_datetime", label: language.transactionsDetail.listDataDateProcessedLabel, value: "" },
+			{ key: "transaction_number", label: language.transactionsDetail.listDataTransactionNumberLabel, value: "" }
+		]
+	}
+]
+
+export const UserTemplate = [
+	{
+		title: language.profileDetails.listDataHeaderPersonalDetails,
+		data: [
+			{ key: "firstname", label: language.profileDetails.listDataFirstNameLabel, value: "" },
+			{ key: "middlename", label: language.profileDetails.listDataMiddleNameLabel, value: "" },
+			{ key: "lastname", label: language.profileDetails.listDataLastNameLabel, value: "" },
+			{ key: "nickname", label: language.profileDetails.listDataNickNameLabel, value: "" },
+			{ key: "dateofbirth", label: language.profileDetails.listDataDateOfBirthLabel, value: "" },
+			{ key: "occupation", label: language.profileDetails.listDataOccupationLabel, value: "" }
+		]
+	},
+	{
+		title: language.profileDetails.listDataHeaderContactDetails,
+		data: [
+			{ key: "phone", label: language.profileDetails.listDataPhoneLabel, value: "" },
+			{ key: "email", label: language.profileDetails.listDataEmailLabel, value: "" }
+		]
+	},
+	{
+		title: language.profileDetails.listDataHeaderAddressDetails,
+		data: [
+			{ key: "address", label: language.profileDetails.listDataAddressLabel, value: "" },
+			{ key: "city", label: language.profileDetails.listDataSuburbLabel, value: "" },
+			{ key: "state", label: language.profileDetails.listDataStateLabel, value: "" },
+			{ key: "postcode", label: language.profileDetails.listDataPostCodeLabel, value: "" },
+			{ key: "country", label: language.profileDetails.listDataCountryLabel, value: "" }
+		]
+	},
+	{
+		title: language.profileDetails.listDataHeaderAccountInfo,
+		data: [
+			{ key: "memberid", label: language.profileDetails.listDataMemberIDLabel, value: "" },
+			{ key: "date_regis", label: language.profileDetails.listDataDateRegisteredLabel, value: "" },
+			{ key: "date_regis_completed", label: language.profileDetails.listDataDateVerifiedLabel, value: "" },
+			{ key: "status", label: language.profileDetails.listDataAccountStatusLabel, value: "" }
+		]
+	},
+	{
+		title: language.profileDetails.listDataHeaderIdentityInfo,
+		data: [
+			{ key: "identity1", label: language.profileDetails.listDataIdentityOneLabel, value: "", subdata: {
+				type: { label: language.profileDetails.listDataIdentityOneSublabelType, value: "" },
+				expiry: { label: language.profileDetails.listDataIdentityOneSublabelExpiry, value: "" },
+				issuer: { label: language.profileDetails.listDataIdentityOneSublabelIssuer, value: "" },
+				number: { label: language.profileDetails.listDataIdentityOneSublabelNumber, value: "" },
+				uploaded: { label: language.profileDetails.listDataIdentityOneSublabelUploaded, value: "" },
+				file: { label: language.profileDetails.listDataIdentityOneSublabelFile, value: "" }
+			}},
+			{ key: "identity2", label: language.profileDetails.listDataIdentityTwoLabel, value: "", subdata: {
+				type: { label: language.profileDetails.listDataIdentityTwoSublabelType, value: "" },
+				expiry: { label: language.profileDetails.listDataIdentityTwoSublabelExpiry, value: "" },
+				issuer: { label: language.profileDetails.listDataIdentityTwoSublabelIssuer, value: "" },
+				number: { label: language.profileDetails.listDataIdentityTwoSublabelNumber, value: "" },
+				uploaded: { label: language.profileDetails.listDataIdentityTwoSublabelUploaded, value: "" },
+				file: { label: language.profileDetails.listDataIdentityTwoSublabelFile, value: "" }
+			}}
+		]
+	}
+]
+
+
+export const TransactionObjFormats = {
+	amount_paid: { type: 'currency', options: ['en-AU', 'AUD']},
+	completed_datetime: { type: 'date', options: { dateStyle: 'medium', timeZone: 'Australia/Sydney', timeStyle: 'medium' } },
+	created_datetime: { type: 'date', options: { dateStyle: 'medium', timeZone: 'Australia/Sydney', timeStyle: 'medium' } },
+	fee_AUD: { type: 'currency', options: ['en-AU', 'AUD'] },
+	processed_datetime: { type: 'date', options: { dateStyle: 'medium', timeZone: 'Australia/Sydney', timeStyle: 'medium' } },
+	rate: { type: 'currency', options: ['th-TH', 'THB'] },
+	received_amount: { type: 'currency', options: ['th-TH', 'THB'] },
+	today_rate: { type: 'currency', options: ['th-TH', 'THB'] },
+	transfer_amount: { type: 'currency', options: ['en-AU', 'AUD'] }
 }
