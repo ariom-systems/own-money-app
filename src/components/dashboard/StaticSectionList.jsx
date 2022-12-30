@@ -1,14 +1,14 @@
 import React from 'react'
-import { Box, Divider } from 'native-base'
+import { Box, Divider, VStack } from 'native-base'
 import HeaderItem from './HeaderItem'
 import ListItem from './ListItem'
 
 const StaticSectionList = (props) => {
-	let { sections, sectionProps } = props 
+	let { sections, sectionProps, listProps } = props 
 	let topProps = Object.keys(sectionProps).filter(key => key.match(/Top/)).reduce((obj, key) => {obj[key] = sectionProps[key]; return obj},{})
 	let bottomProps = Object.keys(sectionProps).filter(key => key.match(/Bottom/)).reduce((obj, key) => {obj[key] = sectionProps[key]; return obj},{})
 	
-	let output = []
+	let listContents = []
 	sections.forEach((section, index) => {
 		let [sectionInner, sectionLength] =  [[], section.data.length]
 	
@@ -30,8 +30,15 @@ const StaticSectionList = (props) => {
 			</Box>
 		)
 
-		output.push(sectionBlock)
+		listContents.push(sectionBlock)
 	})
+
+	let output = (
+		<VStack {...listProps}>
+			{listContents}
+		</VStack>
+	)
+
 	return output
 }
 

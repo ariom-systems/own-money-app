@@ -2,11 +2,13 @@ import React from 'react'
 
 //components
 import { ImageBackground } from 'react-native'
-import { Box, Button, Heading, ScrollView, StatusBar, VStack } from 'native-base'
+import { Box, Button, Heading, HStack, ScrollView, StatusBar, VStack } from 'native-base'
 import AlertBanner from '../../components/common/AlertBanner'
 import StaticSectionList from '../../components/dashboard/StaticSectionList'
 import ExchangeRate from '../../components/common/ExchangeRate'
 import YourPointSummary from '../../components/points/YourPointSummary'
+import Toolbar, { ToolbarItem } from '../../components/common/Toolbar'
+
 
 //data
 import { AuthContext } from '../../data/Context'
@@ -48,7 +50,7 @@ const DashboardScreen = ({ navigation }) => {
 	return (
 		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<StatusBar barStyle={"dark-content"} />
-			<ScrollView nestedScrollEnabled={false} keyboardShouldPersistTaps={"handled"}>
+			<ScrollView>
 				<AlertBanner m={"2.5%"} mb={"0"} />
 				<VStack p={"2.5%"} space={"4"}>
 					<Box justifItems={"flex-start"}>
@@ -61,10 +63,13 @@ const DashboardScreen = ({ navigation }) => {
 					<Box backgroundColor={"white"} rounded={"8"}>
 						<Heading p={"4"} fontSize={"xl"}>{ language.dashboard.recentTransfersTitle }</Heading>
 					</Box>
-					<StaticSectionList sections={transactions} sectionProps={{ mb: "4", roundedTop: "8", roundedBottom: "8" }} />
-					<Box w={"100%"} alignItems={"center"} justifItems={"flex-start"}>
-						<Button size={"lg"} w={"75%"} onPress={() => navigation.navigate('Transactions', {screen: 'TransactionsList'})}>{ language.dashboard.buttonViewTransactions }</Button>
-					</Box>
+					<StaticSectionList sections={transactions} sectionProps={{ roundedTop: "8", roundedBottom: "8" }} listProps={{ space: "4" }} />
+					<Toolbar>
+						<ToolbarItem
+							label={language.dashboard.buttonViewTransactions}
+							buttonProps={{ w: "50%" }}
+							action={() => navigation.navigate('Transactions', { screen: 'TransactionsList' })} />
+					</Toolbar>
 				</VStack>
 			</ScrollView>
 		</ImageBackground>

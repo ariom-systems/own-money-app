@@ -8,6 +8,7 @@ import { Box, Button, Center, HStack, ScrollView, Spacer, StatusBar, VStack } fr
 import * as Forms from '../../../components/common/Forms'
 import { Notice } from '../../../components/common/Notice'
 import LoadingOverlay from '../../../components/common/LoadingOverlay'
+import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
 
 //data
 import { AuthContext } from '../../../data/Context'
@@ -55,7 +56,10 @@ function BeneficiariesAddInner() {
 		}
 	}, [language, auth])
 
-	
+	const handleBack = () => {
+		navigation.goBack()
+	}
+
 	const onSubmit = data => {
 		setLoading({ status: true, text: 'Saving' })
 		//push changes to remote
@@ -84,9 +88,26 @@ function BeneficiariesAddInner() {
 	//TODO: improve the list of errors shown to the user
 	const onError = (errors, e) => console.log(errors, e)
 
-	const handleBack = () => {
-		navigation.goBack()
+	const EditToolbar = ({ submitAction }) => {
+		return (
+			<Toolbar nb={{ my: "4" }} >
+				<ToolbarItem
+					label={language.beneficiariesAdd.buttonBack}
+					icon={"chevron-back-outline"}
+					space={"1"}
+					iconProps={{ ml: "-4" }}
+					buttonProps={{ flex: "1" }}
+					action={() => handleBack()} />
+				<ToolbarSpacer />
+				<ToolbarItem
+					label={language.beneficiariesAdd.buttonSave}
+					icon={"save-outline"}
+					buttonProps={{ isLoadingText: "Saving...", flex: "1" }}
+					action={submitAction} />
+			</Toolbar>
+		)
 	}
+
 
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
@@ -94,21 +115,6 @@ function BeneficiariesAddInner() {
 			{ loading.status && <LoadingOverlay /> }
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex={"1"} space={"4"} w={"100%"}>
-
-					<Box p={"4"} bgColor={"warmGray.200"}>
-						<HStack space={"3"} flexDir={"row"}>
-							<Button
-								flex={"1"}
-								variant={"subtle"}
-								onPress={() => navigation.popToTop()}>{ language.beneficiariesAdd.buttonBack }</Button>
-							<Spacer />
-							<Button
-								flex={"1"}
-								isLoadingText={"Saving..."}
-								onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesAdd.buttonSave }</Button>
-						</HStack>
-					</Box>
-
 					{ (auth.status !== null && auth.status !== "") && (
 						<Box px={"4"}>
 							<Notice nb={{w:"90%", m: "4"}}></Notice>
@@ -117,6 +123,7 @@ function BeneficiariesAddInner() {
 					
 					<ScrollView w={"100%"}>
 						<Box px={"4"}>
+							<EditToolbar submitAction={handleSubmit(onSubmit, onError)} />
 							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
 								
 								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesAdd.listDataHeaderPersonalDetails }</Forms.HeaderItem>
@@ -285,19 +292,7 @@ function BeneficiariesAddInner() {
 								/>
 
 							</VStack>
-						</Box>
-						<Box p={"4"} bgColor={"warmGray.200"}>
-							<HStack space={"3"} flexDir={"row"}>
-								<Button
-									flex={"1"}
-									variant={"subtle"}
-									onPress={() => navigation.popToTop() }>{ language.beneficiariesAdd.buttonBack }</Button>
-								<Spacer />
-								<Button
-									flex={"1"}
-									isLoadingText={"Saving..."}
-									onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesAdd.buttonSave }</Button>
-							</HStack>
+							<EditToolbar submitAction={handleSubmit(onSubmit, onError)} />
 						</Box>
 					</ScrollView>
 				</VStack>

@@ -1,40 +1,34 @@
 import React from 'react'
+
+//components
 import { useNavigation } from '@react-navigation/native'
+import { ImageBackground } from 'react-native'
 import { useForm, Controller, FormProvider, useFormContext } from 'react-hook-form'
-import { Box, Button, Center, Factory, FormControl, Heading, 
+import { Box, Button, Center, Factory, FormControl, Heading,
 	HStack, Input, ScrollView, Select, Spacer, StatusBar, Text, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
-import { AuthContext, DataContext } from '../../../data/Context'
-import { buildDataPath } from '../../../data/Actions'
-import { api } from '../../../config'
+const NBIonicon = Factory(Ionicon)
 import LoadingOverlay from '../../../components/common/LoadingOverlay'
 import { ErrorMessage } from '../../../components/common/Forms'
 import { OMDatePicker } from '../../../components/common/DatePicker'
+import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
 
+//data
+import { AuthContext } from '../../../data/Context'
+import { buildDataPath } from '../../../data/Actions'
+import { api } from '../../../config'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
-let language = new LocalizedStrings({...auStrings, ...thStrings})
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 export default function ProfileEdit() {
 	const methods = useForm({
 		mode: 'onBlur',
-		criteriaMode: 'all',
-		defaultValues: {
-			firstname: '',
-			middlename: '',
-			lastname: '',
-			nickname: '',
-			dateofbirth: '',
-			occupation: '',
-			phone: '',
-			email: '',
-			address: '',
-			city: '',
-			state: '',
-			postcode: ''
-		}
+		criteriaMode: 'all'
 	})
 	return (
 		<FormProvider {...methods}>
@@ -46,31 +40,25 @@ export default function ProfileEdit() {
 function ProfileEditInner() {
 	const navigation = useNavigation()
 	const [ isLoading, setIsLoading ] = React.useState(false)
-	const { data } = React.useContext(DataContext)
 	const { auth, authDispatch } = React.useContext(AuthContext)
 	const { control, handleSubmit, setValue, formState } = useFormContext()
-	const mountRef = React.useRef(false)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
-	React.useEffect(() => {
-		mountRef.current = true
-		setValue('firstname', data.user.firstname)
-		setValue('middlename', data.user.middlename)
-		setValue('lastname', data.user.lastname)
-		setValue('nickname', data.user.nickname)
-		setValue('dateofbirth', data.user.dateofbirth)
-		setValue('occupation', data.user.occupation)
-		setValue('phone', data.user.phone)
-		setValue('email', data.user.email)
-		setValue('address', data.user.address)
-		setValue('city', data.user.city)
-		setValue('state', data.user.state)
-		setValue('postcode', data.user.postcode)
+	// React.useEffect(() => {
+	// 	setValue('firstname', data.user.firstname)
+	// 	setValue('middlename', data.user.middlename)
+	// 	setValue('lastname', data.user.lastname)
+	// 	setValue('nickname', data.user.nickname)
+	// 	setValue('dateofbirth', data.user.dateofbirth)
+	// 	setValue('occupation', data.user.occupation)
+	// 	setValue('phone', data.user.phone)
+	// 	setValue('email', data.user.email)
+	// 	setValue('address', data.user.address)
+	// 	setValue('city', data.user.city)
+	// 	setValue('state', data.user.state)
+	// 	setValue('postcode', data.user.postcode)
 
-		return () => {
-			mountRef.current = false
-		}
-	}, [isLoading])
+	// }, [isLoading])
 
 	React.useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
@@ -83,22 +71,43 @@ function ProfileEditInner() {
 	const onSubmit = data => {
 		setIsLoading(true)
 		api.put(buildDataPath('users', auth.uid, 'edit'), data)
-			.then(response => {
-				authDispatch({ type: 'SET_STATUS', payload: { data: 'profileUpdated' }})
-				navigation.popToTop()
-			})
-		
+		.then(response => {
+			authDispatch({ type: 'SET_STATUS', payload: { data: 'profileUpdated' }})
+			navigation.popToTop()
+		})
+	}
+
+	const onError = error => {
+		console.log("error", error)
+	}
+
+
+	const EditToolbar = ({ submitAction }) => {
+		return (
+			<Toolbar nb={{ my: "4" }} >
+				<ToolbarItem
+					label={language.beneficiariesEdit.buttonBack}
+					icon={"chevron-back-outline"}
+					space={"1"}
+					iconProps={{ ml: "-4" }}
+					buttonProps={{ flex: "1" }}
+					action={() => handleBack()} />
+				<ToolbarSpacer />
+				<ToolbarItem
+					label={language.beneficiariesEdit.buttonSave}
+					icon={"save-outline"}
+					buttonProps={{ isLoadingText: "Saving...", flex: "1" }}
+					action={submitAction} />
+			</Toolbar>
+		)
 	}
 
 	return (
-		<>
-			<StatusBar barStyle={"light-content"} backgroundColor={"#8B6A27"} />
+		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
+			<StatusBar />
 			<Center flex={1} justifyContent={"center"}>
-				{isLoading == true && (
-					<LoadingOverlay />
-				)}
-				<VStack flex={"1"} space={"4"} w={"100%"}>
-					<HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
+				<VStack flex={"1"} space={"4"} w={"100%"} px={"2.5%"}>
+					{/* <HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
 						<Button
 							flex={"1"}
 							variant={"subtle"}
@@ -108,7 +117,7 @@ function ProfileEditInner() {
 							flex={"1"}
 							isLoadingText={"Saving..."}
 							onPress={handleSubmit(onSubmit, onError)}>{ language.profileEdit.buttonSave }</Button>
-					</HStack>
+					</HStack> */}
 					<ScrollView w={"100%"}>
 						<VStack py={"4"} space={"4"}>
 							<Box px={"2"} py={"4"} backgroundColor={"coolGray.200"}>
@@ -432,6 +441,6 @@ function ProfileEditInner() {
 					</ScrollView>
 				</VStack>
 			</Center>
-		</>						
+		</ImageBackground>
 	)
 }

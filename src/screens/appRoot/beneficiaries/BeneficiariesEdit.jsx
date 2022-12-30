@@ -7,6 +7,7 @@ import { Box, Button, Center, HStack, ScrollView, Spacer, Spinner, StatusBar, VS
 import { useForm, FormProvider, useFormContext } from 'react-hook-form'
 import * as Forms from '../../../components/common/Forms'
 import { Notice } from '../../../components/common/Notice'
+import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
 
 //data
 import { AuthContext } from '../../../data/Context'
@@ -109,26 +110,31 @@ function BeneficiariesEditInner() {
 	//TODO: improve the list of errors shown to the user
 	const onError = (errors, e) => console.log(errors, e)
 
+	const EditToolbar = ({submitAction}) => {
+		return (
+			<Toolbar nb={{ my: "4" }} >
+				<ToolbarItem
+					label={language.beneficiariesEdit.buttonBack}
+					icon={"chevron-back-outline"}
+					space={"1"}
+					iconProps={{ ml: "-4" }}
+					buttonProps={{ flex: "1" }}
+					action={() => handleBack()} />
+				<ToolbarSpacer />
+				<ToolbarItem
+					label={language.beneficiariesEdit.buttonSave}
+					icon={"save-outline"}
+					buttonProps={{ isLoadingText: "Saving...", flex: "1" }}
+					action={submitAction} />
+			</Toolbar>
+		)
+	}
+
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
 			<StatusBar barStyle={"light-content"} backgroundColor={"#8B6A27"} />
 			<Center flex={1} justifyContent={"center"}>
 				<VStack flex={"1"} space={"4"} w={"100%"}>
-
-					<Box p={"4"} bgColor={"warmGray.200"}>
-						<HStack space={"3"} flexDir={"row"}>
-							<Button
-								flex={"1"}
-								variant={"subtle"}
-								onPress={() => handleBack()}>{ language.beneficiariesEdit.buttonBack }</Button>
-							<Spacer />
-							<Button
-								flex={"1"}
-								isLoadingText={"Saving..."}
-								onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
-							
-						</HStack>
-					</Box>
 					
 					{ (auth.status !== null && auth.status !== "") && (
 						<Box px={"4"} pb={"4"}>
@@ -138,6 +144,7 @@ function BeneficiariesEditInner() {
 
 					<ScrollView w={"100%"}>
 						<Box px={"4"} mb={"4"}>
+							<EditToolbar submitAction={handleSubmit(onSubmit, onError)} />
 							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
 
 								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesEdit.listDataHeaderPersonalDetails }</Forms.HeaderItem>
@@ -248,10 +255,9 @@ function BeneficiariesEditInner() {
 								
 							</VStack>
 						</Box>
-						<Box px={"4"} mb={"4"}>
+						<Box px={"4"}>
 
 							<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
-							
 								<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiariesEdit.listDataHeaderAddressDetails }</Forms.HeaderItem>
 
 								<Forms.TextInput
@@ -306,21 +312,8 @@ function BeneficiariesEditInner() {
 									placeholder={ language.beneficiariesEdit.listDataCountryPlaceholder }
 									required={true}
 								/>
-								
 							</VStack>
-						</Box>
-						<Box p={"4"} bgColor={"warmGray.200"}>
-							<HStack space={"3"} flexDir={"row"}>
-								<Button
-									flex={"1"}
-									variant={"subtle"}
-									onPress={() => navigation.popToTop() }>{ language.beneficiariesEdit.buttonBack }</Button>
-								<Spacer />
-								<Button
-									flex={"1"}
-									isLoadingText={"Saving..."}
-									onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesEdit.buttonSave }</Button>
-							</HStack>
+							<EditToolbar submitAction={handleSubmit(onSubmit, onError)} />
 						</Box>
 					</ScrollView>
 				</VStack>

@@ -1,15 +1,17 @@
 import React from 'react'
 
 //components
+import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
 import { Button, Center, Divider, HStack, SectionList, Spinner, StatusBar, VStack } from 'native-base'
 import Ionicon from 'react-native-vector-icons/Ionicons'
 Ionicon.loadFont()
 import AlertBanner from '../../../components/common/AlertBanner'
-import { Notice } from '../../../components/common/Notice'
 import ListHeaderItem from '../../../components/transactions/ListHeaderItem'
 import ListRowItem from '../../../components/transactions/ListRowItem'
+import Toolbar, { ToolbarItem } from '../../../components/common/Toolbar'
+
 
 //data
 import { AuthContext } from '../../../data/Context'
@@ -21,7 +23,6 @@ import { noticeState, loadingState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import { useNavigation } from '@react-navigation/native'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -77,7 +78,6 @@ const TransactionsList = () => {
 							renderSectionHeader={({section}) => {							
 								return <ListHeaderItem date={section.header} index={section.index} />
 							}}
-							ListFooterComponent={() => <ListFooterItem />}
 							ItemSeparatorComponent={() => <Divider />}
 							keyExtractor={item => item.transaction_number}
 							getItemLayout={(item, index) => {
@@ -92,6 +92,15 @@ const TransactionsList = () => {
 							// onEndReachedThreshold={0.001}
 							stickySectionHeadersEnabled={false}
 							ListHeaderComponent={notices ? <AlertBanner w={"100%"} my={"2.5%"} /> : null}
+							ListFooterComponent={() => (
+								<Toolbar nb={{ my: "4" }}>
+									<ToolbarItem
+										label={language.transactionsList.labelLoadMore}
+										buttonProps={{ w: "50%" }}
+										action={handleRefresh(transactions, auth.uid)}
+									/>
+								</Toolbar>
+							)}
 							/>
 					</FocusRender>
 				</VStack>

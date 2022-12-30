@@ -17,6 +17,7 @@ import { TransactionTemplate } from '../../../config'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
+import Toolbar, { ToolbarItem } from '../../../components/common/Toolbar'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -46,12 +47,7 @@ const TransactionsDetail = () => {
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
 			<StatusBar barStyle={"dark-content"} />
-			<Center flex={1} justifyContent={"center"}>
-				<Box w={"100%"} p={"4"} bgColor={"warmGray.200"} zIndex={"2"}>
-					<HStack alignItems={"center"} space={"3"} flexDir={"row"}>
-						<Button flex={"1"} onPress={() => handleBack(navigation)}>{language.transactionsDetail.buttonBack}</Button>
-					</HStack>
-				</Box>
+			<Center flex={1} justifyContent={"center"}>			
 				<VStack flex="1" w={"100%"} px={"2.5%"} justifyContent={"flex-start"}>
 					<SectionList
 						sections={sections}
@@ -69,6 +65,14 @@ const TransactionsDetail = () => {
 						stickySectionHeadersEnabled={false}
 						showsVerticalScrollIndicator={false}
 						ItemSeparatorComponent={() => <Divider />}
+						ListHeaderComponentStyle={{ marginTop: "2.5%"}}
+						ListHeaderComponent={() => (
+							<Toolbar>
+								<ToolbarItem
+									label={language.transactionsDetail.buttonBack}	
+									buttonProps={{ w: "50%" }}
+									action={() => handleBack(navigation)} />
+							</Toolbar>)}
 					/>
 				</VStack>
 			</Center>

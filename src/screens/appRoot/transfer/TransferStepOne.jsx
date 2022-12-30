@@ -1,13 +1,15 @@
 import React from 'react'
 
 //components
+import { useNavigation } from '@react-navigation/native'
 import { ImageBackground } from 'react-native'
-import { Box, Button, HStack, ScrollView, Text, VStack } from 'native-base'
+import { Box, Button, HStack, ScrollView, StatusBar, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 import TransferDetails from '../../../components/transfers/TransferDetails'
 import ExchangeRate from '../../../components/common/ExchangeRate'
-import { useNavigation } from '@react-navigation/native'
+import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
+import AlertBanner from '../../../components/common/AlertBanner'
 
 //data
 import { AuthContext } from '../../../data/Context'
@@ -18,7 +20,6 @@ import { userState } from '../../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import AlertBanner from '../../../components/common/AlertBanner'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -53,7 +54,7 @@ const TransferStepOneInner = () => {
 	const [ step, setStep ] = useRecoilState(stepAtom)
 	const [ aud, setAud ] = useRecoilState(audAtom)
 	const [ buttonState, setButtonState ] = useRecoilState(stepOneButtonAtom)
-	const setThb = useSetRecoilState(thbSelector)
+	const [ thb, setThb ] = useRecoilState(thbSelector)
 	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
 
 	let hasErrors
@@ -70,11 +71,14 @@ const TransferStepOneInner = () => {
 		if(formState.errors.aud || formState.errors.thb || formState.errors.remaining) {
 			hasErrors = true
 			setButtonState(true)
+		} else if(aud == "" || thb == "" || aud == 0 || thb == 0) {
+			hasErrors = true
+			setButtonState(true)
 		} else {
 			hasErrors = false
 			if(aud != "") { setButtonState(false) }
 		}
-	},[formState, aud])
+	},[formState, aud, thb])
 
 	const onSubmit = (submitted) => {
 		navigation.navigate('TransferStepTwo')
@@ -93,33 +97,43 @@ const TransferStepOneInner = () => {
 
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
+			<StatusBar barStyle={"dark-content"} />
 			<ScrollView>
 				<AlertBanner m={"2.5%"} mb={"0"} />
-				<Box m={"2.5%"} p={"5%"} backgroundColor={"white"} rounded={"8"}>
-					<TransferStepIndicator />
+				<VStack p={"2.5%"} space={"4"}>
+					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
+						<TransferStepIndicator />
 
-					<VStack space={"4"} w={"100%"} alignItems={"center"}>
-						<Text textAlign={"center"}>{ language.transferStepOne.instructionTop }</Text>
-						<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
-							<ExchangeRate size={"sm"} />
-						</HStack>
+						<VStack space={"4"} w={"100%"} alignItems={"center"}>
+							<Text textAlign={"center"}>{ language.transferStepOne.instructionTop }</Text>
+							<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
+								<ExchangeRate size={"sm"} />
+							</HStack>
 
-						<CurrencyConverter />
-						<TransferDetails />
+							<CurrencyConverter />
+							<TransferDetails />
 
-						<HStack space={"4"} w={"100%"} justifyContent={"center"}>
-							<Button variant={"outline"} w={"40%"} onPress={handleCancel}>Reset</Button>
-							<Button
-								isDisabled={buttonState}
-								_disabled={{ style: "subtle" }}
-								alignSelf={"center"}
-								w={"40%"}
-								onPress={handleSubmit(onSubmit, onError)} >
-								<Text fontSize={"lg"} color={"#FFFFFF"}>{ language.transferStepOne.buttonNext }</Text>
-							</Button>
-						</HStack>
+						</VStack>
+
 					</VStack>
-				</Box>
+					<Toolbar>
+						<ToolbarItem
+							label={language.transferStepOne.buttonReset}
+							icon={"reload-outline"}
+							space={"1"}
+							iconProps={{ ml: "-4" }}
+							buttonProps={{ flex: "1", variant: "outline" }}
+							action={() => handleCancel()} />
+						<ToolbarSpacer />
+						<ToolbarItem
+							label={language.transferStepOne.buttonNext}
+							icon={"chevron-forward"}
+							iconPosition={"right"}
+							buttonProps={{ flex: "1", isDisabled: buttonState, _disabled: { style: "subtle" } }}
+							action={handleSubmit(onSubmit, onError)} />
+					</Toolbar>
+				</VStack>
+				
 			</ScrollView>
 		</ImageBackground>
 	)

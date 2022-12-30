@@ -9,6 +9,7 @@ import DetailRowItem from '../../../components/beneficiaries/DetailRowItem'
 import DetailHeaderItem from '../../../components/beneficiaries/DetailHeaderItem'
 import AlertModal from '../../../components/common/AlertModal'
 import { useNavigation } from '@react-navigation/native'
+import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
 
 //data
 import { AuthContext } from '../../../data/Context'
@@ -68,43 +69,49 @@ export default function BeneficiariesDetail() {
 	return (
 		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
 			<StatusBar barStyle={"dark-content"}/>
-				<Box w={"100%"} p={"4"} bgColor={"primary.700:alpha.80"} zIndex={"2"}>
-					<HStack alignItems={"center"} space={"3"} flexDir={"row"}>
-						<Button flex={"1"} onPress={() => handleBack(navigation)}>{ language.beneficiariesDetail.buttonBack }</Button>
-						<Spacer />
-						<Button onPress={() => handleEdit()}>
-							<HStack alignItems={"center"} space={"2"}>
-								<NBIonicon name={"create-outline"} fontSize={"2xl"} />
-								<Text>Edit</Text>
-							</HStack>
-						</Button>
-						<Button onPress={() => setIsOpen(!isOpen)}>
-							<NBIonicon name={"trash-outline"} fontSize={"2xl"} pl={"1"} />
-						</Button>
-					</HStack>
-				</Box>
-
-				<Center flex={1} justifyContent={"center"} zIndex={"1"}>
-					<VStack w={"100%"} flex={"1"} px={"4"} space={"4"}>
-						<SectionList
-							sections={sections.map((section, index) => ({ ...section, index })) }
-							keyExtractor={(item, index) => item + index }
-							renderItem={(item, index, section) => <DetailRowItem data={item} key={index} nb={{ bgColor: "white" }} />}
-							renderSectionHeader={({section}) => <DetailHeaderItem title={section.title} index={section.index} nb={{ mt: "4"}}  />}
-							stickySectionHeadersEnabled={false}
-							showsVerticalScrollIndicator={false}
-						/>
-					</VStack>
-				</Center>
+			<Center flex={1} justifyContent={"center"} zIndex={"1"}>
+				<VStack w={"100%"} flex={"1"} px={"4"} space={"4"}>
+					<SectionList
+						sections={sections.map((section, index) => ({ ...section, index })) }
+						keyExtractor={(item, index) => item + index }
+						renderItem={(item, index, section) => <DetailRowItem data={item} key={index} nb={{ bgColor: "white" }} />}
+						renderSectionHeader={({section}) => <DetailHeaderItem title={section.title} index={section.index} nb={{ mt: "4"}}  />}
+						stickySectionHeadersEnabled={false}
+						showsVerticalScrollIndicator={false}
+						ListHeaderComponent={(
+							<Toolbar nb={{ mt: "4"}} >
+								<ToolbarItem
+									label={language.beneficiariesDetail.buttonBack}
+									icon={"chevron-back-outline"}
+									space={"1"}
+									iconProps={{ ml: "-4" }}
+									buttonProps={{ flex: "1" }}
+									action={() => handleBack(navigation)} />
+								<ToolbarSpacer />
+								<ToolbarItem
+									label={language.beneficiariesDetail.buttonEdit}
+									icon={"create-outline"}
+									buttonProps={{ flex: "1" }}
+									action={() => handleEdit()} />
+								<ToolbarItem
+									icon={"trash-outline"}
+									iconProps={{ pl: "1" }}
+									action={() => setIsOpen(!isOpen)}
+								/>
+							</Toolbar>
+						)}
+					/>
+				</VStack>
+			</Center>
 			
 			<AlertModal show={isOpen} close={onClose} ldRef={cancelRef}
 				header={(
 					<HStack>
 						{icon}
-						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiariesDetail.alertDeleteHeading} { sections.fullname }?</Heading>
+						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiariesDetail.alertDeleteHeading} { beneficiary.fullname }?</Heading>
 					</HStack>
 				)}
-				content={ language.beneficiariesDetail.alertDeleteMessageLine1 + " " + sections.fullname + ". " + language.beneficiariesDetail.alertDeleteMessageLine2 }>
+				content={ language.beneficiariesDetail.alertDeleteMessageLine1 + " " + beneficiary.fullname + ". " + language.beneficiariesDetail.alertDeleteMessageLine2 }>
 				<Button.Group space={2}>
 					<Button variant="unstyled" colorScheme="coolGray" onPress={onClose} ref={cancelRef}>{ language.beneficiariesDetail.alertDeleteButtonCancel }</Button>
 					<Button colorScheme="danger" onPress={() => {onClose(); handleDelete()}}>{ language.beneficiariesDetail.alertDeleteButtonConfirm }</Button>

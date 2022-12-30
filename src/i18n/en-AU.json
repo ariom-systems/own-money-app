@@ -112,6 +112,7 @@
 		},
 		"beneficiariesDetail": {
 			"buttonBack": "Back",
+			"buttonEdit": "Edit",
 			"listDataHeaderAddressDetails": "Address Details",
 			"listDataHeaderBankDetails": "Bank Details",
 			"listDataHeaderPersonalDetails": "Personal Details",
@@ -258,7 +259,8 @@
 			"labelYourRate": "Your Rate",
 			"errorMessageInvalidFormat": "Invalid format! Please only use positive and valid money values.",
 			"errorMessageLimitExceeded": "You cannot transfer more than your daily limit. Please contact Own Money Services if you require assistance.",
-			"buttonNext": "Next"
+			"buttonNext": "Next",
+			"buttonReset": "Reset"
 		},
 		"transferSteptwo": {
 			"titleTop": "Select the beneficiary for this transfer",
@@ -503,6 +505,9 @@
 			"buttonLabelSaving": "Saving",
 			"buttonLabelLoading": "Loading",
 			"buttonLabelDeleting": "Deleting"
+		},
+		"misc": {
+			"none": "none"
 		}
 	}
 }

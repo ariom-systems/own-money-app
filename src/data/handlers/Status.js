@@ -101,7 +101,7 @@ export function getNotice(reasonCode, currentLang) {
 					canClose: false,
 					bannerAction: {
 						label: language.notices.statusVerifyIdentityButton,
-						fn: () => Navigation.navigate('Your Profile')
+						fn: () => Navigation.navigate('Your Profile', { screen: 'ProfileEdit' })
 					}
 				}
 			break

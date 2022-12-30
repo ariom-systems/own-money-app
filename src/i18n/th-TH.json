@@ -111,6 +111,7 @@
 		},
 		"beneficiariesDetail": {
 			"buttonBack": "ย้อนกลับ",
+			"buttonEdit": "การแก้ไข",
 			"listDataHeaderAddressDetails": "ข้อมูลที่อยู่",
 			"listDataHeaderBankDetails": "ข้อมูลบัญชีธนาคาร",
 			"listDataHeaderPersonalDetails": "ข้อมูลส่วนตัว",
@@ -257,7 +258,8 @@
 			"labelYourRate": "อัตราของคุณ",
 			"errorMessageInvalidFormat": "กรุณากรอกยอดเงินให้ถูกต้อง",
 			"errorMessageLimitExceeded": "ยอดเงินเกินลิมิตต่อวัน หากต้องการโอนมากกว่าลิมิตต่อวันกรุณาติดต่อเจ้าหน้าที่",
-			"buttonNext": "ต่อไป"
+			"buttonNext": "ต่อไป",
+			"buttonReset": "รีเซ็ต"
 		},
 		"transferSteptwo": {
 			"titleTop": "เลือกผู้รับปลายทาง",
@@ -502,6 +504,9 @@
 			"buttonLabelSaving": "ประหยัด",
 			"buttonLabelLoading": "กำลังโหลด",
 			"buttonLabelDeleting": "กำลังลบ"
+		},
+		"misc": {
+			"none": "ว่างเปล่า"
 		}
 	}
 }

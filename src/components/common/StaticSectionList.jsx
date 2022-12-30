@@ -15,8 +15,6 @@ const StaticSectionList = (props) => {
 		return "test"
 	}
 
-	console.log(sections)
-
 
 	let output = []
 	// sections.forEach((section, index) => {

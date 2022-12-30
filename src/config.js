@@ -192,16 +192,16 @@ export const BeneficiaryTemplate = [
 			{ key: "accountnumber", label: language.beneficiariesDetail.listDataLabelAccountNumber, value: "" },
 			{ key: "accounttype", label: language.beneficiariesDetail.listDataLabelAccountType, value: "" },
 			{ key: "bankname", label: language.beneficiariesDetail.listDataLabelBankName, value: "" },
-			{ key: "bankbranch", label: language.beneficiariesDetail.listDataLabelBankBranch, value: "" },
-			{ key: "bankcity", label: language.beneficiariesDetail.listDataLabelBankCity, value: "" }
+			{ key: "branchname", label: language.beneficiariesDetail.listDataLabelBankBranch, value: "" },
+			{ key: "branchcity", label: language.beneficiariesDetail.listDataLabelBankCity, value: "" }
 		]
 	},
 	{
 		title: language.beneficiariesDetail.listDataHeaderAddressDetails,
 		data: [
-			{ key: "thaiaddress", label: language.beneficiariesDetail.listDataLabelThaiAddress, value: "" },
-			{ key: "province", label: language.beneficiariesDetail.listDataLabelProvince, value: "" },
-			{ key: "district", label: language.beneficiariesDetail.listDataLabelDistrict, value: "" },
+			{ key: "address", label: language.beneficiariesDetail.listDataLabelThaiAddress, value: "" },
+			{ key: "state", label: language.beneficiariesDetail.listDataLabelProvince, value: "" },
+			{ key: "city", label: language.beneficiariesDetail.listDataLabelDistrict, value: "" },
 			{ key: "postcode", label: language.beneficiariesDetail.listDataLabelPostCode, value: "" },
 			{ key: "country", label: language.beneficiariesDetail.listDataLabelCountry, value: "" }
 		]
