@@ -1,6 +1,6 @@
 import * as Keychain from "react-native-keychain"
 import { Buffer } from 'buffer'
-
+import { cloneDeep } from 'lodash'
 
 /**
  * Encrypt and write a fragment of sensitive data to the iOS Keychain/Android Keystore. 
@@ -363,43 +363,64 @@ export function groupTransactionsByDate(input) {
 
 /**
  * Maps data from one object to corresponding properties in a template object. Used for populating
- * SectionList components with external key/value array data
+ * SectionList components with external key/value array data. Updated January 2023 to account for
+ * i18n string handling for labels and headings.
  * 
  * @category Data
  * 
- * @param {object}			[data]		The data to transform and map.
- * @param {object|array}	[template]	Structure for the data to fit into.
+ * @param {object}			[template]		Structure for the data to fit into.
+ * @param {object|array}	[inputData]		Data to map into the template.
+ * @param {object}			[labels]		A collection of translated label to map into the template
+ * @param {object}			[headings]		A collection of translated headings to map into the template
  * 
  * @returns {object|array}
  */
-export function mapSectionDataFromTemplate(data, template) {
-	//check if input data is a valid object
-	if(Object.keys(data).length !== 0) {
-		//map the input data values over the top of the template. first by section
-		let mappedTemplate = template.map((section, index) => {
-			let obj = {}, title = section.title
+export function mapSectionDataFromTemplate(template, inputData, labels, headings) {
+	//make an unattached copy of the template
+	let newTemplate = cloneDeep(template)
+	//check if inputData is a valid object
+	if (Object.keys(inputData).length !== 0) {
+		//iterate through the blank template and map the data values over the top of it. first by section
+		let mappedTemplate = newTemplate.map((section, index) => {
+			let output = { title: "", data: {} }, title = section.title, id = section.id, renderItem = section.renderItem
 			//then by individual item
 			let mappedSection = section.data.map((item, index2) => {
 				//loop through the data, extracting the property name and value
-				for(const [key, value] of Object.entries(data)) {
-					//match the data property name to the template property name and copy the value.
-					//this should run for every property in the template...
-					if(key === item.key) {
-						item.value = value
+				if(item.hasOwnProperty("data")) {
+					let data = item.data
+					let mappedSubSection = data.map((subitem, index3) => {
+						let subLabelKey = Object.keys(labels).find(subkey => subkey == subitem.key)
+						subitem.label = labels[subLabelKey] ?? ""
+						for (const [subkey, subvalue] of Object.entries(inputData)) {
+							//match the data property name to the template property name and copy the value.
+							if (subkey === subitem.key) { subitem.value = subvalue }
+						}
+						return subitem
+					})
+					item.data = mappedSubSection
+				} else {
+					let labelKey = Object.keys(labels).find(key => key == item.key)
+					item.label = labels[labelKey] ?? ""
+					for (const [key, value] of Object.entries(inputData)) {
+						//match the data property name to the template property name and copy the value.
+						if (key === item.key) { item.value = value }
 					}
-					//ignore everything else and repeat
 				}
 				return item
 			})
-			let sectionData = mappedSection.filter(mappedItem => mappedItem.value != "0000-00-00 00:00:00")
-			obj.title = title
-			obj.data = sectionData
-			return obj
+			let headingKey = Object.keys(headings).find(key => key == title.key), obj = {}
+			output.title = headings[headingKey]
+			output.data = mappedSection.filter(mappedItem => mappedItem.value != "0000-00-00 00:00:00")
+			if (id) { output.id = id }
+			if (renderItem) { output.renderItem = renderItem }
+			return output
 		})
 		return mappedTemplate
 	} else {
-		return template
+		//if the data isn't valid, return a blank template
+		return newTemplate
 	}
+
 }
 
 
@@ -557,6 +578,91 @@ export function modifyTransferVariables(input, ruleset, secondary = null) {
 
 
 /**
+ * Merges an array of functions into a 'config' array. Solely used for adding 'action' callback to a Toolbar component
+ * config array.
+ * 
+ * @category Data
+ * 
+ * @param {array}		[config]		The 'config' array to merge into.
+ * @param {array}		[actions]		A set of actions to add to the config
+ * 
+ * @returns {array}
+ * 
+ */
+export function mapActionsToConfig(config, actions) {
+	const newConfig = config.map((element, index) => {
+		if (actions[index] != null) {
+			element['action'] = actions[index]
+		}
+		return element
+	})
+	return newConfig
+}
+
+
+/**
+ * Merges an array of object properties into a 'config' array. Solely used for adding dynamic properties to a Toolbar component
+ * config array.
+ * 
+ * @category Data
+ * 
+ * @param {array}		[config]		The 'config' array to merge into.
+ * @param {array}		[properties]	A set of object properties to add to the config
+ * 
+ * @returns {array}
+ * 
+ */
+export function mapPropertiesToConfig(config, properties) {
+	const newConfig = config.map((element, index) => {
+		if (properties[index] != null) {
+			let obj = properties[index]
+			return {...element, ...obj}
+		} else {
+			return element
+		}
+	})
+	return newConfig
+}
+
+
+/**
+ * Given an input string with dot notation, return the value of an object property using the input as a path. Used to forward
+ * 'path' to traverse for language objects. A convoluted workaround for updating language strings in deeply nested React
+ * components that are shared across multiple parts of the app (e.g. <Toolbar />). Used where the component need to remain
+ * independant of the content it is displaying.
+ * 
+ * @category Data
+ * 
+ * @param {object}		[obj]		The object to traverse
+ * @param {string} 		[path] 		Path of object properties to traverse through (e.g 'language.dashboard.ui.button' will 
+ * 									get a value located in language: { dashboard: { ui: { button: "value"}}})
+ * 
+ * @returns {string}
+ */
+export function traverseObjectByPath(obj, path, def = null) {
+	let stringToPath = (path) => {
+		if(typeof path !== 'string') return path
+		let output = []
+		path.split('.').forEach((item, index) => {
+			item.split(/\[([^}]+)\]/g).forEach((key) =>{
+				if(key.length > 0) {
+					output.push(key)
+				}
+			})
+		})
+		return output
+	}
+	path = stringToPath(path)
+	let current = obj
+	for(let x = 0; x < path.length; x++) {
+		if(!current[path[x]]) return def
+		current = current[path[x]]
+	}
+	return current
+}
+
+
+/**
  * Formats an input number to a localised currency as specified by a locale. This function is
  * a little more complicated than we'd like however the limiting factor is this app is built
  * on React Native 0.70.4 and uses the Hermes engine which (as of November 2022) has no support
@@ -648,11 +754,135 @@ export function localiseObjectData(input, template, lang) {
 					break
 				case 'date':
 					if (value != '0000-00-00 00:00:00') {
-						let newValue = new Date(Date.parse(value.replace(' ', 'T')))
-						input[property] = newValue.toLocaleString(lang, rule.options)
+						let newValue = new Date(Date.parse(value.replace(' ', 'T'))), tmpLang = lang
+						if (rule.options.dateStyle == 'short') { tmpLang = 'en-GB' }
+						input[property] = newValue.toLocaleString(tmpLang, rule.options)
 					}
 					break
 			}
 		}
 	}
+	return input
+}
+
+
+/**
+ * Return a formated string from a date Object mimicking PHP's date() functionality
+ *
+ * @author Gospel Chinyereugo <https://gist.github.com/Ebugo/10b5c1a87b2dac685603dc5af7168782>
+ * 
+ * @param {string} format "Y-m-d H:i:s" or similar PHP-style date format string
+ * @param {* | null} date Date Object, Datestring, or milliseconds 
+ *
+ */
+export function dateFormat(format, date) {
+	if (!date || date === "") {
+		date = new Date()
+	} else if (typeof date !== 'object') {
+		// attempt to convert string/number to date object
+		try {
+			if (typeof date === 'number') date = new Date(date)
+			else date = new Date(date.replace(/-/g, "/"))
+		} catch (e) {
+			date = new Date()
+		}
+	}
+
+	let string = '',
+		mo = date.getMonth(), // month (0-11)
+		m1 = mo + 1, // month (1-12)
+		dow = date.getDay(), // day of week (0-6)
+		d = date.getDate(), // day of the month (1-31)
+		y = date.getFullYear(), // 1999 or 2003
+		h = date.getHours(), // hour (0-23)
+		mi = date.getMinutes(), // minute (0-59)
+		s = date.getSeconds() // seconds (0-59)
+
+	for (let i of format.match(/(\\)*./g)) {
+		switch (i) {
+			case 'j': // Day of the month without leading zeros  (1 to 31)
+				string += d
+				break
+
+			case 'd': // Day of the month, 2 digits with leading zeros (01 to 31)
+				string += (d < 10) ? "0" + d : d
+				break
+
+			case 'l': // (lowercase 'L') A full textual representation of the day of the week
+				var days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+				string += days[dow]
+				break
+
+			case 'w': // Numeric representation of the day of the week (0=Sunday,1=Monday,...6=Saturday)
+				string += dow
+				break
+
+			case 'D': // A textual representation of a day, three letters
+				var days = ["Sun", "Mon", "Tue", "Wed", "Thr", "Fri", "Sat"]
+				string += days[dow]
+				break
+
+			case 'm': // Numeric representation of a month, with leading zeros (01 to 12)
+				string += (m1 < 10) ? "0" + m1 : m1
+				break
+
+			case 'n': // Numeric representation of a month, without leading zeros (1 to 12)
+				string += m1
+				break
+
+			case 'F': // A full textual representation of a month, such as January or March 
+				var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+				string += months[mo]
+				break
+
+			case 'M': // A short textual representation of a month, three letters (Jan - Dec)
+				var months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+				string += months[mo]
+				break
+
+			case 'Y': // A full numeric representation of a year, 4 digits (1999 OR 2003)	
+				string += y
+				break
+
+			case 'y': // A two digit representation of a year (99 OR 03)
+				string += y.toString().slice(-2)
+				break
+
+			case 'H': // 24-hour format of an hour with leading zeros (00 to 23)
+				string += (h < 10) ? "0" + h : h
+				break
+
+			case 'g': // 12-hour format of an hour without leading zeros (1 to 12)
+				var hour = (h === 0) ? 12 : h
+				string += (hour > 12) ? hour - 12 : hour
+				break
+
+			case 'h': // 12-hour format of an hour with leading zeros (01 to 12)
+				var hour = (h === 0) ? 12 : h
+				hour = (hour > 12) ? hour - 12 : hour
+				string += (hour < 10) ? "0" + hour : hour
+				break
+
+			case 'a': // Lowercase Ante meridiem and Post meridiem (am or pm)
+				string += (h < 12) ? "am" : "pm"
+				break
+
+			case 'i': // Minutes with leading zeros (00 to 59)
+				string += (mi < 10) ? "0" + mi : mi
+				break
+
+			case 's': // Seconds, with leading zeros (00 to 59)
+				string += (s < 10) ? "0" + s : s
+				break
+
+			case 'c': // ISO 8601 date (eg: 2012-11-20T18:05:54.944Z)
+				string += date.toISOString()
+				break
+
+			default:
+				if (i.startsWith("\\")) i = i.substr(1)
+				string += i
+		}
+	}
+	return string
 }

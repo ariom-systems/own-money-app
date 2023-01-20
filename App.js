@@ -1,47 +1,32 @@
-//Core
-import React from 'react'
+import React, { useContext, useEffect, useReducer } from 'react'
 import 'react-native-gesture-handler'
-import { ActivityIndicator, useColorScheme, LogBox, Image, ImageBackground } from 'react-native'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ActivityIndicator, LogBox } from 'react-native'
 
-//Navigation
+//navigation
 import { navigationRef } from './src/data/handlers/Navigation'
-import { NavigationContainer, useNavigationContainerRef } from '@react-navigation/native'
+import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { createDrawerNavigator, DrawerContentScrollView } from '@react-navigation/drawer'
 import { useFlipper } from '@react-navigation/devtools'
-import AppTabs from './src/components/navigators/AppTabs'
 
-//Screens - splash
+//navigators
+import AuthStack from './src/components/navigators/AuthStack'
+import AppStack from './src/components/navigators/AppStack'
+
+//screens
 import SplashScreen from './src/screens/SplashScreen';
 
-//Screens - external
-import ForgotPasswordScreen from './src/screens/authRoot/ForgotPasswordScreen'
-import LoginScreen from './src/screens/authRoot/LoginScreen'
-import RegisterScreen from './src/screens/authRoot/RegisterScreen'
-
-//Screens - authenticated
-import LoadingScreen from './src/screens/appRoot/LoadingScreen'
-import PinCodeScreen from './src/screens/appRoot/PinCodeScreen'
-import SettingsScreen from './src/screens/appRoot/SettingsScreen'
-import TermsAndConditionsScreen from './src/screens/appRoot/TermsAndConditionsScreen'
-
-//Context
+//data
 import { AuthContext, AuthProvider } from './src/data/Context'
 import { NativeBaseProvider, extendTheme, Text } from 'native-base'
-
-//Other
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
 import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
 import { initialCheckConnection } from './src/data/handlers/Connection'
-
 import * as Hooks from './src/data/Hooks';
-import LogoutScreen from './src/screens/appRoot/LogoutScreen';
-
-//Recoil
 import { RecoilRoot } from 'recoil'
 import RecoilFlipperClient from 'react-recoil-flipper-client'
 
-//Lang
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('./src/i18n/en-AU.json')
 const thStrings = require('./src/i18n/th-TH.json')
@@ -49,10 +34,6 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 LogBox.ignoreLogs(["Could not find Fiber with id"])
 LogBox.ignoreLogs(["Duplicate atom key"])
-
-const RootStack = createNativeStackNavigator()
-const AuthStack = createNativeStackNavigator()
-const AppStack = createNativeStackNavigator()
 
 export default function App() {
 	return (
@@ -67,25 +48,26 @@ export default function App() {
 	)
 }
 
-//Root navigation container. To separate Splash screen from the rest of the app.
+const RootStack = createNativeStackNavigator()
 const RootNavigator = ({navigation}) => {
     useFlipper(navigationRef)
     return (
-        <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
-            <RootStack.Navigator>
-                <RootStack.Screen options={{ headerShown: false }} name="Splash" component={ SplashScreen } />
-                <RootStack.Screen options={{ headerShown: false }} name="AppNavigator" component={ AppNavigator } />
-            </RootStack.Navigator>
-        </NavigationContainer>
+        <SafeAreaProvider>
+            <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
+                <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                    <RootStack.Screen name="Splash" component={ SplashScreen } />
+                    <RootStack.Screen name="AppNavigator" component={ AppNavigator } />
+                </RootStack.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
     )
 }
 
-//App navigation container. To separate external facing screens from internal authenticated screens.
 const AppNavigator = ({navigation}) => {    
-    const { auth, authDispatch } = React.useContext(AuthContext)
-    const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+    const { auth, authDispatch } = useContext(AuthContext)
+    const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-    React.useEffect(() => {
+    useEffect(() => {
         //check if we can connect to the API first
         initialCheckConnection(authDispatch)
         // begin authentication run: is token present in Context?
@@ -113,7 +95,7 @@ const AppNavigator = ({navigation}) => {
         }
     }, [])
 
-    React.useEffect(() => {
+    useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
 			language.setLanguage(auth.lang)
 			forceUpdate()
@@ -137,47 +119,10 @@ const AppNavigator = ({navigation}) => {
 
     // const scheme = useColorScheme()
     // theme={scheme === 'dark' ? ReactNavigationThemeDark : ReactNavigationThemeDefault}
-    
-    return (
-        <>
-            { auth.token === null ? (
-                <AuthStack.Navigator id="AuthRoot">
-                    <AuthStack.Screen options={{ headerShown: false }} name={'Login'} component={ LoginScreen } />
-                    <AuthStack.Screen options={{ headerShown: false }} name={'ForgotPassword'} component={ ForgotPasswordScreen } />
-                    <AuthStack.Screen options={{ headerShown: false }} name={'Register'} component={ RegisterScreen } />
-                </AuthStack.Navigator>
-            ) : (
-                <AppStack.Navigator id="AppRoot">
-                    <AppStack.Screen options={{ headerShown: false }} name={'PinCode'} component={ PinCodeScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'Loading'} component={ LoadingScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'TermsAndConditions'} component={ TermsAndConditionsScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'AppDrawer'} component={ AppDrawer } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'LogoutScreen'} component={ LogoutScreen } />
-                </AppStack.Navigator>
-            )}
-        </>
-    )
-}
-
-const Drawer = createDrawerNavigator()
-const AppDrawer = ({navigation}) => {
-    return (
-        <Drawer.Navigator
-            drawerContent={(props) => <DrawerComponent {...props} />}
-            screenOptions={{
-                drawerPosition: 'right',
-                drawerStyle: { width: '90%'}
-            }}
-        >
-            <Drawer.Screen options={{ headerShown: false }} name={'AppTabs'} component={AppTabs} />
-        </Drawer.Navigator>
-    )
-}
-
-const DrawerComponent = (props) => {
-    return (
-        <DrawerContentScrollView>
-            <SettingsScreen />
-        </DrawerContentScrollView>
-    )
+   
+    if (auth.token === null) {
+        return <AuthStack />
+    } else {
+        return <AppStack />
+    }
 }

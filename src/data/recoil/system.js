@@ -14,11 +14,16 @@ export const loadingState = atom({
 	key: 'loading',
 	default: {
 		status: false,
-		text: "loading"
+		type: "loading"
 	}
 })
 
 export const noticeState = atom({
 	key: 'notices',
 	default: []
+})
+
+export const profileNavState = atom({
+	key: 'profileNav',
+	default: false
 })

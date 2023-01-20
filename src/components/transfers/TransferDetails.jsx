@@ -1,31 +1,36 @@
-import React from 'react'
-import { Box, Button, Heading, HStack, Text, VStack } from 'native-base'
-import { Controller, useFormContext } from 'react-hook-form'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
+
+//components
+import { Heading, HStack, Text, VStack } from 'native-base'
+
+//data
 import { AuthContext } from '../../data/Context'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { audAtom, thbSelector, feeSelector, rateSelector, limitSelector } from '../../data/recoil/transfer'
+import { useFormContext } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
+import { feeSelector, rateSelector, limitSelector } from '../../data/recoil/transfer'
 import { userState } from '../../data/recoil/user'
 import { formatCurrency } from '../../data/Actions'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferDetails = (props)  => {
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const { control, setValue, setError, clearErrors, formState } = useFormContext()
 	const [ user, fee, rate, limit ] = [ useRecoilValue(userState), useRecoilValue(feeSelector), useRecoilValue(rateSelector), useRecoilValue(limitSelector) ]
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setValue("remaining", Number(limit))
 		setValue("fee", Number(fee))
 		setValue("rate", Number(rate))
@@ -65,4 +70,4 @@ const TransferDetails = (props)  => {
 	)
 }
 
-export default TransferDetails
+export default memo(TransferDetails)

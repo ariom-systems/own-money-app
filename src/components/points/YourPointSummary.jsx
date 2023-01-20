@@ -1,4 +1,4 @@
-import React from "react"
+import React, { memo } from "react"
 
 //components
 import { StyleSheet, Platform } from 'react-native'
@@ -33,7 +33,7 @@ const YourPointSummary = () => {
 	generateBoxShadow(-2, 4, '#2b2b2b', 0.2, 3, 4, '#2b2b2b')
 
 	return (
-		<Box backgroundColor={"primary.200"} borderRadius={"8"} p={"4"} mt={"4"}>
+		<Box backgroundColor={"primary.200"} borderRadius={"8"} p={"4"}>
 			<Heading fontSize={"lg"}>{language.dashboard.yourPointsTitle}</Heading>
 			<Box pt={"4"} pb={"8"}>
 				<Text textAlign={"center"} fontSize={"3xl"} bold
@@ -43,4 +43,4 @@ const YourPointSummary = () => {
 	)
 }
 
-export default React.memo(YourPointSummary)
+export default memo(YourPointSummary)

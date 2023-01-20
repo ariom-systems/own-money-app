@@ -1,22 +1,25 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer } from 'react'
 
 //components
+import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { ImageBackground } from 'react-native'
-import { Box, Button, HStack, ScrollView, StatusBar, Text, VStack } from 'native-base'
+import { Button, HStack, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 import TransferDetails from '../../../components/transfers/TransferDetails'
 import ExchangeRate from '../../../components/common/ExchangeRate'
-import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
+import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner'
 
 //data
 import { AuthContext } from '../../../data/Context'
+import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
+import { transferStepOneToolbarConfig } from '../../../config'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
 import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
+import { noticeState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -49,25 +52,35 @@ export default TransferStepOne
 
 const TransferStepOneInner = () => {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
-	const { handleSubmit, setValue, getValues, reset, formState } = useFormContext()
-	const [ step, setStep ] = useRecoilState(stepAtom)
+	const { auth } = useContext(AuthContext)
+	const notices = useRecoilValue(noticeState)
+	const setStep = useSetRecoilState(stepAtom)
+	const user = useRecoilValue(userState)
+	const [ buttonState, setButtonState] = useRecoilState(stepOneButtonAtom)
 	const [ aud, setAud ] = useRecoilState(audAtom)
-	const [ buttonState, setButtonState ] = useRecoilState(stepOneButtonAtom)
 	const [ thb, setThb ] = useRecoilState(thbSelector)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const { handleSubmit, setValue, getValues, reset, formState } = useFormContext()
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	let hasErrors
+	const actions = [
+		() => handleCancel(),null,
+		handleSubmit((data) => onSubmit(data))
+	]
+	const properties = [ {}, {}, { isDisabled: buttonState } ]
+	let toolbarConfig = mapActionsToConfig(transferStepOneToolbarConfig, actions)
+	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
+	
+	let hasErrors
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if(formState.errors.aud || formState.errors.thb || formState.errors.remaining) {
 			hasErrors = true
 			setButtonState(true)
@@ -80,61 +93,34 @@ const TransferStepOneInner = () => {
 		}
 	},[formState, aud, thb])
 
-	const onSubmit = (submitted) => {
+	const onSubmit = (e) => {
 		navigation.navigate('TransferStepTwo')
 		setStep(1)
 	}
 
 	const onError = error => console.log(error)
 
-	const handleCancel = () => {
-		setAud(0)
-		setThb(0)
-		setStep(0)
-		reset()
-		setButtonState(true)
-	}
+	const handleCancel = () => { console.log('cancelled'); setAud(0); setThb(0); setStep(0); reset(); setButtonState(true); }
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
+		<AppSafeArea>
 			<ScrollView>
-				<AlertBanner m={"2.5%"} mb={"0"} />
 				<VStack p={"2.5%"} space={"4"}>
+					{notices && <AlertBanner /> }
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />
-
 						<VStack space={"4"} w={"100%"} alignItems={"center"}>
 							<Text textAlign={"center"}>{ language.transferStepOne.instructionTop }</Text>
 							<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
 								<ExchangeRate size={"sm"} />
 							</HStack>
-
 							<CurrencyConverter />
 							<TransferDetails />
-
 						</VStack>
-
 					</VStack>
-					<Toolbar>
-						<ToolbarItem
-							label={language.transferStepOne.buttonReset}
-							icon={"reload-outline"}
-							space={"1"}
-							iconProps={{ ml: "-4" }}
-							buttonProps={{ flex: "1", variant: "outline" }}
-							action={() => handleCancel()} />
-						<ToolbarSpacer />
-						<ToolbarItem
-							label={language.transferStepOne.buttonNext}
-							icon={"chevron-forward"}
-							iconPosition={"right"}
-							buttonProps={{ flex: "1", isDisabled: buttonState, _disabled: { style: "subtle" } }}
-							action={handleSubmit(onSubmit, onError)} />
-					</Toolbar>
+					<Toolbar config={toolbarConfig} />
 				</VStack>
-				
 			</ScrollView>
-		</ImageBackground>
+		</AppSafeArea>
 	)
 }

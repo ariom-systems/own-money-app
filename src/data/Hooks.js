@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 export function useInterval(callback, delay, cancel = null) {
-	const savedCallback = React.useRef()
+	const savedCallback = useRef()
 
-	React.useEffect(() => {
+	useEffect(() => {
 		savedCallback.current = callback
 	})
 
-	React.useEffect(() => {
+	useEffect(() => {
 		function tick() {
 			savedCallback.current()
 		}
@@ -22,12 +22,11 @@ export function useInterval(callback, delay, cancel = null) {
 			return () => clearInterval(id)
 		}
 
-
 	}, [delay])
 }
 
 export function useAspect(initial) {
-	const [ aspect, setAspect ] = React.useState(initial)
+	const [ aspect, setAspect ] = useState(initial)
 	let current = aspect;
 	const get = () => current
 	const set = newValue => {
@@ -39,16 +38,16 @@ export function useAspect(initial) {
 }
 
 export const useEffectOnce = (effect) => {
-	const destroyFunc = React.useRef()
-	const effectCalled = React.useRef(false)
-	const renderAfterCalled = React.useRef(false)
-	const [ val, setVal ] = React.useState(0)
+	const destroyFunc = useRef()
+	const effectCalled = useRef(false)
+	const renderAfterCalled = useRef(false)
+	const [ val, setVal ] = useState(0)
 
 	if(effectCalled.current) {
 		renderAfterCalled.current = true
 	}
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if(!effectCalled.current) {
 			destroyFunc.current = effect()
 			effectCalled.current = true

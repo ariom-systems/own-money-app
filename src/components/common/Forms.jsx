@@ -1,17 +1,18 @@
-import React from 'react'
-import { Box, Checkbox, Factory, FormControl, Heading, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Text } from 'native-base'
-import { useController } from 'react-hook-form'
-import { Controlled as BeneficiaryControl } from '../../components/beneficiaries/SelectControls'
-import { Controlled as TransferControl } from '../../components/transfers/SelectControls'
+import React, { useContext, useState, useEffect, useReducer } from 'react'
 
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon = Factory(Ionicon)
+//components
+import { Box, Button, Checkbox, FormControl, Heading, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Text } from 'native-base'
+import { Controlled } from './SelectControls'
+import DatePicker from 'react-native-date-picker'
+import Icon from './Icon'
+
+//data
+import { useController } from 'react-hook-form'
 
 export const ErrorMessage = (props) => {
 	const { message, icon = "alert-circle-outline", errorStyles = null } = props
 	return (
-		<FormControl.ErrorMessage leftIcon={<NBIonicon alignSelf={"flex-start"} mt={"0.5"} name={icon} />} _text={errorStyles}>{ message }</FormControl.ErrorMessage>
+		<FormControl.ErrorMessage leftIcon={<Icon type={"Ionicon"} alignSelf={"flex-start"} mt={"0.5"} name={icon} />} _text={errorStyles}>{ message }</FormControl.ErrorMessage>
 	)
 }
 
@@ -24,26 +25,30 @@ export const ErrorMessageBlock = (props) => {
 	)
 }
 
+export const Label = ({ text, errors, styles }) => {
+	return <FormControl.Label _text={{ ...styles, color: errors ? "danger.600" : "black" }}>{text}</FormControl.Label>
+}
+
+export const HelperText = ({ text }) => {
+	return (
+		<FormControl.HelperText>{text}</FormControl.HelperText>
+	)
+}
+
 export const HeaderItem = ({nb, children}) => {
 	return (
-		<Box {...nb} px={"2"} py={"4"} backgroundColor={"coolGray.200"}>
+		<Box {...nb} px={"2"} py={"4"} backgroundColor={"primary.200"}>
 			<Heading size={"sm"}>{ children }</Heading>
 		</Box>
 	)
 }
 
 export const TextInput = (props) => {
-	let { name, control, rules = {}, errors, label = "", placeholder = "", required,
-		inputAttributes = null,
-		labelStyles = null,
-		blockStyles = null,
-		errorStyles = null,
-		addonLeft = null,
-		addonRight = null } = props
+	const { name, control, rules = {}, errors, label = "", helperText = null, placeholder = "", required, type = "default",
+		isReadOnly = false, inputAttributes = null, labelStyles = null, blockStyles = null, errorStyles = null, 
+		addonLeft = null, addonRight = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({ name, control, rules: rules })
 	
-	let labelRow, inputRow
-
 	const inputField = (
 		<Input
 			placeholder={ placeholder }
@@ -54,9 +59,13 @@ export const TextInput = (props) => {
 			fontSize={"lg"}
 			autoCorrect={false}
 			autoCapitalize={'none'}
+			keyboardType={type}
+			isReadOnly={isReadOnly}
 			{...inputAttributes}
 		/>
 	)
+
+	let inputRow = inputField
 
 	if (addonLeft != null || addonRight != null) {
 		inputRow = (
@@ -66,18 +75,13 @@ export const TextInput = (props) => {
 				{ addonRight || null }
 			</InputGroup>
 		)
-	} else {
-		inputRow = inputField
-	}
-
-	if(label != "") {
-		labelRow = <FormControl.Label _text={{ ...labelStyles, color: errors ? "danger.600" : "black" }}>{ label }</FormControl.Label>
 	}
 
 	return (
-		<FormControl px={"4"} isRequired={ required ? true : false } isInvalid={ errors ? true : false}  {...blockStyles}>
-			{ labelRow || null }
+		<FormControl isRequired={ required ? true : false } isInvalid={ errors ? true : false}  {...blockStyles}>
+			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
 			{ inputRow }
+			{ helperText && <HelperText text={helperText} /> }
 			{ errors && <ErrorMessage message={ errors.message } errorStyles={errorStyles} />}
 		</FormControl>
 	)
@@ -101,7 +105,7 @@ export const TextInputRight = (props) => {
 }
 
 export const SelectInput = (props) => {
-	const { name, control, component, rules = {}, errors, label, placeholder, required, context, labelStyles = null, blockStyles = null, errorStyles = null } = props
+	const { name, control, component, rules = {}, errors, label, helperText = null, placeholder, required, labelStyles = null, blockStyles = null, errorStyles = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields } } = useController({ name, control, rules: rules })
 	const contextProps = {
 		component: component,
@@ -111,29 +115,23 @@ export const SelectInput = (props) => {
 		value:  field.value,
 		name:  field.name
 	}
-	let selectElement = null
-	switch(context) {
-	 	case 'Beneficiaries': selectElement = <BeneficiaryControl {...contextProps} />; break;
-		case 'Transfers': selectElement = <TransferControl {...contextProps} />; break;
-	}
 
 	return (
-		<FormControl px={"4"} isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
-			<HStack>
-				<FormControl.Label _text={{ ...labelStyles, color: errors ? "danger.600" : "black" }}>{ label }</FormControl.Label>
-			</HStack>
-			{ selectElement }
+		<FormControl isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
+			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
+			<Controlled {...contextProps} />
+			{ helperText && <HelperText text={helperText} /> }
 			{ errors && <ErrorMessage message={ errors.message } errorStyles={errorStyles} /> }
 		</FormControl>
 	)
 }
 
 export const CheckInput = (props) => {
-	const { name, control, rules, required = false, errors, label, labelStyles = null, blockStyles = null, 
+	const { name, control, rules, required = false, errors, label, helperText = null, labelStyles = null, blockStyles = null, 
 		errorStyles = null, innerStyles = null, labelStylesOuter = null, isDisabled = false, disabledStyles = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({ name, control, rules: rules })
 	return (
-		<FormControl px={"4"} isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
+		<FormControl isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
 			<HStack {...innerStyles}>
 				<Checkbox
 					name={ field.name }
@@ -144,9 +142,100 @@ export const CheckInput = (props) => {
 					isDisabled={isDisabled}
 					disabled={disabledStyles}
 				/>
-				<FormControl.Label _text={{ ...labelStyles, color: errors ? "danger.600": "black" }}>{ label }</FormControl.Label>	
+				{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
+				{/* <FormControl.Label _text={{ ...labelStyles, color: errors ? "danger.600": "black" }}>{ label }</FormControl.Label>	 */}
 			</HStack>
+			{ helperText && <HelperText text={helperText} /> }
 			{ errors && <ErrorMessage message={ errors.message } errorStyles={errorStyles} />}
 		</FormControl>
 	)
 }
+
+export const DatePickerInput = (props) => {
+	const { name, control, rules, required = false, errors, label, title, helperText = null, labelStyles = null, blockStyles = null,
+		errorStyles = null } = props
+	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({name, control, rules: rules })
+	
+	const [open, setOpen] = useState(false)
+	const [date, setDate] = useState(new Date())
+	const [visualDate, setVisualDate] = useState({
+		day: '',
+		month: '',
+		year: ''
+	})
+
+	useEffect(() => {
+		const dateFromRHF = new Date(field.value)
+		const dateVisual = formatTheDate(field.value, 'visual')
+		if (!isNaN(Date.parse(dateFromRHF))) {
+			setDate(dateFromRHF)
+			splitDate(dateVisual)
+		}
+	}, [field.value])
+
+	const handleChange = (newDate) => {
+		const visual = formatTheDate(newDate, 'visual')
+		const dbstring = formatTheDate(newDate, 'database')
+		splitDate(visual)
+		field.onChange(dbstring)
+	}
+
+	function splitDate(theDate) {
+		
+		let newDate = theDate.split(' ')
+		setVisualDate({
+			day: newDate[0],
+			month: newDate[1],
+			year: newDate[2]
+		})
+	}
+
+	function formatTheDate(theDate, type) {
+		if (type == 'visual') {
+			let date = new Date(theDate).toLocaleDateString('en-AU', { year: 'numeric', month: 'long', day: 'numeric' })
+			return date
+		} else {
+			//couldnt find a good way to do this. en-AU year numeric is bugged when using the below options
+			let tmp = new Date(theDate).toLocaleString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })
+			//and americans are weird. how on earth is YYYY/DD/MM a good format? seriously?
+			let tmpArray = tmp.split('/')
+			tmpArray = tmpArray.reverse()
+			tmpArray.push(tmpArray.splice(1, 1)[0])
+			return tmpArray.join('-')
+		}
+	}
+
+	return (
+		<FormControl px={"4"} isRequired={required ? true : false} isInvalid={errors ? true : false} {...blockStyles}>
+			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
+			<InputGroup w={"100%"}>
+				<Input value={visualDate.day} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"2"} />
+				<Input value={visualDate.month} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"3"} />
+				<Input value={visualDate.year} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"2"} />
+				<Button flexGrow={"1"} onPress={() => { setOpen(true) }}>
+					<Icon type={"Ionicon"} name={"calendar-sharp"} color={"white"} fontSize={"2xl"} />
+				</Button>
+			</InputGroup>
+			<DatePicker
+				modal
+				title={title}
+				mode={"date"}
+				maximumDate={new Date(Date.now())}
+				open={open}
+				date={date}
+				locale={'en-AU'}
+				onConfirm={(newDate) => {
+					setOpen(false)
+					setDate(newDate)
+					handleChange(newDate)
+				}}
+				onCancel={() => {
+					setOpen(false)
+				}}
+			/>
+			{ helperText && <HelperText text={helperText} /> }
+			{ errors && <ErrorMessage message={errors.message} errorStyles={errorStyles} /> }
+		</FormControl>
+	)
+}
+

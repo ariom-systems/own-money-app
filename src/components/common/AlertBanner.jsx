@@ -1,33 +1,44 @@
-import React from 'react'
+import React, { useEffect, useState, useReducer } from 'react'
 
 //components
 import { Alert, Box, Button, CloseIcon, Collapse, Factory, HStack, IconButton, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon = Factory(Ionicon)
+import Icon from './Icon'
 
 //data
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useRecoilState } from 'recoil'
 import { noticeState } from '../../data/recoil/system'
-import { Pressable } from 'react-native'
+import { userState } from '../../data/recoil/user'
+import { atomRemoveItemAtIndex } from '../../data/Actions'
 
 export const AlertItem = (props) => {
-	let { icon, title, message, style = "info", canClose = false, bannerAction = null } = props.data
-	let { label, fn } = bannerAction
-	
-	const [ show, setShow ] = React.useState(true)
+	const user = useRecoilValue(userState)
+	const { icon, title, message, style = "info", canClose = false, bannerAction = null, timeout = 10000, id } = props.data
+	const { label, fn } = bannerAction ?? { label: "none", fn: () => {} }
+	const [ show, setShow ] = useState(true)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
+	const handleBannerAction = () => { fn() }
 
-	const handleBannerAction = () => {
-		fn()
+	useEffect(() => {
+		setTimeout(() => {
+			if(canClose == true) {
+				removeBanner()
+				setShow(false)
+			}
+		}, timeout)
+	})
+
+	const removeBanner = () => {
+		let newNotices = atomRemoveItemAtIndex(notices, props.index)
+		setNotices(newNotices)
 	}
 
 	return (
 		<Collapse isOpen={show} width={"100%"}>
-			<Alert my={"2.5%"} space={"4"} status={style} variant={"top-accent"}>
+			<Alert space={"4"} status={style} variant={"top-accent"}>
 				<VStack space={"1"} flexShrink={"1"} w={"100%"}>
 					<HStack alignItems={"center"} flexShrink={"1"} space={"2"} justifyContent={"space-between"}>
 						<HStack alignItems={"center"} flexShrink={"1"} space={"2"}>
-							<NBIonicon name={icon} fontSize={"lg"} />
+							<Icon type={"Ionicon"} name={icon} fontSize={"lg"} />
 							<Text fontSize={"md"} fontWeight={"medium"}>{title}</Text>
 						</HStack>
 						{ canClose && (
@@ -36,7 +47,10 @@ export const AlertItem = (props) => {
 								_focus={{ borderWidth: 0 }}
 								icon={<CloseIcon size={"3"} />}
 								_icon={{ color: "coolGray.600" }}
-								onPress={() => setShow(false)}
+								onPress={() => {
+									removeBanner()
+									setShow(false)
+								}}
 							/>)
 						}
 					</HStack>
@@ -58,16 +72,23 @@ export const AlertItem = (props) => {
 
 const AlertBanner = (props) => {
 	const notices = useRecoilValue(noticeState)
-	let noticeList = []
-	notices.forEach((element, index) => {
-	 	noticeList.push(<AlertItem key={index} data={element} />)
+	const user = useRecoilValue(userState)
+	let noticeList = noticeList = notices.map((element, index) => {
+		return <AlertItem key={index} index={index} data={element} />
 	})
+
+	useEffect(() => {
+		noticeList = notices.map((element, index) => {
+			return <AlertItem key={index} index={index} data={element} />
+		})
+	}, [notices])
+
 	return noticeList.length > 0 ? (
-		<Box {...props}>
+		<VStack {...props} space={"4"}>
 			{noticeList}
-		</Box>
-	) : ({noticeList})
+		</VStack>
+	) : ( null )
 }
 
-export default React.memo(AlertBanner)
+export default AlertBanner
 

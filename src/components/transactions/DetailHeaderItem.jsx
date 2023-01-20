@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 import { Box, Heading } from 'native-base'
 
 const DetailHeaderItem = (props) => {
@@ -10,4 +10,4 @@ const DetailHeaderItem = (props) => {
 	)
 }
 
-export default React.memo(DetailHeaderItem)
+export default memo(DetailHeaderItem)

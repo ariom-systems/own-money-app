@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useState, useEffect, memo } from 'react'
 import { View, Image, StatusBar, StyleSheet } from 'react-native'
 import Animated, { Pinwheel, useSharedValue, useAnimatedStyle, withTiming, withDelay } from 'react-native-reanimated'
 import { runOnJS } from 'react-native-reanimated/lib/reanimated2/core'
 
 const SplashScreen = ({navigation}) => {
-	const [state, setState ] = React.useState(false)
+	const [state, setState ] = useState(false)
 	const bgOpacity = useSharedValue(0)
 	const boxSize = useSharedValue(0)
 	const containerOpacity = useSharedValue(1)
@@ -29,7 +29,7 @@ const SplashScreen = ({navigation}) => {
 		}
 	}, [state])
 	
-	React.useEffect(() => {
+	useEffect(() => {
 		bgOpacity.value = withTiming(1, { duration: 750 }, () => {
 			boxSize.value = withTiming(1, { duration: 750 }, () => {
 				boxSize.value = withDelay(1000, withTiming(0, { duration: 500 }, () => {
@@ -93,4 +93,4 @@ const styles = StyleSheet.create({
 	}
 })
 
-export default SplashScreen
+export default memo(SplashScreen)

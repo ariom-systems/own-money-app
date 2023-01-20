@@ -1,27 +1,27 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, useRef, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { ImageBackground } from 'react-native'
-import { Box, Button, Divider, HStack, ScrollView, StatusBar, Text, VStack } from 'native-base'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Box, Button, Divider, HStack, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import ReviewListHeader from '../../../components/transfers/ReviewListHeader'
 import ReviewListItem from '../../../components/transfers/ReviewListItem'
 import * as Forms from '../../../components/common/Forms'
-import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
+import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner'
 
 
 //data
 import { AuthContext } from '../../../data/Context'
-import { Controller, FormProvider, set, useForm, useFormContext } from 'react-hook-form'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepThreeButtonAtom } from '../../../data/recoil/transfer'
-import { globalState, loadingState } from '../../../data/recoil/system'
+import { globalState, loadingState, noticeState } from '../../../data/recoil/system'
 import { userState } from '../../../data/recoil/user'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
-import { api, validationRulesTransferStepThree } from '../../../config'
-import { buildDataPath, formatCurrency } from '../../../data/Actions'
+import { api, validationRulesTransferStepThree, transferStepThreeToolbarConfig } from '../../../config'
+import { buildDataPath, formatCurrency, mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -30,7 +30,7 @@ const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferStepThree = () => {
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const [aud, thb, fee, rate ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(feeSelector), useRecoilValue(rateSelector) ]
 	const globals = useRecoilValue(globalState)
 	const user = useRecoilValue(userState)
@@ -65,33 +65,43 @@ const TransferStepThree = () => {
 
 }
 
-export default TransferStepThree
+export default memo(TransferStepThree)
 
 const TransferStepThreeInner = () => {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = React.useContext(AuthContext)
+	const { auth, authDispatch } = useContext(AuthContext)
 	const { control, handleSubmit, getValues, formState} = useFormContext()
 	const [aud, thb, fee, rate ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(feeSelector), useRecoilValue(rateSelector) ]
-	const globals = useRecoilValue(globalState)
+	const [ globals, notices ] = [useRecoilValue(globalState), useRecoilValue(noticeState)]
 	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const user = useRecoilValue(userState)
 	const beneficiary = useRecoilValue(beneficiaryObj)
 	const setStep = useSetRecoilState(stepAtom)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [buttonState, setButtonState] = useRecoilState(stepThreeButtonAtom)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	const scrollRef = React.useRef()
+	const scrollRef = useRef()
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	const actions = [
+		() => handlePrevious(),null,
+		handleSubmit((data) => onSubmit(data))
+	]
+	const properties = [{},{},{ isDisabled: buttonState }]
+	let toolbarConfig = mapActionsToConfig(transferStepThreeToolbarConfig, actions)
+	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
+
+
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
 
-	}, [language, auth])
+	}, [language, user])
 
-	React.useEffect(() => {
-		//console.log("loading", loading)
+	useEffect(() => {
+		
 	},[loading])
 
 	const onSubmit = (submitted) => {
@@ -142,10 +152,9 @@ const TransferStepThreeInner = () => {
 	}
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
+		<AppSafeArea>
 			<ScrollView>
-				<AlertBanner m={"2.5%"} mb={"0"} />
+				{notices && <AlertBanner />}
 				<VStack p={"2.5%"} space={"4"}>
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />
@@ -210,24 +219,9 @@ const TransferStepThreeInner = () => {
 
 						</VStack>
 					</VStack>
-					<Toolbar>
-						<ToolbarItem
-							label={language.transferStepthree.buttonPrevious}
-							icon={"chevron-back-outline"}
-							space={"1"}
-							iconProps={{ ml: "-4" }}
-							buttonProps={{ flex: "1" }}
-							action={() => handlePrevious()} />
-						<ToolbarSpacer />
-						<ToolbarItem
-							label={language.transferStepthree.buttonNext}
-							icon={"chevron-forward-outline"}
-							iconPosition={"right"}
-							buttonProps={{ flex: "1" }}
-							action={handleSubmit(onSubmit, onError)} />
-					</Toolbar>
+					<Toolbar config={toolbarConfig} />
 				</VStack>
 			</ScrollView>
-		</ImageBackground>
+		</AppSafeArea>
 	)
 }

@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { memo } from 'react'
+
+//components
 import { Divider } from 'native-base'
 import FlatListItem from './FlatListItem'
 
@@ -14,4 +16,4 @@ const StaticFlatList = (props) => {
 	return output
 }
 
-export default React.memo(StaticFlatList)
+export default memo(StaticFlatList)

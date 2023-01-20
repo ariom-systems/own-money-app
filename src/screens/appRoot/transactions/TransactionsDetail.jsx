@@ -1,43 +1,56 @@
-import React from 'react';
+import React, { useContext, useReducer, useEffect } from 'react';
 
 //components
-import { ImageBackground } from 'react-native'
-import { Box, Button, Center, Divider, HStack, Pressable, SectionList, Spacer, StatusBar, VStack } from 'native-base'
-import DetailHeaderItem from '../../../components/transactions/DetailHeaderItem'
-import DetailRowItem from '../../../components/transactions/DetailRowItem'
-import StatusBanner from '../../../components/transactions/StatusBanner'
 import { useNavigation } from '@react-navigation/native'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Divider, SectionList, VStack } from 'native-base'
+import ListHeader from '../../../components/common/ListHeader';
+import DetailRowItem from '../../../components/transactions/DetailRowItem'
+import Toolbar from '../../../components/common/Toolbar'
+import AlertBanner from '../../../components/common/AlertBanner';
 
 //data
-import { AuthContext} from '../../../data/Context'
-import { mapSectionDataFromTemplate } from '../../../data/Actions'
-import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
+import { useRecoilValue, useRecoilState, useResetRecoilState } from 'recoil'
 import { transactionObj } from '../../../data/recoil/transactions'
-import { TransactionTemplate } from '../../../config'
+import { noticeState, loadingState } from '../../../data/recoil/system'
+import { userState } from '../../../data/recoil/user'
+import { transactionsDetailToolbarConfig, TransactionTemplate } from '../../../config'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import Toolbar, { ToolbarItem } from '../../../components/common/Toolbar'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransactionsDetail = () => {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
 	const transaction = useRecoilValue(transactionObj)
+	const notices = useRecoilValue(noticeState)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+
+	const user = useRecoilValue(userState)
 	const resetTransaction = useResetRecoilState(transactionObj)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	const sections = mapSectionDataFromTemplate(transaction, TransactionTemplate)
+	const actions = [() => handleBack(navigation)]
+	const toolbarConfig = mapActionsToConfig(transactionsDetailToolbarConfig, actions)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	let labels = language.transactionsDetail.labels
+	let headings = language.transactionsDetail.headings
+	const sections = mapSectionDataFromTemplate(TransactionTemplate, transaction, labels, headings)
+
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
+
+	useEffect(() => {
+		setLoading({ status: false, text: 'none' })
+	}, [transaction])
 
 	const handleBack = () => {
 		navigation.goBack()
@@ -45,38 +58,29 @@ const TransactionsDetail = () => {
 	}
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
-			<Center flex={1} justifyContent={"center"}>			
-				<VStack flex="1" w={"100%"} px={"2.5%"} justifyContent={"flex-start"}>
-					<SectionList
-						sections={sections}
-						keyExtractor={(item, index) => item + index }
-						renderItem={(item, index) => {
-							if(item.section.title == "Status") {
-								return <StatusBanner status={transaction.status} />
-							} else { 
-								return <DetailRowItem data = { item } key = { index } nb = {{ bgColor: "white" } } /> 
-							}}}
-						renderSectionHeader={({ section: { title } }) => {
-							if (title != "Status") {
-								return <DetailHeaderItem title={title} nb={{ mt: "4" }} />
-							}}}
-						stickySectionHeadersEnabled={false}
-						showsVerticalScrollIndicator={false}
-						ItemSeparatorComponent={() => <Divider />}
-						ListHeaderComponentStyle={{ marginTop: "2.5%"}}
-						ListHeaderComponent={() => (
-							<Toolbar>
-								<ToolbarItem
-									label={language.transactionsDetail.buttonBack}	
-									buttonProps={{ w: "50%" }}
-									action={() => handleBack(navigation)} />
-							</Toolbar>)}
-					/>
-				</VStack>
-			</Center>
-		</ImageBackground>
+		<AppSafeArea>
+			<SectionList
+				sections={sections}
+				keyExtractor={(item, index) => item + index }
+				renderItem={({item, index, section}) => <DetailRowItem item={item} index={index} section={section} />}
+				renderSectionHeader={({ section }) => {
+					if (section.title != "Status") {
+						return <ListHeader title={section.title} id={section.id} index={section.index} styles={{ mt: "4", roundedTop: "8" }} />
+					}
+				}}
+				stickySectionHeadersEnabled={false}
+				showsVerticalScrollIndicator={false}
+				ItemSeparatorComponent={() => <Divider />}
+				ListHeaderComponentStyle={{ marginTop: "2.5%"}}
+				ListHeaderComponent={() => (
+					<VStack space={"4"} mb={"4"}>
+						{notices && <AlertBanner />}
+						<Toolbar config={toolbarConfig} />
+					</VStack>
+				)}
+				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start" }}
+			/>
+		</AppSafeArea>
 	)
 }
 

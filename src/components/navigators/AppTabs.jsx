@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
+import { useWindowDimensions } from 'react-native'
 
 //screens
 import BeneficiariesScreen from '../../screens/appRoot/BeneficiariesScreen'
@@ -8,16 +9,16 @@ import TransactionsScreen from '../../screens/appRoot/TransactionsScreen'
 import TransferScreen from '../../screens/appRoot/TransferScreen'
 
 //components
+import { useNavigation } from '@react-navigation/native'
 import IconSettingsCog from '../../components/common/IconSettingsCog'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
-const Tabs = createBottomTabNavigator()
-import { Factory, Text, useToken } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon = Factory(Ionicon)
+import Icon from '../common/Icon'
 
 //data
 import { AuthContext } from '../../data/Context'
+import { useToken } from 'native-base'
+import { useRecoilValue } from 'recoil'
+import { userState } from '../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -25,26 +26,36 @@ const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
-
-const AppTabs = ({ navigation }) => {
-	const { auth } = React.useContext(AuthContext)
+const AppTabs = () => {
+	const navigation = useNavigation()
+	const Tabs = createBottomTabNavigator()
+	const user = useRecoilValue(userState)
+	const { auth } = useContext(AuthContext)
 	const [active, inactive] = useToken('colors', ['primary.600', 'black'])
-	const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0)
+	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const { height, width } = useWindowDimensions()
 
-	React.useEffect(() => {
-		if (language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	let tabBarStyle
+	if( height > width ) {
+		tabBarStyle = { height: 90, paddingTop: "2.5%" }
+	} else {
+		tabBarStyle = { height: 60, paddingTop: "1.25%" }
+	}
+
+	useEffect(() => {
+		if (language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
 	const tabOptions = (navigation, icon) => ({
 		headerShown: true,
-		headerRight: () => (<IconSettingsCog props={navigation} />),
+		headerRight: () => (<IconSettingsCog />),
 		tabBarIcon: ({ focused, color, size = 32 }) => {
-			return focused ? (<NBIonicon name={icon} fontSize={size} color={color} />) : (<NBIonicon name={icon + '-outline'} fontSize={size} color={"coolGray.400"} />)
+			return focused ? (<Icon type={"Ionicon"} name={icon} fontSize={size} color={color} />) : (<Icon type={"Ionicon"} name={icon + '-outline'} fontSize={size} color={"coolGray.400"} />)
 		},
-		tabBarStyle: { height: 90, paddingTop: "2.5%" },
+		tabBarStyle: tabBarStyle,
 		tabBarActiveTintColor: active,
 		tabBarInactiveTintColor: inactive
 	})
@@ -60,4 +71,4 @@ const AppTabs = ({ navigation }) => {
 	)
 }
 
-export default React.memo(AppTabs)
+export default memo(AppTabs)

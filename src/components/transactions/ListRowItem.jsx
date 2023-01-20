@@ -1,16 +1,17 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
 import { Avatar, Badge, HStack, Pressable, Spacer, Text, VStack } from 'native-base'
+import TransactionItem from '../common/TransactionItem'
 
 //data
-import { AuthContext } from '../../data/Context'
 import { formatCurrency, localiseObjectData } from '../../data/Actions'
-import { useSetRecoilState, useRecoilCallback } from 'recoil'
+import { useSetRecoilState, useRecoilValue } from 'recoil'
 import { transactionObj } from '../../data/recoil/transactions'
 import { loadingState } from '../../data/recoil/system'
 import { TransactionObjFormats } from '../../config'
+import { userState } from '../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -20,58 +21,38 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ListRowItem = (props) => {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
-	const { transaction_number, initials, fullname, status, transfer_amount, received_amount } = props.data.item
+	const user = useRecoilValue(userState)
+	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
 	const setTransaction = useSetRecoilState(transactionObj)
 	const setLoading = useSetRecoilState(loadingState)
-	const index = props.data.index
-	const listLength = props.data.section.data.length - 1 //now THATS a mouthfull
-	const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0)
+	let data = props.data.item
+	let index = props.data.index
+	let listLength = props.data.section.data.length - 1 //now THATS a mouthfull
+
+	data.transfer_amount = formatCurrency(data.transfer_amount, "en-AU", "AUD").full + " " + language.transactionsList.currencyCodeAUD
+	data.received_amount = formatCurrency(data.received_amount, "th-TH", "THB").full + " " + language.transactionsList.currencyCodeTHB
 
 	const handlePress = (item) => {
 		setTransaction(item)
-		localiseObjectData(item, TransactionObjFormats, auth.lang)
+		localiseObjectData(item, TransactionObjFormats, user.lang)
 		setLoading({ status: true, text: 'Loading' })
 		navigation.navigate('TransactionsDetail')
 	}
 
-	let statusBadge
-	switch(status) {
-		case 'Wait for payment': statusBadge = 'default'; break
-		case 'Cancelled': statusBadge = 'danger'; break
-		case 'Completed': statusBadge = 'success'; break
-	}
-
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
-			//navigation.setOptions()
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
 	return (
 		<Pressable bgColor={"white"} px={"4"} onPress={() => handlePress(props.data.item) } borderBottomRadius={ index == listLength ? "8" : "0"}>
-			<HStack key={transaction_number} alignItems={"center"} space={"3"} py={"4"}>
-				<Avatar size={"48px"} bgColor={"primary.600"}>{ initials }</Avatar>
-				<VStack>
-					<Text mb={"2"} bold>{ fullname }</Text>
-				</VStack>
-				<Spacer />
-				<VStack alignContent={"flex-end"} space={"2"}>
-					<Badge colorScheme={statusBadge} variant={"outline"}>{ status }</Badge>
-					<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>
-						{ formatCurrency(transfer_amount, "en-AU", "AUD").full } { language.transactionsList.currencyCodeAUD }
-					</Text>
-					<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>
-						{ formatCurrency(received_amount, "th-TH", "THB").full } { language.transactionsList.currencyCodeTHB }
-					</Text>
-				</VStack>
-			</HStack>
+			<TransactionItem {...data} />
 		</Pressable>
 	)
 }
 
-export default React.memo(ListRowItem)
+export default memo(ListRowItem)
 
 

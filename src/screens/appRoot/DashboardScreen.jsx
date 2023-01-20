@@ -1,22 +1,22 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer } from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import { Box, Button, Heading, HStack, ScrollView, StatusBar, VStack } from 'native-base'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Box, Divider, Heading, SectionList, VStack } from 'native-base'
 import AlertBanner from '../../components/common/AlertBanner'
-import StaticSectionList from '../../components/dashboard/StaticSectionList'
 import ExchangeRate from '../../components/common/ExchangeRate'
-import YourPointSummary from '../../components/points/YourPointSummary'
-import Toolbar, { ToolbarItem } from '../../components/common/Toolbar'
-
+import Toolbar from '../../components/common/Toolbar'
+import ListItem from '../../components/dashboard/ListItem'
+import ListHeader from '../../components/common/ListHeader'
 
 //data
 import { AuthContext } from '../../data/Context'
-import { groupTransactionsByDate } from '../../data/Actions'
+import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
 import { selector, useRecoilValue } from 'recoil'
 import { userState } from '../../data/recoil/user'
-import { noticeState } from '../../data/recoil/system'
 import { transactionList } from '../../data/recoil/transactions'
+import { noticeState } from '../../data/recoil/system'
+import { dashboardToolbarConfig } from '../../config'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -28,51 +28,55 @@ const dashboardTransactions = selector({
 	key: 'dashboardTransactions',
 	get: ({get}) => {
 		let unsorted = get(transactionList)
-		const listData = unsorted.slice(0, 10)
+		unsorted.slice(0, 10)
 		return groupTransactionsByDate(unsorted)
 	}
 })
 
 const DashboardScreen = ({ navigation }) => {
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const transactions = useRecoilValue(dashboardTransactions)
 	const user = useRecoilValue(userState)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const notices = useRecoilValue(noticeState)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
+
+	const actions = [() => navigation.navigate('Transactions', { screen: 'TransactionsList' })]
+	const toolbarConfig = mapActionsToConfig(dashboardToolbarConfig, actions)
+	
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
-			<ScrollView>
-				<AlertBanner m={"2.5%"} mb={"0"} />
-				<VStack p={"2.5%"} space={"4"}>
-					<Box justifItems={"flex-start"}>
-						<Box p={"5%"} backgroundColor={"white"} rounded={"8"}>
-							<Heading>{ language.dashboard.greeting } {user.firstname} {user.lastname}!</Heading>
-							<ExchangeRate size={"lg"} nb={{my: "4"}} />
-							<YourPointSummary />
+		<AppSafeArea>
+			<SectionList
+				sections={transactions.map((section, index) => ({ ...section, index }))} 
+				ListHeaderComponent={() => 
+					<VStack space={"4"}>
+						{notices && <AlertBanner />}
+						<VStack p={"4"} bgColor={"white"} space={"4"} rounded={"8"}>
+							<Heading>{language.dashboard.ui.greeting} {user.firstname} {user.lastname}!</Heading>
+							<ExchangeRate size={"lg"}/>
+						</VStack>
+						<Box bgColor={"white"} roundedTop={"8"}>
+							<Heading p={"4"} fontSize={"xl"}>{language.dashboard.ui.recentTransfersTitle}</Heading>
 						</Box>
-					</Box>
-					<Box backgroundColor={"white"} rounded={"8"}>
-						<Heading p={"4"} fontSize={"xl"}>{ language.dashboard.recentTransfersTitle }</Heading>
-					</Box>
-					<StaticSectionList sections={transactions} sectionProps={{ roundedTop: "8", roundedBottom: "8" }} listProps={{ space: "4" }} />
-					<Toolbar>
-						<ToolbarItem
-							label={language.dashboard.buttonViewTransactions}
-							buttonProps={{ w: "50%" }}
-							action={() => navigation.navigate('Transactions', { screen: 'TransactionsList' })} />
-					</Toolbar>
-				</VStack>
-			</ScrollView>
-		</ImageBackground>
+					</VStack>
+				}
+				stickySectionHeadersEnabled={false}
+				ItemSeparatorComponent={() => <Divider />}
+				renderItem={({item, index, section}) => <ListItem key={index} data={{...item, index: index, section: { count: transactions.length, sectionIndex: section.index, sectionItemLength: section.data.length }}} /> }
+				renderSectionHeader={({section}) => <ListHeader title={section.header} index={section.index} date={true} />}
+				ListFooterComponent={() => <Toolbar nb={{ mt: "4" }} config={toolbarConfig} />}
+				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start"}}
+			/>
+			
+		</AppSafeArea>
 	)
 }
 

@@ -1,28 +1,20 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 //components
-import { Box, Divider, HStack, Text } from 'native-base'
+import LabelValue from '../common/LabelValue'
 
 const DetailRowItem = (props) => {
-	const { nb, data } = props
-	const [index, section, sectionLength] = [ data.index, data.section, data.section.data.length - 1 ]
-	const { label, value } = data.item
-	let veryLastItem = 0
+	const { index, item, section } = props
+	const sectionLength = section.data.length - 1
+	const { label, value } = item
 
-	if (section.title == "Details") {
-		if (index == sectionLength) {
-			veryLastItem = "4"
-		}
-	}
+	let styles = {}
+
+	if (index == sectionLength) { styles = { borderBottomRadius: "8" } }
 
 	return (
-		<Box {...nb} px={"4"} roundedBottom={index == sectionLength ? "8" : "0"} mb={veryLastItem}>
-			<HStack justifyContent={"space-between"} py={"4"} roundedBottom={index == sectionLength ? "8" : "0"}>
-				<Text bold>{label}</Text>
-				<Text textAlign={"right"} >{value}</Text>
-			</HStack>
-		</Box>
+		<LabelValue label={label} value={value} styles={styles} />
 	)
 }
 
-export default React.memo(DetailRowItem)
+export default memo(DetailRowItem)

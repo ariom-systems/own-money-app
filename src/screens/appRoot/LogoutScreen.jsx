@@ -1,24 +1,23 @@
-import React from 'react'
+import React, { useContext, useEffect, memo } from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import { Center, Heading, HStack, Spinner, StatusBar, Text, VStack } from 'native-base'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Center, Heading, HStack, Spinner, Text, VStack } from 'native-base'
 
 //data
 import { AuthContext } from '../../data/Context'
 
 const LogoutScreen = () => {
-	const { authDispatch } = React.useContext(AuthContext)
+	const { authDispatch } = useContext(AuthContext)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'logout' }})
 		authDispatch({ type: 'LOGOUT'})
 	},[])
 
 
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
-			<StatusBar barStyle={"dark-content"}/>
+		<AppSafeArea>
 			<Center safeArea flex={1} justifyContent={"center"}>
 				<VStack flex="1" space={"4"} w={"100%"} alignItems="center" justifyContent={"center"}>
 					<VStack p={"10"} backgroundColor={"white"} rounded={"2xl"} space={"3"}>
@@ -30,8 +29,8 @@ const LogoutScreen = () => {
 					</VStack>
 				</VStack>	
 			</Center>
-		</ImageBackground>
+		</AppSafeArea>
 	)
 }
 
-export default LogoutScreen
+export default memo(LogoutScreen)

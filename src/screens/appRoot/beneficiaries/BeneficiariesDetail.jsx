@@ -1,23 +1,24 @@
-import React from 'react'
+import React, { useContext, useState, useEffect, useReducer, useRef } from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import { Box, Button, Center, Factory, Heading, HStack, Pressable, SectionList, Spacer, StatusBar, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-import DetailRowItem from '../../../components/beneficiaries/DetailRowItem'
-import DetailHeaderItem from '../../../components/beneficiaries/DetailHeaderItem'
-import AlertModal from '../../../components/common/AlertModal'
 import { useNavigation } from '@react-navigation/native'
-import Toolbar, { ToolbarItem, ToolbarSpacer } from '../../../components/common/Toolbar'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Button, Divider, Heading, HStack, SectionList, VStack } from 'native-base'
+import Icon from '../../../components/common/Icon'
+import DetailRowItem from '../../../components/beneficiaries/DetailRowItem'
+import AlertModal from '../../../components/common/AlertModal'
+import AlertBanner from '../../../components/common/AlertBanner'
+import Toolbar from '../../../components/common/Toolbar'
+import ListHeader from '../../../components/common/ListHeader'
 
 //data
 import { AuthContext } from '../../../data/Context'
-import { mapSectionDataFromTemplate } from '../../../data/Actions'
+import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { loadingState } from '../../../data/recoil/system'
+import { loadingState, noticeState } from '../../../data/recoil/system'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
-import { BeneficiaryTemplate } from '../../../config'
+import { BeneficiaryTemplate, beneficiaryDetailToolbarConfig } from '../../../config'
+import { userState } from '../../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -25,40 +26,58 @@ const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const NBIonicon = Factory(Ionicon)
-const icon = <NBIonicon name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"danger.600"} />
-
 export default function BeneficiariesDetail() {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const beneficiary = useRecoilValue(beneficiaryObj)
+	const user = useRecoilValue(userState)
 	const setLoading = useSetRecoilState(loadingState)
-	const [ isOpen, setIsOpen ] = React.useState(false)
+	const notices = useRecoilValue(noticeState)
+	const [ isOpen, setIsOpen ] = useState(false)
 	const onClose = () => setIsOpen(false)
-	const cancelRef = React.useRef(null)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const cancelRef = useRef(null)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	let deleteMessage = ""
+	
+	let labels = language.beneficiaryDetail.labels
+	let headings = language.beneficiaryDetail.headings
+	let sections = mapSectionDataFromTemplate(BeneficiaryTemplate, beneficiary, labels, headings)
+	sections = sections.map((section, index) => ({ ...section, index }))
 
-	const sections = mapSectionDataFromTemplate(beneficiary, BeneficiaryTemplate)
+	let actions = [
+		() => handleBack(navigation),, //note the double comma. second element is a spacer and has no action
+		() => handleEdit(),
+		() => setIsOpen(!isOpen)
+	]
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	const toolbarConfig = mapActionsToConfig(beneficiaryDetailToolbarConfig, actions)
+
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
-	React.useEffect(() => {
-		setLoading({ status: false, text: "" })
+	useEffect(() => {
+		setLoading({ status: false, type: "none" })
 	},[])
 
+	useEffect(() => {
+		if(beneficiary.fullname != "") {
+			deleteMessage = language.formatString(language.beneficiaryDetail.ui.alertDeleteMessage, beneficiary.fullname ?? "no name")
+		}
+	}, [language, beneficiary])
+
+
 	const handleEdit = () => {
-		setLoading({ status: true, text: 'Loading' })
+		setLoading({ status: true, type: 'loading' })
 		navigation.navigate('BeneficiariesEdit')
 	}
 
 	const handleBack = () => {
-		setLoading({ status: false, text: "" })
+		setLoading({ status: false, type: "none" })
 		navigation.popToTop()
 	}
 
@@ -67,56 +86,38 @@ export default function BeneficiariesDetail() {
 	}
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
-			<StatusBar barStyle={"dark-content"}/>
-			<Center flex={1} justifyContent={"center"} zIndex={"1"}>
-				<VStack w={"100%"} flex={"1"} px={"4"} space={"4"}>
-					<SectionList
-						sections={sections.map((section, index) => ({ ...section, index })) }
-						keyExtractor={(item, index) => item + index }
-						renderItem={(item, index, section) => <DetailRowItem data={item} key={index} nb={{ bgColor: "white" }} />}
-						renderSectionHeader={({section}) => <DetailHeaderItem title={section.title} index={section.index} nb={{ mt: "4"}}  />}
-						stickySectionHeadersEnabled={false}
-						showsVerticalScrollIndicator={false}
-						ListHeaderComponent={(
-							<Toolbar nb={{ mt: "4"}} >
-								<ToolbarItem
-									label={language.beneficiariesDetail.buttonBack}
-									icon={"chevron-back-outline"}
-									space={"1"}
-									iconProps={{ ml: "-4" }}
-									buttonProps={{ flex: "1" }}
-									action={() => handleBack(navigation)} />
-								<ToolbarSpacer />
-								<ToolbarItem
-									label={language.beneficiariesDetail.buttonEdit}
-									icon={"create-outline"}
-									buttonProps={{ flex: "1" }}
-									action={() => handleEdit()} />
-								<ToolbarItem
-									icon={"trash-outline"}
-									iconProps={{ pl: "1" }}
-									action={() => setIsOpen(!isOpen)}
-								/>
-							</Toolbar>
-						)}
-					/>
-				</VStack>
-			</Center>
-			
+		<AppSafeArea>
+			<SectionList
+				sections={sections}
+				keyExtractor={(item, index) => item + index }
+				renderItem={(item, index, section) => { return <DetailRowItem data={item} key={index} nb={{ bgColor: "white" }} />}}
+				renderSectionHeader={({section}) => { return <ListHeader title={section.title} index={section.index} styles={{ mt: "4", roundedTop: "8" }} />
+				}}
+				stickySectionHeadersEnabled={false}
+				showsVerticalScrollIndicator={false}
+				ItemSeparatorComponent={() => <Divider />}
+				ListHeaderComponent={() => (
+					<VStack key={beneficiary.id} space={"4"}>
+						{notices && <AlertBanner />}
+						<Toolbar config={toolbarConfig} />
+					</VStack>
+				)}
+				ListFooterComponent={() => <Toolbar config={toolbarConfig} />}
+				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start" }}
+			/>
 			<AlertModal show={isOpen} close={onClose} ldRef={cancelRef}
 				header={(
 					<HStack>
-						{icon}
-						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiariesDetail.alertDeleteHeading} { beneficiary.fullname }?</Heading>
+						<Icon type={"Ionicon"} name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"danger.600"} />
+						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiaryDetail.ui.alertDeleteHeading} { beneficiary.fullname }?</Heading>
 					</HStack>
 				)}
-				content={ language.beneficiariesDetail.alertDeleteMessageLine1 + " " + beneficiary.fullname + ". " + language.beneficiariesDetail.alertDeleteMessageLine2 }>
+				content={deleteMessage}>
 				<Button.Group space={2}>
-					<Button variant="unstyled" colorScheme="coolGray" onPress={onClose} ref={cancelRef}>{ language.beneficiariesDetail.alertDeleteButtonCancel }</Button>
-					<Button colorScheme="danger" onPress={() => {onClose(); handleDelete()}}>{ language.beneficiariesDetail.alertDeleteButtonConfirm }</Button>
+					<Button variant="unstyled" colorScheme="coolGray" onPress={onClose} ref={cancelRef}>{language.beneficiaryDetail.ui.alertDeleteButtonCancel }</Button>
+					<Button colorScheme="danger" onPress={() => { onClose(); handleDelete() }}>{language.beneficiaryDetail.ui.alertDeleteButtonConfirm }</Button>
 				</Button.Group>
 			</AlertModal>
-		</ImageBackground>
+		</AppSafeArea>
 	)
 }

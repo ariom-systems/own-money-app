@@ -7,12 +7,5 @@ export const beneficiaryObj = atom({
 
 export const beneficiaryList = atom({
 	key: 'beneficiaryList',
-	default: [],
-	effects_UNSTABLE: [
-		({ setSelf, onSet}) => {
-			onSet((newVal, oldVal) => {
-				//console.log("beneficiaryList onSet", newVal.length, oldVal.length)
-			})
-		}
-	]
+	default: []
 })

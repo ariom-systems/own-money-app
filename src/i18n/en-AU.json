@@ -1,51 +1,67 @@
 {
 	"en-AU": {
 		"login": {
-			"logoAlt": "Own Money Services",
-			"underLogo": "Login to Transfer Money",
-			"formEmailLabel": "Email",
-			"formEmailMessageRequired": "Please enter your email address",
-			"formEmailMessagePattern": "Please enter a valid email address (name@example.com)",
-			"formPasswordLabel": "Password",
-			"formPasswordMessageRequired": "Please enter your password",
-			"forgotPassword": "Forgot Password?",
-			"buttonLoginNormal": "Sign In",
-			"buttonLoginLoading": "Loading",
-			"buttonRegister": "Create an account"
+			"ui": {
+				"logoAlt": "Own Money Services",
+				"underLogo": "Login to Transfer Money",
+				"forgotPassword": "Forgot Password?",
+				"buttonLoginNormal": "Sign In",
+				"buttonRegister": "Create an account"
+			},
+			"labels": {
+				"email": "Email",
+				"password": "Password"
+			},
+			"errors": {
+				"emailRequired": "Please enter your email address",
+				"emailPattern": "Please enter a valid email address (name@example.com)",
+				"passwordRequired": "Please enter your password"
+			}
 		},
 		"register": {
-			"logoAlt": "Own Money Services",
-			"underLogo": "Account Registration",
-			"formEmailLabel": "Email",
-			"formEmailMessageRequired": "Please enter your email address",
-			"formEmailMessagePattern": "Please enter a valid email address (name@example.com)",
-			"formEmailMessageRemote": "The email has already been taken or you already registered. Please check your email for the activation link.",
-			"formPasswordLabel": "Password",
-			"formPasswordMessageRequired": "Please enter a your password",
-			"formPasswordConfirmLabel": "Confirm Password",
-			"formPasswordConfirmMessageRequired": "Please re-enter the same password to confirm",
-			"formPasswordConfirmMessageMismatch": "Both passwords must be the same",
-			"formPhoneLabel": "Australian Phone No.",
-			"formPhoneMessageRequired": "Please enter a value phone number",
-			"formPhoneMessagePattern": "Only use digits for Phone Number",
-			"formReferrerLabel": "Referrer ID (Optional)",
-			"formReferrerMessageInvalid": "The referrer ID is invalid. Please check the Referrer ID.",
-			"buttonRegister": "Sign Up",
-			"buttonRegisterLoading": "Processing",
-			"buttonRegisterComplete": "Account Registered",
-			"buttonBackToLogin": "Back to Sign In"
+			"ui": {
+				"logoAlt": "Own Money Services",
+				"underLogo": "Account Registration",
+				"buttonRegister": "Sign Up",
+				"buttonRegisterLoading": "Processing",
+				"buttonRegisterComplete": "Account Registered",
+				"buttonBackToLogin": "Back to Sign In"
+			},
+			"labels": {
+				"email": "Email",
+				"password": "Password",
+				"passwordConfirm": "Confirm Password",
+				"phone": "Australian Phone No.",
+				"referrer": "Referrer ID (Optional)"
+			},
+			"errors": {
+				"emailRequired": "Please enter your email address",
+				"emailPattern": "Please enter a valid email address (name@example.com)",
+				"emailRemote": "The email has already been taken or you already registered. Please check your email for the activation link.",
+				"passwordRequired": "Please enter a your password",
+				"passwordConfirmRequired": "Please re-enter the same password to confirm",
+				"passwordConfirmMismatch": "Both passwords must be the same",
+				"phoneRequired": "Please enter a value phone number",
+				"phonePattern": "Only use digits for Phone Number",
+				"referrerInvalid": "The referrer ID is invalid. Please check the Referrer ID."
+			}
 		},
 		"forgotPassword": {
-			"logoAlt": "Own Money Services",
-			"underLogo": "If you have forgotten your password, enter your email below to reset it.",
-			"formEmailLabel": "Email",
-			"formEmailMessageRequired": "Please enter your email address",
-			"formEmailMessagePattern": "Please enter a valid email address (name@example.com)",
-			"buttonResetPassword": "Reset Password",
-			"buttonResetLoading": "Processing",
-			"buttonResetSent": "Request Sent!",
-			"buttonBackToLogin": "Back to Login"
-
+			"ui": {
+				"logoAlt": "Own Money Services",
+				"underLogo": "If you have forgotten your password, enter your email below to reset it.",
+				"buttonResetPassword": "Reset Password",
+				"buttonResetLoading": "Processing",
+				"buttonResetSent": "Request Sent!",
+				"buttonBackToLogin": "Back to Login"
+			},
+			"labels": {
+				"email": "Email"
+			},
+			"errors": {
+				"emailRequired": "Please enter your email address",
+				"emailPattern": "Please enter a valid email address (name@example.com)"
+			}
 		},
 		"pinCode": {
 			"subtitleChoose": "to keep your information secure",
@@ -80,165 +96,201 @@
 			"subtitle": "Loading, Please wait."
 		},
 		"dashboard": {
-			"greeting": "Hi",
-			"currentRate": "Current Rate",
-			"audCode": "AUD",
-			"thbCode": "THB",
-			"yourPointsTitle": "Your Points",
-			"yourPointsPlaceholder": "Coming Soon",
-			"recentTransfersTitle": "Recent Transfers",
-			"modalLabelBeneficiaryName": "Beneficiary Name",
-			"modalLabelAccountNumber": "Account Number",
-			"modalLabelBank": "Bank",
-			"modalLabelSendAmount": "Send Amount",
-			"modalLabelRate": "Rate",
-			"modalLabelFees": "Fees",
-			"modalLabelTotalToPay": "Total To Pay",
-			"modalLabelReceivableAmount": "Receivable Amount",
-			"modalLabelStatus": "Status",
-			"modalLabelCreatedDate": "Created Date",
-			"modalLabelCompletedDate": "Completed Date",
-			"buttonViewTransactions": "View Transactions"
+			"ui": {
+				"buttonViewTransactions": "View Transactions",
+				"greeting": "Hi",
+				"recentTransfersTitle": "Recent Transfers"
+			},
+			"exchange": {
+				"currentRate": "Current Rate",
+				"audCode": "AUD",
+				"thbCode": "THB",
+				"yourPointsTitle": "Your Points",
+				"yourPointsPlaceholder": "Coming Soon"
+			},
+			"modal": {
+				"title": "Transaction",
+				"beneficiaryName": "Beneficiary Name",
+				"accountNumber": "Account Number",
+				"bank": "Bank",
+				"sendAmount": "Send Amount",
+				"rate": "Rate",
+				"fees": "Fees",
+				"totalToPay": "Total To Pay",
+				"receivableAmount": "Receivable Amount",
+				"status": "Status",
+				"createdDate": "Created Date",
+				"completedDate": "Completed Date"
+			}
 		},
-		"beneficiariesList": {
-			"labelAwaitingVerify": "Awaiting verification by staff.",
-			"slideButtonEdit": "Edit",
-			"slideButtonDelete": "Delete",
-			"alertDeleteHeading": "Delete Beneficiary",
-			"alertDeleteMessageLine1": "This will remove all data relating to",
-			"alertDeleteMessageLine2": "This action cannot be reversed. Are you sure?",
-			"alertDeleteButtonCancel": "Cancel",
-			"alertDeleteButtonConfirm": "Delete"
+		"beneficiaryList": {
+			"ui": {
+				"alertDeleteHeading": "Delete Beneficiary",
+				"alertDeleteMessage": "This will remove all data relating to {0}. This action cannot be reversed. Are you sure?",
+				"alertDeleteButtonCancel": "Cancel",
+				"alertDeleteButtonConfirm": "Delete",
+				"buttonAddNew": "Add New",
+				"slideButtonEdit": "Edit",
+				"slideButtonDelete": "Delete"
+			},
+			"labels": {
+				"awaitingVerify": "Awaiting verification by staff."
+			}
 		},
-		"beneficiariesDetail": {
-			"buttonBack": "Back",
-			"buttonEdit": "Edit",
-			"listDataHeaderAddressDetails": "Address Details",
-			"listDataHeaderBankDetails": "Bank Details",
-			"listDataHeaderPersonalDetails": "Personal Details",
-			"listDataLabelAccountNumber": "Account Number",
-			"listDataLabelAccountType": "Account Type",
-			"listDataLabelBankBranch": "Branch Name",
-			"listDataLabelBankCity": "Branch City",
-			"listDataLabelBankName": "Bank Name",
-			"listDataLabelCountry": "Country",
-			"listDataLabelDistrict": "District",
-			"listDataLabelFirstName": "First Name",
-			"listDataLabelLastName": "Last Name",
-			"listDataLabelPhone": "Phone Number",
-			"listDataLabelPostCode": "Post Code",
-			"listDataLabelProvince": "Province",
-			"listDataLabelThaiAddress": "Thai Address",
-			"listDataLabelThaiName": "Thai Name",
-			"alertDeleteHeading": "Delete",
-			"alertDeleteMessageLine1": "This will remove all data relating to",
-			"alertDeleteMessageLine2": "This action cannot be reversed. Are you sure?",
-			"alertDeleteButtonCancel": "Cancel",
-			"alertDeleteButtonConfirm": "Delete"
+		"beneficiaryDetail": {
+			"ui": {
+				"alertDeleteHeading": "Delete",
+				"alertDeleteMessage": "This will remove all data relating to {0}. This action cannot be reversed. Are you sure?",
+				"alertDeleteButtonCancel": "Cancel",
+				"alertDeleteButtonConfirm": "Delete",
+				"buttonBack": "Back",
+				"buttonEdit": "Edit"
+			},
+			"headings": {
+				"address": "Address Details",
+				"bank": "Bank Details",
+				"personal": "Personal Details"
+			},
+			"labels": {
+				"accountnumber": "Account Number",
+				"accounttype": "Account Type",
+				"bankname": "Branch Name",
+				"branchcity": "Branch City",
+				"branchname": "Bank Name",
+				"country": "Country",
+				"city": "District",
+				"firstname": "First Name",
+				"lastname": "Last Name",
+				"phone": "Phone Number",
+				"postcode": "Post Code",
+				"state": "Province",
+				"address": "Thai Address",
+				"thainame": "Thai Name"
+			}
 		},
-		"beneficiariesEdit": {
-			"listDataHeaderPersonalDetails": "Personal Details",
-			"listDataFirstNameErrorRequired": "Please provide First Name",
-			"listDataFirstNameLabel": "First Name",
-			"listDataFirstNamePlaceholder": "First Name",
-			"listDataLastNameErrorRequired": "Please provide Last Name",
-			"listDataLastNameLabel": "Last Name",
-			"listDataLastNamePlaceholder": "Last Name",
-			"listDataThaiNameLabel": "Thai Name (Optional)",
-			"listDataThaiNamePlaceholder": "Thai Name (Optional)",
-			"listDataPhoneErrorDigits": "Only use digits for Phone Number",
-			"listDataPhoneErrorMax": "Phone Number must be 10 digits exactly",
-			"listDataPhoneErrorMin": "Phone Number must be 10 digits exactly",
-			"listDataPhoneLabel": "Thai Phone No. (Optional)",
-			"listDataPhonePlaceholder": "Thai Phone No. (Optional)",
-			"listDataHeaderBankDetails": "Bank Details",
-			"listDataAccountNumberErrorDigits": "Only use digits for Account Number",
-			"listDataAccountNumberErrorMax": "Account Number must be 10 digits exactly",
-			"listDataAccountNumberErrorMin": "Account Number must be 10 digits exactly",
-			"listDataAccountNumberErrorRequired": "Please provide an Account Number",
-			"listDataAccountNumberLabel": "Account no. (Number only)",
-			"listDataAccountNumberPlaceholder": "Account no. (Number only)",
-			"listDataAccountTypeErrorRequired": "Please select an Account Type",
-			"listDataAccountTypeLabel": "Account Type",
-			"listDataAccountTypePlaceholder": "Account Type",
-			"listDataBankNameErrorRequired": "Please provide a Bank Name",
-			"listDataBankNameLabel": "Bank Name",
-			"listDataBankNamePlaceholder": "- Select Bank -",
-			"listDataBranchNameErrorRequired": "Please provide Branch Name",
-			"listDataBranchNameLabel": "Branch Name",
-			"listDataBranchNamePlaceholder": "Branch Name",
-			"listDataBranchCityErrorRequired": "Please provide a Branch City",
-			"listDataBranchCityLabel": "Branch City",
-			"listDataBranchCityPlaceholder": "- Select Branch City -",
-			"listDataHeaderAddressDetails": "Address Details",
-			"listDataThaiAddressErrorRequired": "Please provide Receiver's Residental Address",
-			"listDataThaiAddressLabel": "Thai Residential Address (Street Sub-district)",
-			"listDataThaiAddressPlaceholder": "Thai Residential Address (Street Sub-district)",
-			"listDataProvinceErrorRequired": "Please select a Province",
-			"listDataProvinceLabel": "Province",
-			"listDataProvincePlaceholder": "- Province -",
-			"listDataDistrictErrorRequired": "Please select a District",
-			"listDataDistrictLabel": "District",
-			"listDataDistrictPlaceholder": "- District -",
-			"listDataPostCodeErrorRequired": "Please enter a Postcode",
-			"listDataPostCodeLabel": "Post Code",
-			"listDataPostCodePlaceholder": "Post Code",
-			"listDataCountryLabel": "Country",
-			"listDataCountryPlaceholder": "Country",
-			"buttonBack": "Back",
-			"buttonSave": "Save"
+		"beneficiaryEdit": {
+			"ui": {
+				"buttonBack": "Back",
+				"buttonSave": "Save"
+			},
+			"headings": {
+				"personalDetails": "Personal Details",
+				"bankDetails": "Bank Details",
+				"addressDetails": "Address Details"
+			},
+			"labels": {
+				"firstName": "First Name",
+				"lastName": "Last Name",
+				"thaiName": "Thai Name (Optional)",
+				"phone": "Thai Phone No. (Optional)",
+				"accountNumber": "Account no. (Number only)",
+				"accountType": "Account Type",
+				"bankName": "Bank Name",
+				"branchName": "Branch Name",
+				"branchCity": "Branch City",
+				"thaiAddress": "Thai Residential Address (Street Sub-district)",
+				"province": "Province",
+				"district": "District",
+				"postCode": "Post Code",
+				"country": "Country"
+			},
+			"placeholders": {
+				"firstName": "First Name",
+				"lastName": "Last Name",
+				"thaiName": "Thai Name (Optional)",
+				"phone": "Thai Phone No. (Optional)",
+				"accountNumber": "Account no. (Number only)",
+				"accountType": "Account Type",
+				"bankName": "- Select Bank -",
+				"branchName": "Branch Name",
+				"branchCity": "- Select Branch City -",
+				"thaiAddress": "Thai Residential Address (Street Sub-district)",
+				"province": "- Province -",
+				"district": "- District -",
+				"postCode": "Post Code",
+				"country": "Country"
+			},
+			"errors": {
+				"firstNameRequired": "Please provide First Name",
+				"lastNameRequired": "Please provide Last Name",
+				"phoneDigits": "Only use digits for Phone Number",
+				"phoneMax": "Phone Number must be 10 digits exactly",
+				"phoneMin": "Phone Number must be 10 digits exactly",
+				"accountNumberDigits": "Only use digits for Account Number",
+				"accountNumberMax": "Account Number must be 10 digits exactly",
+				"accountNumberMin": "Account Number must be 10 digits exactly",
+				"accountNumberRequired": "Please provide an Account Number",
+				"accountTypeRequired": "Please select an Account Type",
+				"bankNameRequired": "Please provide a Bank Name",
+				"branchNameRequired": "Please provide Branch Name",
+				"branchCityRequired": "Please provide a Branch City",
+				"thaiAddressRequired": "Please provide Receiver's Residental Address",
+				"provinceRequired": "Please select a Province",
+				"districtRequired": "Please select a District",
+				"postCodeRequired": "Please enter a Postcode"
+			}
 		},
-		"beneficiariesAdd": {
-			"listDataHeaderPersonalDetails": "Personal Details",
-			"listDataFirstNameErrorRequired": "Please provide First Name",
-			"listDataFirstNameLabel": "First Name",
-			"listDataFirstNamePlaceholder": "First Name",
-			"listDataLastNameErrorRequired": "Please provide Last Name",
-			"listDataLastNameLabel": "Last Name",
-			"listDataLastNamePlaceholder": "Last Name",
-			"listDataThaiNameLabel": "Thai Name (Optional)",
-			"listDataThaiNamePlaceholder": "Thai Name (Optional)",
-			"listDataPhoneErrorDigits": "Only use digits for Phone Number",
-			"listDataPhoneErrorMax": "Phone Number must be 10 digits exactly",
-			"listDataPhoneErrorMin": "Phone Number must be 10 digits exactly",
-			"listDataPhoneLabel": "Thai Phone No. (Optional)",
-			"listDataPhonePlaceholder": "Thai Phone No. (Optional)",
-			"listDataHeaderBankDetails": "Bank Details",
-			"listDataAccountNumberErrorDigits": "Only use digits for Account Number",
-			"listDataAccountNumberErrorMax": "Account Number must be 10 digits exactly",
-			"listDataAccountNumberErrorMin": "Account Number must be 10 digits exactly",
-			"listDataAccountNumberErrorRequired": "Please provide an Account Number",
-			"listDataAccountNumberLabel": "Account no. (Number only)",
-			"listDataAccountNumberPlaceholder": "Account no. (Number only)",
-			"listDataAccountTypeErrorRequired": "Please select an Account Type",
-			"listDataAccountTypeLabel": "Account Type",
-			"listDataAccountTypePlaceholder": "Account Type",
-			"listDataBankNameErrorRequired": "Please provide a Bank Name",
-			"listDataBankNameLabel": "Bank Name",
-			"listDataBankNamePlaceholder": "- Select Bank -",
-			"listDataBranchNameErrorRequired": "Please provide Branch Name",
-			"listDataBranchNameLabel": "Branch Name",
-			"listDataBranchNamePlaceholder": "Branch Name",
-			"listDataBranchCityErrorRequired": "Please provide a Branch City",
-			"listDataBranchCityLabel": "Branch City",
-			"listDataBranchCityPlaceholder": "- Select Branch City -",
-			"listDataHeaderAddressDetails": "Address Details",
-			"listDataThaiAddressErrorRequired": "Please provide Receiver's Residental Address",
-			"listDataThaiAddressLabel": "Thai Residential Address (Street Sub-district)",
-			"listDataThaiAddressPlaceholder": "Thai Residential Address (Street Sub-district)",
-			"listDataProvinceErrorRequired": "Please select a Province",
-			"listDataProvinceLabel": "Province",
-			"listDataProvincePlaceholder": "- Province -",
-			"listDataDistrictErrorRequired": "Please select a District",
-			"listDataDistrictLabel": "District",
-			"listDataDistrictPlaceholder": "- District -",
-			"listDataPostCodeErrorRequired": "Please enter a Postcode",
-			"listDataPostCodeLabel": "Post Code",
-			"listDataPostCodePlaceholder": "Post Code",
-			"listDataCountryLabel": "Country",
-			"listDataCountryPlaceholder": "Country",
-			"buttonBack": "Back",
-			"buttonSave": "Save"
+		"beneficiaryAdd": {
+			"ui": {
+				"buttonCancel": "Cancel",
+				"buttonSave": "Save"
+			},
+			"headings": {
+				"personalDetails": "Personal Details",
+				"bankDetails": "Bank Details",
+				"addressDetails": "Address Details"
+			},
+			"labels": {
+				"firstName": "First Name",
+				"lastName": "Last Name",
+				"thaiName": "Thai Name (Optional)",
+				"phone": "Thai Phone No. (Optional)",
+				"accountNumber": "Account no. (Number only)",
+				"accountType": "Account Type",
+				"bankName": "Bank Name",
+				"branchName": "Branch Name",
+				"branchCity": "Branch City",
+				"thaiAddress": "Thai Residential Address (Street Sub-district)",
+				"province": "Province",
+				"district": "District",
+				"postCode": "Post Code",
+				"country": "Country"
+			},
+			"placeholders": {
+				"firstName": "First Name",
+				"lastName": "Last Name",
+				"thaiName": "Thai Name (Optional)",
+				"phone": "Thai Phone No. (Optional)",
+				"accountNumber": "Account no. (Number only)",
+				"accountType": "Account Type",
+				"bankName": "- Select Bank -",
+				"branchName": "Branch Name",
+				"branchCity": "- Select Branch City -",
+				"thaiAddress": "Thai Residential Address (Street Sub-district)",
+				"province": "- Province -",
+				"district": "- District -",
+				"postCode": "Post Code",
+				"country": "Country"
+			},
+			"errors": {
+				"firstNameRequired": "Please provide First Name",
+				"lastNameRequired": "Please provide Last Name",
+				"phoneDigits": "Only use digits for Phone Number",
+				"phoneMax": "Phone Number must be 10 digits exactly",
+				"phoneMin": "Phone Number must be 10 digits exactly",
+				"accountNumberDigits": "Only use digits for Account Number",
+				"accountNumberMax": "Account Number must be 10 digits exactly",
+				"accountNumberMin": "Account Number must be 10 digits exactly",
+				"accountNumberRequired": "Please provide an Account Number",
+				"accountTypeRequired": "Please select an Account Type",
+				"bankNameRequired": "Please provide a Bank Name",
+				"branchNameRequired": "Please provide Branch Name",
+				"branchCityRequired": "Please provide a Branch City",
+				"thaiAddressRequired": "Please provide Receiver's Residental Address",
+				"provinceRequired": "Please select a Province",
+				"districtRequired": "Please select a District",
+				"postCodeRequired": "Please enter a Postcode"
+			}
 		},
 		"transferProgress": {
 			"labelAmount": "Amount",
@@ -319,66 +371,70 @@
 			"labelLoadMore": "Load more"
 		},
 		"transactionsDetail": {
-			"buttonBack": "Back",
-			"listHeaderStatus": "Status",
-			"listHeaderRecipient": "Recipient",
-			"listHeaderAmounts": "Amounts",
-			"listHeaderDetails": "Details",
-			"listDataAccountNameLabel": "Account Name",
-			"listDataAccountNumberLabel": "Account Number",
-			"listDataBankNameLabel": "Bank Name",
-			"listDataSendAmountLabel": "Send Amount",
-			"listDataYourRateLabel": "Your Rate",
-			"listDataFeeLabel": "Fees",
-			"listDataTotalToPayLabel": "Total to Pay",
-			"listDataReceivableAmountLabel": "Receivable Amount",
-			"listDataTransactionNumberLabel": "Transaction Number",
-			"listDataStatusLabel": "Status",
-			"listDataDateCreatedLabel": "Created",
-			"listDataDateCompletedLabel": "Completed",
-			"listDataDateProcessedLabel": "Completed"
-
+			"ui": {
+				"buttonBack": "Back"
+			},
+			"headings": {
+				"status": "Status",
+				"recipient": "Recipient",
+				"amounts": "Amounts",
+				"details": "Details"
+			},
+			"labels": {
+				"fullname": "Account Name",
+				"accountnumber": "Account Number",
+				"bankname": "Bank Name",
+				"transfer_amount": "Send Amount",
+				"rate": "Your Rate",
+				"fee_AUD": "Fees",
+				"amount_paid": "Total to Pay",
+				"received_amount": "Receivable Amount",
+				"transaction_number": "Transaction Number",
+				"status": "Status",
+				"created_datetime": "Date Created",
+				"completed_datetime": "Date Completed",
+				"processed_datetime": "Date Completed"
+			}
 		},
 		"profileDetails": {
-			"listDataHeaderPersonalDetails": "Personal Details",
-			"listDataHeaderContactDetails": "Contact Details",
-			"listDataHeaderAddressDetails": "Address Details",
-			"listDataHeaderAccountInfo": "Account Info",
-			"listDataHeaderIdentityInfo": "Identity Info",
-			"listDataFirstNameLabel": "First Name",
-			"listDataMiddleNameLabel": "Middle Name",
-			"listDataLastNameLabel": "Last Name",
-			"listDataNickNameLabel": "Nickname (Optional)",
-			"listDataDateOfBirthLabel": "Date of Birth",
-			"listDataOccupationLabel": "Occupation",
-			"listDataPhoneLabel": "Phone Number",
-			"listDataEmailLabel": "Email",
-			"listDataAddressLabel": "Australian Residential Address",
-			"listDataSuburbLabel": "City/Suburb",
-			"listDataStateLabel": "State",
-			"listDataPostCodeLabel": "Post Code",
-			"listDataCountryLabel": "Country",
-			"listDataMemberIDLabel": "Member ID Number",
-			"listDataDateRegisteredLabel": "Date Registered",
-			"listDataDateVerifiedLabel": "Date Verified",
-			"listDataAccountStatusLabel": "Account Status",
-			"listDataIdentityOneLabel": "Proof of Identity (1)",
-			"listDataIdentityOneSublabelUploaded": "Uploaded",
-			"listDataIdentityOneSublabelType": "Type",
-			"listDataIdentityOneSublabelNumber": "Number",
-			"listDataIdentityOneSublabelExpiry": "Expiry",
-			"listDataIdentityOneSublabelIssuer": "Issuer",
-			"listDataIdentityOneSublabelFile": "File",
-			"listDataIdentityTwoLabel": "Proof of Identity (2)",
-			"listDataIdentityTwoSublabelUploaded": "Uploaded",
-			"listDataIdentityTwoSublabelType": "Type",
-			"listDataIdentityTwoSublabelNumber": "Number",
-			"listDataIdentityTwoSublabelExpiry": "Expiry",
-			"listDataIdentityTwoSublabelIssuer": "Issuer",
-			"listDataIdentityTwoSublabelFile": "File",
-			"statusVerifyIdentity": "Please verify your identity",
-			"statusUpdateDetails": "Please update your details",
-			"buttonUpdateProfile": "Update Profile"
+			"ui": {
+				"buttonUpdateProfile": "Update Profile",
+				"statusVerifyIdentity": "Please verify your identity",
+				"statusUpdateDetails": "Please update your details",
+				"statusProvideProofOfIdentity": "Please provide proof of your identity"
+			},
+			"headings": {
+				"personalDetails": "Personal Details",
+				"contactDetails": "Contact Details",
+				"addressDetails": "Address Details",
+				"accountInfo": "Account Info",
+				"identityInfo": "Proof of Identity"
+			},
+			"labels": {
+				"firstname": "First Name",
+				"middlename": "Middle Name",
+				"lastname": "Last Name",
+				"nickname": "Nickname (Optional)",
+				"dateofbirth": "Date of Birth",
+				"occupation": "Occupation",
+				"phone": "Phone Number",
+				"email": "Email",
+				"address": "Australian Residential Address",
+				"city": "City/Suburb",
+				"state": "State",
+				"postcode": "Post Code",
+				"country": "Country",
+				"memberid": "Member ID Number",
+				"date_regis": "Date Registered",
+				"date_regis_completed": "Date Verified",
+				"status": "Account Status",
+				"identity_uploaded": "Uploaded",
+				"identity_type": "Type",
+				"identity_number": "Number",
+				"identity_expiry": "Expiry",
+				"identity_issuer": "Issuer",
+				"identity_file": "File"
+			}
 		},
 		"profileEdit": {
 			"listDataHeaderPersonalDetails": "Personal Details",
@@ -506,8 +562,17 @@
 			"buttonLabelLoading": "Loading",
 			"buttonLabelDeleting": "Deleting"
 		},
+		"loadingOverlay": {
+			"processing": "Processing",
+			"saving": "Saving",
+			"loading": "Loading",
+			"deleting": "Deleting",
+			"subtitle": "Please wait a moment."
+		},
 		"misc": {
-			"none": "none"
+			"none": "none",
+			"aud": "AUD",
+			"thb": "THB"
 		}
 	}
 }

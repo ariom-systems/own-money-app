@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { memo } from 'react'
 
 //components
 import { Box, HStack, Text, VStack } from 'native-base'
@@ -10,11 +10,11 @@ const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
-const StatusBanner = (props) => {
-	let { status } = props
-	let headerColour, headerBgColour, colour, bgColour, icon, statusText
+const StatusSection = ({section}) => {
+	let { key, label, value }  = section[0]
+	let headerBgColour, colour, bgColour, icon, statusText
 
-	switch (status) {
+	switch (value) {
 		case 'Completed':
 			headerBgColour = "success.600"
 			bgColour = "success.200"
@@ -39,7 +39,7 @@ const StatusBanner = (props) => {
 	}
 	
 	return (
-		<VStack mt={"4"} rounded={"8"} bgColor={bgColour}position={"relative"}>
+		<VStack rounded={"8"} bgColor={bgColour} position={"relative"}>
 			<Box roundedTop={"8"} bgColor={headerBgColour} p={"2"}>
 				<Text color={"white"} fontWeight={"bold"}>Status</Text>
 			</Box>
@@ -51,4 +51,4 @@ const StatusBanner = (props) => {
 	)
 }
 
-export default React.memo(StatusBanner)
+export default memo(StatusSection)

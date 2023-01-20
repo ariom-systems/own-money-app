@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer } from 'react'
 import { Avatar, HStack, Pressable, Text, VStack } from 'native-base'
 import { useNavigation } from '@react-navigation/native'
 
 import { AuthContext } from '../../data/Context'
-import * as Recoil from 'recoil'
+import { useRecoilValue, useSetRecoilState} from 'recoil'
 import { loadingState } from '../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
+import { userState } from '../../data/recoil/user'
 
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
@@ -15,16 +16,16 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 const ListSwipeItem = (props) => {
 	let { id, status, initials, fullname } = props.data.item
 	let index = props.data.index
-	const { auth } = React.useContext(AuthContext)
-	const beneficiaries = Recoil.useRecoilValue(beneficiaryList)
-	const setBeneficiary = Recoil.useSetRecoilState(beneficiaryObj)
-	const setLoading = Recoil.useSetRecoilState(loadingState)
+	const beneficiaries = useRecoilValue(beneficiaryList)
+	const setBeneficiary = useSetRecoilState(beneficiaryObj)
+	const setLoading = useSetRecoilState(loadingState)
+	const user = useRecoilValue(userState)
 	const navigation = useNavigation()
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
 	const handlePress = (item) => {
 		setBeneficiary(item)
-		setLoading({ status: true, text: 'Loading' })
+		setLoading({ status: true, type: 'loading' })
 		navigation.navigate('BeneficiariesDetail')
 	}
 
@@ -37,12 +38,12 @@ const ListSwipeItem = (props) => {
 		corners = "none"
 	}
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
 	return (
 		<Pressable key={ index } onPress={() => handlePress({...props.data.item, index: props.data.index }) }>
@@ -52,7 +53,7 @@ const ListSwipeItem = (props) => {
 				<VStack>
 					<Text mb={"2"} bold>{ fullname }</Text>
 					{ status != 'Verified' && (
-						<Text fontSize={"xs"} >{ language.beneficiariesList.labelAwaitingVerify }</Text>
+						<Text fontSize={"xs"} >{ language.beneficiaryList.labels.awaitingVerify }</Text>
 					)}
 				</VStack>
 			</HStack>
@@ -60,4 +61,4 @@ const ListSwipeItem = (props) => {
 	)
 }
 
-export default React.memo(ListSwipeItem)
+export default ListSwipeItem

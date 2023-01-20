@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import { Box, Button, Center, FormControl, HStack, Image, StatusBar, Text, VStack } from 'native-base'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Box, Button, Center, Image, Text, VStack } from 'native-base'
 import WebView from 'react-native-webview'
 import image from '../../assets/img/logo.png'
 import * as Forms from '../../components/common/Forms'
@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { buildDataPath } from '../../data/Actions'
 import { api } from '../../config'
-import { atom, useRecoilState, useRecoilValue } from 'recoil'
+import { atom, useRecoilState } from 'recoil'
 import { noticeState } from '../../data/recoil/system'
 import Config from 'react-native-config'
 
@@ -49,26 +49,26 @@ const TermsAndConditionsScreen = () => {
 	)
 }
 
-export default TermsAndConditionsScreen
+export default memo(TermsAndConditionsScreen)
 
 const TermsAndConditionsScreenInner = () => {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const { handleSubmit, setError, clearErrors, formState } = useFormContext()
 	const [ acceptance, setAcceptance ] = useRecoilState(acceptanceState)
 	const [ scroll, setScroll ] = useRecoilState(scrollState)
 	const [ termsBanner, setTermsBanner ] = useRecoilState(noticeState)
-	const [ignored, forceUpdate] = React.useReducer((x) => x + 1, 0)
+	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
 	let banner = termsBanner.find(element => element.id == "termsAndConditions"), 
 		blankBanner = {title: "", message: "", style: "default", icon: "help-circle-outline"}
 
 
-	React.useEffect(() => {
+	useEffect(() => {
 		banner =  
 		forceUpdate()
 	}, [termsBanner])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if(scroll >= 99) {
 			setAcceptance(previous => ({
 				...previous,
@@ -99,8 +99,7 @@ const TermsAndConditionsScreenInner = () => {
 	}
 
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
+		<AppSafeArea>
 			<Center flex={"1"} p={"2.5%"} h={"100%"} alignContent={"center"}>
 				<VStack w={"100%"} h={"90%"} p={"4"} bgColor={"white"} rounded={"8"}>
 					{ acceptance.checked || <AlertItem data={banner} /> }
@@ -134,6 +133,6 @@ const TermsAndConditionsScreenInner = () => {
 					</Box>
 				</VStack>
 			</Center>
-		</ImageBackground>
+		</AppSafeArea>
 	)
 }

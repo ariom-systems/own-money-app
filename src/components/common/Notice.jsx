@@ -1,14 +1,15 @@
-import React from 'react'
-import { Alert, Box, Collapse, Factory, Heading, HStack, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
+import React, { useContext, useEffect } from 'react'
+
+//components
+import { Alert, Box, Heading, HStack, Text, VStack } from 'native-base'
+import Icon from './Icon'
+
+//data
 import { AuthContext } from '../../data/Context'
 import { getNotice } from '../../data/handlers/Status'
 
-const NBIonicon = Factory(Ionicon)
-
 export const Notice = (props) => {
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
 	const { nb, showClose, timeout, children } = props
 	let content = getNotice(auth.status, auth.lang)
 
@@ -31,9 +32,9 @@ export const Notice = (props) => {
 
 export const NoticeBox = (props) => {
 	const { content, showClose = true, timeout, extra, nb = null } = props
-	const { authDispatch } = React.useContext(AuthContext)
+	const { authDispatch } = useContext(AuthContext)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setTimeout(() => {
 			handleDismiss()
 		}, 10000)
@@ -49,11 +50,11 @@ export const NoticeBox = (props) => {
 				<VStack space={"2"} w={"100%"}>
 					<HStack justifyContent={"space-between"} space={"2"}>
 						<HStack flexShrink={"1"} space={"2"} alignItems={"center"}>
-							<NBIonicon name={content.icon} fontSize={"xl"} />
+							<Icon type={"Ionicon"}  name={content.icon} fontSize={"xl"} />
 							<Heading fontSize={"md"} fontWeight={"medium"}>{content.title}</Heading>
 						</HStack>
 						{ showClose == true && (
-							<NBIonicon name={"close"} fontSize={"xl"} onPress={handleDismiss}/>
+							<Icon type={"Ionicon"}  name={"close"} fontSize={"xl"} onPress={handleDismiss}/>
 						)}
 					</HStack>
 					<Box pl={ typeof extra == "undefined" ? "6" : "0"}>

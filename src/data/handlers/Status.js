@@ -5,7 +5,6 @@ const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-
 export function getNotice(reasonCode, currentLang) {
 	if(language.getLanguage() !== currentLang) {
 		language.setLanguage(currentLang)
@@ -70,7 +69,6 @@ export function getNotice(reasonCode, currentLang) {
 				}
 			break	
 			case 'badUser':
-				console.log(language.notices.badUserMessage)
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
@@ -101,7 +99,7 @@ export function getNotice(reasonCode, currentLang) {
 					canClose: false,
 					bannerAction: {
 						label: language.notices.statusVerifyIdentityButton,
-						fn: () => Navigation.navigate('Your Profile', { screen: 'ProfileEdit' })
+						fn: () => Navigation.navigate('Your Profile', { screen: 'ProfileDetails' })
 					}
 				}
 			break

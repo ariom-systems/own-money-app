@@ -1,13 +1,19 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
+
+//components
 import { Box, Button, Divider, Heading, HStack, ScrollView, Text, VStack} from 'native-base'
 import StepIndicator from 'react-native-step-indicator'
-import { AuthContext, TransferContext } from '../../../data/Context'
-import { useNavigation } from '@react-navigation/native'
 import { Notice } from '../../../components/common/Notice'
-import { useAspect } from '../../../data/Hooks'
-import { sum } from 'lodash'
-import { formatCurrency } from '../../../data/Actions'
 
+//data
+import { AuthContext } from '../../../data/Context'
+import { useNavigation } from '@react-navigation/native'
+import { useAspect } from '../../../data/Hooks'
+import { formatCurrency } from '../../../data/Actions'
+import { useRecoilValue } from 'recoil'
+import { userState } from '../../../data/recoil/user'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
@@ -20,23 +26,23 @@ let labels = [
 	language.transferProgress.labelFinish
 ]
 
-export default TransferStepFour = () => {
+const TransferStepFour = () => {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const { transfer, transferDispatch } = React.useContext(TransferContext)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const { auth, authDispatch } = useContext(AuthContext)
+	const user = useRecoilValue(userState)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 	
 	let summary = useAspect(transfer.stepThree.summary)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		let tmp = summary.get()
 		let total = Number(tmp.totalsend) + Number(tmp.fee_AUD)
 		summary.set({...summary.get(), total_to_pay: total})
 	}, [])
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			labels = [
 				language.transferProgress.labelAmount,
@@ -46,7 +52,7 @@ export default TransferStepFour = () => {
 			]
 			forceUpdate()
 		}
-	}, [language, auth, labels])
+	}, [language, user, labels])
 
 	const handleFinishTransfer = () => {
 		authDispatch({ type: 'CLEAR_STATUS'})
@@ -122,3 +128,5 @@ export default TransferStepFour = () => {
 		</ScrollView>
 	)
 }
+
+export default memo(TransferStepFour)

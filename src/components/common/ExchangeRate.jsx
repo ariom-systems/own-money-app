@@ -1,17 +1,19 @@
-import React from 'react'
-import { Box, Factory, Heading, HStack, Popover, Pressable, Spacer, Text } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-const NBIonicon = Factory(Ionicon)
+import React, { useContext, useEffect, useReducer } from 'react'
 
+//components
+import { Box, Heading, HStack, Popover, Pressable, Spacer, Text } from 'native-base'
+import Icon from './Icon'
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
 
+//data
 import { AuthContext } from '../../data/Context'
 import { formatCurrency } from '../../data/Actions'
 import { useRecoilValue }  from 'recoil'
 import { globalState } from '../../data/recoil/system'
+import { userState } from '../../data/recoil/user'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
@@ -19,25 +21,26 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ExchangeRate = (props) => {
 	const { nb, size = "lg" } = props
+	const { auth } = useContext(AuthContext)
 	const globals = useRecoilValue(globalState)
-	const { auth } = React.useContext(AuthContext)
+	const user = useRecoilValue(userState)
 	let formatted = formatCurrency(globals.rate, "th-TH", "THB")
 	let rateValue = formatted.symbol + formatted.value
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 	//en-AU only returns 2 digit year values even though it is supposed to display 4 digits. Beyond our control.
-	let rateAsOf = new Date().toLocaleDateString(auth.lang == 'en-AU' ? 'en-GB' : auth.lang, { year: 'numeric', month: 'numeric', day: 'numeric'}).split(',')[0]
+	let rateAsOf = new Date().toLocaleDateString(user.lang == 'en-AU' ? 'en-GB' : user.lang, { year: 'numeric', month: 'numeric', day: 'numeric'}).split(',')[0]
 
 	switch(size) {
 		case "lg": xr = xrStyles.lg; break;
 		case "sm": xr = xrStyles.sm; break;
 	}
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
 	return (
 		<Box backgroundColor={"gray.200"} w={"100%"} borderRadius={"8"} {...nb} {...xr.padding}>
@@ -45,7 +48,7 @@ const ExchangeRate = (props) => {
 				<Heading {...xr.heading}>{ language.components.exchangeRateCardTitle }</Heading>
 				<Popover placement={"top"} trigger={triggerProps => { return (
 						<Pressable {...triggerProps}>
-							<NBIonicon color={"coolGray.500"} name={"information-circle-outline"} fontSize={"md"} ml={"1"} />
+							<Icon type={"Ionicon"} color={"coolGray.500"} name={"information-circle-outline"} fontSize={"md"} ml={"1"} />
 						</Pressable>
 					) }} >
 						<Popover.Content>

@@ -1,30 +1,36 @@
-import React from 'react'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
+
+//components
 import { Button, HStack } from 'native-base'
 
+//data
 import { AuthContext } from '../../data/Context'
-import { useRecoilState } from 'recoil'
+import { useRecoilState, useRecoilValue } from 'recoil'
 import { transactionList } from '../../data/recoil/transactions'
+import { userState } from '../../data/recoil/user'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const LoadMoreButton = (props) => {
-	const { auth } = React.useContext(AuthContext)
+	const { auth } = useContext(AuthContext)
+	const user = useRecoilValue(userState)
 	const [ transactions, setTransactions ] = useRecoilState(transactionList)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
 	const handleRefresh = (batchIndex, uid) => {
 		console.log("loading")
 	}
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, user])
 
 	return (
 		<HStack justifyContent={"center"} py={"8"} alignItems={"center"}>
@@ -36,4 +42,4 @@ const LoadMoreButton = (props) => {
 	)
 }
 
-export default LoadMoreButton
+export default memo(LoadMoreButton)

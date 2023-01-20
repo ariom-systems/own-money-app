@@ -1,72 +1,80 @@
-import React from 'react'
+import React, { useEffect, useReducer} from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import FocusRender from 'react-navigation-focus-render'
-import { Center, Divider, Fab, StatusBar, VStack } from 'native-base'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Box, Divider, VStack } from 'native-base'
 import { SwipeListView } from 'react-native-swipe-list-view'
-import { Notice } from '../../../components/common/Notice'
 import AlertBanner from '../../../components/common/AlertBanner'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
 import ListSwipeItem from '../../../components/beneficiaries/ListSwipeItem'
 import ListSwipeHiddenItem from '../../../components/beneficiaries/ListSwipeHiddenItem'
+import Toolbar from '../../../components/common/Toolbar'
 
 //data
-import { AuthContext} from '../../../data/Context'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { noticeState, loadingState } from '../../../data/recoil/system'
+import { useNavigation } from '@react-navigation/native'
+import { beneficiaryListToolbarConfig } from '../../../config'
+import { mapActionsToConfig } from '../../../data/Actions'
+import { useRecoilValue } from 'recoil'
+import { noticeState } from '../../../data/recoil/system'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
+import { userState } from '../../../data/recoil/user'
 
-const BeneficiariesList = ({navigation}) => {
-	const { auth } = React.useContext(AuthContext)
-	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+//lang
+import LocalizedStrings from 'react-native-localization'
+const auStrings = require('../../../i18n/en-AU.json')
+const thStrings = require('../../../i18n/th-TH.json')
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
+
+const BeneficiariesList = () => {
+	const navigation = useNavigation()
 	const notices = useRecoilValue(noticeState)
-	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const beneficiaries = useRecoilValue(beneficiaryList)
+	const user = useRecoilValue(userState)
+	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const actions = [() => navigation.navigate('BeneficiariesAdd')]
+	const toolbarConfig = mapActionsToConfig(beneficiaryListToolbarConfig, actions)
 
-	React.useEffect(() => {
-		const unsubscribe = navigation.addListener('focus', () => {
-			setLoading({ status: false, text: "" })
-		})
-		return unsubscribe
-	},[navigation, beneficiaries])
+	useEffect(() => {
+		if (language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
+			forceUpdate()
+		}
+	}, [language, user])
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"}/>
-			<Center flex={1} justifyContent={"center"}>
-				
-				<VStack flex="1" w={"100%"} p={"2.5%"} justifyContent={"flex-start"}>
-					<FocusRender>
-						<SwipeListView
-							data={beneficiaries}
-							renderItem={(item, rowMap) => <ListSwipeItem data={item} rowMap={rowMap} navigation={navigation} /> }
-							renderHiddenItem={(item, rowMap) => <ListSwipeHiddenItem data={item} rowMap={rowMap} navigation={navigation}  />}
-							rightOpenValue={-160}
-							previewRowKey={'0'}
-							previewOpenValue={0}
-							previewOpenDelay={3000}
-							ItemSeparatorComponent={<Divider />}
-							keyExtractor={(item, index) => item + index }
-							getItemLayout={(item, index) => {
-								return { length: 80, offset: 80 * index, index }
-							}}
-							initialNumToRender={20}
-							maxToRenderPerBatch={20}
-							removeClippedSubviews={false}
-							ListHeaderComponent={notices ? <AlertBanner w={"100%"} mb={"2.5%"} /> : null}
-							/>
-					</FocusRender>
-					<Fab
-						renderInPortal={false}
-						placement={"bottom-right"}
-						shadow={"2"}
-						backgroundColor={"primary.400"}
-						icon={<Ionicon color={"#FFFFFF"} name={"add"} size={24} />}
-						onPress={() => navigation.navigate('BeneficiariesAdd')}/>
-				</VStack>
-			</Center>
-		</ImageBackground>				
+		<AppSafeArea>
+			<Box px={"2.5%"} justifyContent={"flex-start"} w={"100%"} h={"100%"}>
+				<SwipeListView
+					data={beneficiaries}
+					renderItem={(item, rowMap) => <ListSwipeItem data={item} rowMap={rowMap} navigation={navigation} />}
+					renderHiddenItem={(item, rowMap) => <ListSwipeHiddenItem data={item} rowMap={rowMap} navigation={navigation} />}
+					rightOpenValue={-160}
+					previewRowKey={'0'}
+					previewOpenValue={0}
+					previewOpenDelay={3000}
+					
+					ItemSeparatorComponent={<Divider />}
+					keyExtractor={(item, index) => item + index}
+					getItemLayout={(item, index) => {
+						return { length: 80, offset: 80 * index, index }
+					}}
+					initialNumToRender={20}
+					maxToRenderPerBatch={20}
+					removeClippedSubviews={false}
+					ListHeaderComponent={() =>
+						<VStack space={"4"} mb={"4"}>
+							{notices && <AlertBanner />}
+							<Toolbar config={toolbarConfig} />
+						</VStack>
+					}
+					ListFooterComponent={() => {
+						if(beneficiaries.length > 5) {
+							return <Toolbar nb={{ mt: "4" }} config={toolbarConfig} />}
+						}
+					}
+					contentContainerStyle={{ paddingVertical: "2.5%" }}
+				/>
+			</Box>
+		</AppSafeArea>	
 	)
 }
 

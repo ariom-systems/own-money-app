@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { memo } from 'react'
+
+//components
 import { Box, Heading } from 'native-base'
 
 const ReviewListHeader = (props) => {
@@ -11,4 +13,4 @@ const ReviewListHeader = (props) => {
 	)
 }
 
-export default React.memo(ReviewListHeader)
+export default memo(ReviewListHeader)

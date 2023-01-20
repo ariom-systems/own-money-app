@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 
 //components
-import { StatusBar } from 'native-base'
-import LoadingOverlay from '../../../components/common/LoadingOverlay'
 import { useNavigation } from '@react-navigation/native';
+import AppSafeArea from '../../../components/common/AppSafeArea';
+import LoadingOverlay from '../../../components/common/LoadingOverlay'
 
 //data
 import { AuthContext} from '../../../data/Context'
@@ -15,13 +15,13 @@ import { loadingState } from '../../../data/recoil/system'
 
 export default function BeneficiariesDelete() {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = React.useContext(AuthContext)
+	const { auth, authDispatch } = useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
 	const beneficiary = useRecoilValue(beneficiaryObj)
 	const resetBeneficiary = useResetRecoilState(beneficiaryObj)
 	const loading = useRecoilValue(loadingState)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		api.delete(buildDataPath('beneficiaries', auth.uid, 'delete', { id: Number.parseInt(beneficiary.id) }))
 		.then(response => {
 			if (response.data == true) {
@@ -35,9 +35,8 @@ export default function BeneficiariesDelete() {
 	},[beneficiary.id])
 
 	return (
-		<>
+		<AppSafeArea>
 			{ loading.status && <LoadingOverlay /> }
-			<StatusBar barStyle={"dark-content"} />
-		</>
+		</AppSafeArea>
 	)
 }

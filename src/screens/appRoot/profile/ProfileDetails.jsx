@@ -1,23 +1,21 @@
-import React from 'react'
+import React, { useEffect, useReducer } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { ImageBackground } from 'react-native'
-import { Button, Center, Divider, Factory, HStack, Pressable, 
-	SectionList, Spacer, StatusBar, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Divider, SectionList,VStack } from 'native-base'
 import AlertBanner from '../../../components/common/AlertBanner'
-import DetailHeaderItem from '../../../components/profile/DetailHeaderItem'
+import Toolbar from '../../../components/common/Toolbar'
+import ListHeader from '../../../components/common/ListHeader'
 import DetailRowItem from '../../../components/profile/DetailRowItem'
 
 //data
-import { AuthContext } from '../../../data/Context'
-import { mapSectionDataFromTemplate } from '../../../data/Actions'
-import { UserTemplate } from '../../../config'
+import { mapSectionDataFromTemplate, mapActionsToConfig, localiseObjectData } from '../../../data/Actions'
+import { ProfileObjFormats, UserTemplate } from '../../../config'
 import { useRecoilValue } from 'recoil'
 import { userState } from '../../../data/recoil/user'
 import { noticeState } from '../../../data/recoil/system'
+import { profileDetailToolbarConfig } from '../../../config'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -27,52 +25,46 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ProfileDetails = () => {
 	const navigation = useNavigation()
-	const { auth } = React.useContext(AuthContext)
-	const userData = useRecoilValue(userState)
+	const user = useRecoilValue(userState)
 	const notices = useRecoilValue(noticeState)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	const sections = mapSectionDataFromTemplate(userData, UserTemplate)
+	let actions = [() => navigation.navigate('ProfileEdit', { showBack: true })]
+	const toolbarConfig = mapActionsToConfig(profileDetailToolbarConfig, actions)
+	
+	let labels = language.profileDetails.labels
+	let headings = language.profileDetails.headings
+	let localisedData = localiseObjectData(user, ProfileObjFormats, user.lang)
+	let sections = mapSectionDataFromTemplate(UserTemplate, localisedData, labels, headings)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
-
-	const HeaderComponent = () => {
-		return (
-			<>
-				{ notices && <AlertBanner w={"100%"} my={"2.5%"} /> }
-				<HStack w={"100%"} justifyContent={"center"} alignItems={"center"} bgColor={"primary.800:alpha.80"} p={"4"} mb={"4"} rounded={"8"}>
-					<Button size={"lg"} leftIcon={<Ionicon name={"create-outline"} color={"#FFF"} size={22} />}
-						onPress={() => navigation.navigate('ProfileEdit')}>{language.profileDetails.buttonUpdateProfile}</Button>
-				</HStack>
-			</>
-		)
-	}
+	}, [language, user])
 
 	return (
-		<ImageBackground source={require("../../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
-			<Center flex={1} justifyContent={"center"}>
-				
-				<VStack flex="1" space={"4"} w={"100%"} px={"2.5%"}>
-					<SectionList
-						sections={sections.map((section, index) => ({ ...section, index }))}
-						keyExtractor={(item, index) => item + index }
-						stickySectionHeadersEnabled={false}
-						ItemSeparatorComponent={() => <Divider />}
-						renderItem={(item, index) => <DetailRowItem data={item} key={index} /> }
-						renderSectionHeader={({section}) => <DetailHeaderItem title={section.title} index={section.index} /> }
-						ListHeaderComponent={HeaderComponent}
-					/>
-				</VStack>
-			</Center>
-		</ImageBackground>					
+		<AppSafeArea>
+			<SectionList
+				sections={sections}
+				keyExtractor={(item, index) => item + index}
+				stickySectionHeadersEnabled={false}
+				ItemSeparatorComponent={() => <Divider />}
+				renderItem={({ item, index, section }) => <DetailRowItem item={item} index={index} section={section} />}
+				renderSectionHeader={({ section }) => <ListHeader title={section.title} id={section.id} index={section.index} styles={{ mt: "4", roundedTop: "8" }}  /> }
+				ListHeaderComponent={() => (
+					<VStack key={Math.random() * 100} space={"4"}>
+						{notices && <AlertBanner />}
+						<Toolbar config={toolbarConfig} />
+					</VStack>
+				)}
+				ListFooterComponent={() => <Toolbar config={toolbarConfig} nb={{ mt: "4" }} />}
+				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start" }}
+			/>
+		</AppSafeArea>
 	)
 }
 
-export default React.memo(ProfileDetails)
+export default ProfileDetails

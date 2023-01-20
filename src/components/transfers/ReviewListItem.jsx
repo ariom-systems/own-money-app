@@ -1,4 +1,6 @@
-import React from 'react'
+import React, { memo } from 'react'
+
+//components
 import { HStack, Text } from 'native-base'
 
 const ReviewListItem = (props) => {
@@ -21,4 +23,4 @@ const ReviewListItem = (props) => {
 	)
 }
 
-export default React.memo(ReviewListItem)
+export default memo(ReviewListItem)

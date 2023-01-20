@@ -1,17 +1,12 @@
-import React from 'react'
+import React, { useContext, useState, useEffect, useReducer, useRef, memo } from 'react'
 
 //components
 import { Button, Factory, HStack, Pressable, Text, VStack } from 'native-base'
 import PINCode, { hasUserSetPinCode, deleteUserPinCode } from '@haskkor/react-native-pincode'
 import TouchID from 'react-native-touch-id'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-import MaterialCommunity from 'react-native-vector-icons/MaterialCommunityIcons'
 import AlertModal from '../../components/common/AlertModal'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
-Ionicon.loadFont()
-MaterialCommunity.loadFont()
-const NBIonicon = Factory(Ionicon)
-const NBMaterial = Factory(MaterialCommunity)
+import Icon from '../../components/common/Icon'
 
 //data
 import { AuthContext } from '../../data/Context'
@@ -20,6 +15,7 @@ import { useResetRecoilState } from 'recoil'
 import { userState } from '../../data/recoil/user'
 import { globalState, noticeState } from '../../data/recoil/system'
 import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
+import { transactionList, transactionObj } from '../../data/recoil/transactions'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -29,23 +25,25 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const PinCodeScreen = ({ navigation }) => {
 
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ show1, setShow1 ] = React.useState(false)
-	const [ show2, setShow2 ] = React.useState(false)
-	const [ hasPin, setHasPin ] = React.useState(false)
-	const [ key, setKey ] = React.useState(0)
-	const [ biometry, setBiometry ] = React.useState(null)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-	const [ resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions ] = 
+	const { auth, authDispatch } = useContext(AuthContext)
+	const [ resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions, resetTransaction ] = 
 		[useResetRecoilState(userState), useResetRecoilState(globalState), useResetRecoilState(noticeState), 
-			useResetRecoilState(beneficiaryList), useResetRecoilState(beneficiaryObj)]
+			useResetRecoilState(beneficiaryList), useResetRecoilState(beneficiaryObj), 
+			useResetRecoilState(transactionList), useResetRecoilState(transactionObj)]
+		
+	const [ show1, setShow1 ] = useState(false)
+	const [ show2, setShow2 ] = useState(false)
+	const [ hasPin, setHasPin ] = useState(false)
+	const [ key, setKey ] = useState(0)
+	const [ biometry, setBiometry ] = useState(null)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
 	const onClose1 = () => setShow1(false)
 	const onClose2 = () => setShow2(false)
-	const pincodeRef = React.useRef()
-	const cancelRef = React.useRef()
+	const pincodeRef = useRef()
+	const cancelRef = useRef()
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const checkForTouchID = async () => {
 			TouchID.isSupported({ passcodeFallback: false, unifiedErrors: true })
 				.then(biometryType => {
@@ -58,7 +56,7 @@ const PinCodeScreen = ({ navigation }) => {
 		checkForTouchID()
 	}, [])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		const checkKeychainForPin = async () => {
 			const result = await hasUserSetPinCode('com.ariom.ownmoney')
 			if(typeof result !== 'undefined') {
@@ -72,7 +70,7 @@ const PinCodeScreen = ({ navigation }) => {
 		checkKeychainForPin()
 	}, [])
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if(language.getLanguage() !== auth.lang) {
 			language.setLanguage(auth.lang)
 			forceUpdate()
@@ -129,6 +127,8 @@ const PinCodeScreen = ({ navigation }) => {
 		resetNotices()
 		resetBeneficiaries()
 		resetBeneficiary()
+		resetTransactions()
+		resetTransaction()
 		if (reset === true) {
 			authDispatch({ type: 'LOGOUT' })
 		}
@@ -138,7 +138,7 @@ const PinCodeScreen = ({ navigation }) => {
 		return (
 			<Pressable onPress={handleLogout}>
 				<VStack w={"100%"} h={"100%"} alignItems={"center"} justifyContent={"center"}>
-					<NBIonicon name={"exit-outline"} fontSize={"2xl"} ml={"1"} />
+					<Icon type={"Ionicon"} name={"exit-outline"} fontSize={"2xl"} ml={"1"} />
 					<Text>{ language.pinCode.pinPadButtonBack }</Text>
 				</VStack>
 			</Pressable>
@@ -149,7 +149,7 @@ const PinCodeScreen = ({ navigation }) => {
 		return (
 			<Pressable onPress={props.handleOnPress}>
 				<VStack w={"100%"} h={"100%"} alignItems={"center"} justifyContent={"center"}>
-					<NBIonicon name={"backspace"} fontSize={"2xl"} />
+					<Icon type={"Ionicon"} name={"backspace"} fontSize={"2xl"} />
 					<Text>{ language.pinCode.pinPadButtonDelete }</Text>
 				</VStack>
 			</Pressable>
@@ -200,9 +200,9 @@ const PinCodeScreen = ({ navigation }) => {
 					{biometry !== 'none' && (
 					<Pressable onPress={() => setKey(Math.random()) /* this doesn't feel right */}>
 						{biometry == 'TouchID' ? (
-							<NBIonicon name={'finger-print'} fontSize={"4xl"} />
+							<Icon type={"Ionicon"} name={'finger-print'} fontSize={"4xl"} />
 						) : (
-							<NBMaterial name={'face-recognition'} fontSize={"4xl"} />
+							<Icon type={"MaterialCommunity"} name={'face-recognition'} fontSize={"4xl"} />
 						)}
 					</Pressable>
 					)}
@@ -237,4 +237,4 @@ const PinCodeScreen = ({ navigation }) => {
 		</>)
 }
 
-export default PinCodeScreen
+export default memo(PinCodeScreen)

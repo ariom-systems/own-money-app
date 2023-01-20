@@ -1,18 +1,17 @@
-import React from 'react'
+import React, { useContext } from 'react'
 
 //components
-import { ImageBackground } from 'react-native'
-import { Center, Heading, HStack, Spinner, StatusBar, Text, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
 import { useNavigation } from '@react-navigation/native'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Heading, HStack, Spinner, Text, VStack } from 'native-base'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 
 //data
 import { AuthContext } from '../../data/Context'
 import { api, beneficiaryColumns } from '../../config'
 import Config from 'react-native-config'
 import * as Hooks from '../../data/Hooks'
-import { keychainReset, buildDataPath, sortByParam, addExtraRecordData, stringifyArray, removeEmptyDateEntries } from '../../data/Actions'
+import { keychainReset, buildDataPath, sortByParam, addExtraRecordData, stringifyArray, dateFormat } from '../../data/Actions'
 import { getNotice } from '../../data/handlers/Status'
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { userState } from '../../data/recoil/user'
@@ -22,14 +21,13 @@ import { globalState, noticeState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const LoadingScreen = () => {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = React.useContext(AuthContext)
+	const { auth, authDispatch } = useContext(AuthContext)
 	const [user, setUser] = useRecoilState(userState)
 	const setGlobals = useSetRecoilState(globalState)
 	const setNotices = useSetRecoilState(noticeState)
@@ -50,7 +48,7 @@ const LoadingScreen = () => {
 				.then(response => {
 					//fetch userdata from API. also need to convert $logins from string to an array
 					let [logins, daily_limit, newObj] = [JSON.parse(response.data.logins), JSON.parse(response.data.daily_limit), {}]
-					newObj = {...response.data, daily_limit_max: daily_limit.max, daily_limit_remaining: daily_limit.remaining, logins: logins }
+					newObj = {...response.data, daily_limit_max: daily_limit.max, daily_limit_remaining: daily_limit.remaining, logins: logins, uid: auth.uid }
 					
 					let app_flags = JSON.parse(response.data.app_flags)
 					if (app_flags !== null) { newObj.app_flags = app_flags }
@@ -60,7 +58,7 @@ const LoadingScreen = () => {
 					authDispatch({ type: 'SET_LANG', payload: { lang: newObj.lang }})
 					
 					if(app_flags === null) {
-						console.log("new user!")
+						console.log("New user found!")
 						setNotices((prev) => ([...prev, getNotice('verifyIdentity', auth.lang)]))
 						setNotices((prev) => ([...prev, getNotice('redirectToTermsConditions', auth.lang)]))
 						resolve('🔒 Redirect To Terms')
@@ -69,9 +67,9 @@ const LoadingScreen = () => {
 							setNotices((prev) => ([...prev, getNotice('verifyIdentity', auth.lang)]))
 						}
 					}
-					resolve('✅ Loaded User Data')
+					resolve('✅ Loaded User Data 👤')
 			 	})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => { reject('🚫👤 ' + error) })
 		})
 
 		const loadBeneficiaries = new Promise((resolve, reject) => {
@@ -80,21 +78,22 @@ const LoadingScreen = () => {
 					let responseData = addExtraRecordData(response.data)
 					responseData.sort(sortByParam("initials", "firstname"))
 					setBeneficiaries((init) => ([ ...responseData ]))
-					resolve('✅ Loaded Beneficiaries')
+					resolve('✅ Loaded Beneficiaries 🗃')
 				})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => { reject('🚫🗃 ' + error) })
 		})
 
 		const loadTransactions = new Promise((resolve, reject) => {
-			const today = new Date(Date.parse(new Date())).getTime() / 1000
-			api.get(buildDataPath('transactions', auth.uid, 'list', { from: today }))
+			const today = new Date(Date.parse(new Date()))
+			let time = encodeURIComponent(dateFormat('Y-m-d H:i:s', today))
+			api.get(buildDataPath('transactions', auth.uid, 'list', { from: time }))
 				.then(response => {
 					let data = response.data, newData
 					newData = addExtraRecordData(data)
 					setTransactions(newData)
-					resolve('✅ Loaded Recent Transactions')
+					resolve('✅ Loaded Recent Transactions 💰')
 				})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => { reject('🚫💰 ' + error) })
 		})
 
 		const loadGlobals = new Promise((resolve, reject) => {
@@ -102,11 +101,13 @@ const LoadingScreen = () => {
 				.then(response => {
 					let [ lastReset, newObj ] = [ response.data[0].lastDailyLimitReset, {} ]
 					let date = new Date(Date.parse(lastReset.replace(' ', 'T')))
-					newObj = {...response.data[0], lastDailyLimitReset: Math.floor(date.getTime() / 1000) }
+					let limitReset = Math.floor(date.getTime() / 1000)
+					console.log("Limit was last reset at: ", date, limitReset)
+					newObj = {...response.data[0], lastDailyLimitReset: limitReset }
 					setGlobals((initial) => ({ ...initial, ...newObj }))
-					resolve('✅ Loaded Globals')
+					resolve('✅ Loaded Globals 🌏')
 				})
-				.catch(error => { reject('🚫 ' + error) })
+				.catch(error => { reject('🚫🌏 ' + error) })
 		})
 
 		verifyLoggedIn
@@ -150,21 +151,9 @@ const LoadingScreen = () => {
 	}
 
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>	
-			<StatusBar barStyle={"dark-content"}/>
-			<Center safeArea flex={1} justifyContent={"center"}>
-				<VStack flex="1" space={"4"} w={"100%"} alignItems="center" justifyContent={"center"}>
-					<VStack p={"10"} backgroundColor={"white"} rounded={"2xl"} space={"3"}>
-						<HStack space={"3"} alignItems={"center"}>
-							<Spinner size={"lg"} />
-							<Heading color={"primary.500"} fontSize={"xl"}>{ language.loading.title }</Heading>
-							{/* <Button onPress={() => navigation.navigate('AppTabs')}>(debug) Continue</Button> */}
-						</HStack>
-						<Text>{ language.loading.subtitle }</Text>
-					</VStack>
-				</VStack>	
-			</Center>
-		</ImageBackground>
+		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems:"center", justifyContent:"center" }}>	
+			<LoadingSpinner message={language.loading.title} subtitle={language.loading.subtitle} />
+		</AppSafeArea>
 	)
 }
 

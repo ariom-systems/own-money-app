@@ -1,24 +1,37 @@
-import React from 'react'
-import { Button, HStack, Text } from 'native-base';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useContext, useState, useEffect, useReducer } from 'react'
+
+//components
+import { Button, HStack, Text } from 'native-base'
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
-import { AuthContext } from '../../data/Context';
-import { api } from '../../config';
-import Config from 'react-native-config';
+
+//data
+import { AuthContext } from '../../data/Context'
+import { useRecoilState } from 'recoil'
+import { userState } from '../../data/recoil/user'
+import { noticeState } from '../../data/recoil/system'
+import { api } from '../../config'
+import Config from 'react-native-config'
+import { getNotice } from '../../data/handlers/Status'
 
 export const LanguageToggle = () => {
-	
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ selected, setSelected ] = React.useState(auth.lang)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const { auth, authDispatch } = useContext(AuthContext)
+	const [ user, setUser ] = useRecoilState(userState)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
+	const [ selected, setSelected ] = useState(auth.lang)
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
 
-	React.useEffect(() => {
+	useEffect(() => {
 		setSelected(auth.lang)
 	}, [auth])
 
 	const handleLanguageChange = (lang) => {
 		setSelected(lang)
+		setUser((prev) => ({...prev, lang: lang }))
+		if(notices.length > 0) {
+			let tmpNotices = notices.map((element) => { return getNotice(element.id, lang) })
+			setNotices((prev) => ([...tmpNotices]))
+		}
 		authDispatch({ type: 'SET_LANG', payload: { lang: lang }})
 		if(auth.token !== 'undefined') {
 			api.setHeader('Authorization', 'Bearer ' + auth.token)
@@ -26,6 +39,8 @@ export const LanguageToggle = () => {
 		}
 		forceUpdate()
 	}
+
+
 
 	return (
 		<HStack>

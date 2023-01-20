@@ -1,22 +1,16 @@
 import React from 'react'
-import { ImageBackground } from 'react-native'
-import { DefaultTheme, NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
+//screens
 import TransferStepOne from './transfer/TransferStepOne'
 import TransferStepTwo from './transfer/TransferStepTwo'
 import TransferStepThree from './transfer/TransferStepThree'
 import TransferStepFour from './transfer/TransferStepFour'
 
-const Stack = createNativeStackNavigator()
+//components
+import { ImageBackground } from 'react-native' //do not replace with AppSafeArea
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
 
-const navTheme = {
-	...DefaultTheme,
-	colors: {
-		...DefaultTheme.colors,
-		background: 'transparent'
-	}
-}
+const Stack = createNativeStackNavigator()
 
 export default TransferScreen = () => {
 	return (

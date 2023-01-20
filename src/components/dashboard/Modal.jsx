@@ -1,101 +1,79 @@
-import React from 'react'
-import { Badge, HStack, Modal as ModalComponent, Text } from 'native-base'
-import { useNavigation } from '@react-navigation/native'
-import { AuthContext } from '../../data/Context'
-import { formatCurrency } from '../../data/Actions'
+import React, { useContext, useEffect, useReducer, memo } from 'react'
 
+//components
+import { useNavigation } from '@react-navigation/native'
+import { Badge, Divider, HStack, Modal as ModalComponent, Text } from 'native-base'
+import LabelValue from '../common/LabelValue'
+
+//data
+import { formatCurrency } from '../../data/Actions'
+import { useRecoilValue } from 'recoil'
+import { userState } from '../../data/recoil/user'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const Modal = (props) => {
-	const { auth } = React.useContext(AuthContext)
 	const navigation = useNavigation()
-	const { accountnumber, amount_paid, bankname, completed_date, completed_time, created_date, created_time, 
-		fee_AUD, fullname, initials, rate, received_amount, status, transaction_number, transfer_amount } = props.data
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-
-	let badgeWaiting = <Badge colorScheme={"default"} variant={"solid"}>{ language.components.statusBadgeWaitForPayment }</Badge>
-	let badgeCancelled = <Badge colorScheme={"danger"} variant={"solid"}>{ language.components.statusBadgeCancelled }</Badge>
-	let badgeCompleted = <Badge colorScheme={"success"} variant={"solid"}>{ language.components.statusBadgeCompleted }</Badge>
+	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const user = useRecoilValue(userState)
+	let { accountnumber, amount_paid, bankname, completed_date, completed_time, created_date, created_time, 
+		fee_AUD, fullname, rate, received_amount, status, transaction_number, transfer_amount } = props.data
 
 	let dateCR = new Date([created_date, created_time].join('T'))
 	let dateCO = new Date([completed_date, completed_time].join('T'))
 	let dateOptions = { dateStyle: 'medium', timeZone: 'Australia/Sydney', timeStyle: 'medium' }
 
-	let statusBadge
-	switch(status) {
-		case 'Wait for payment': statusBadge = badgeWaiting; break
-		case 'Cancelled': statusBadge = badgeCancelled; break
-		case 'Completed': statusBadge = badgeCompleted; break
-	} 
+	let scheme, message, badge
+	switch (status) {
+		case 'Wait for payment': [scheme, message] = ['default', language.components.statusBadgeWaitForPayment]; break
+		case 'Cancelled': [scheme, message] = ['danger', language.components.statusBadgeCancelled]; break
+		case 'Completed': [scheme, message] = ["default", language.components.statusBadgeCompleted]; break
+	}
+	badge = <Badge colorScheme={scheme} variant={"solid"}>{message}</Badge>
 
+	transfer_amount = formatCurrency(transfer_amount, "en-AU", "AUD").full + " " + language.misc.aud
+	rate = formatCurrency(rate, "en-AU", "AUD").full + " " + language.misc.aud
+	fee_AUD = formatCurrency(fee_AUD, "en-AU", "AUD").full + " " + language.misc.aud
+	amount_paid = formatCurrency(amount_paid, "en-AU", "AUD").full + " " + language.misc.aud
+	received_amount = formatCurrency(received_amount, "th-TH", "THB").full + " " + language.misc.thb
+	dateCR = dateCR.toLocaleString(user.lang, dateOptions)
+	dateCO = dateCO.toLocaleString(user.lang, dateOptions)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	useEffect(() => {
+		if(language.getLanguage() !== user.lang) {
+			language.setLanguage(user.lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
 		forceUpdate()
-	}, [language, auth])
+	}, [language, user])
 
 	return (
 		<ModalComponent isOpen={props.isOpen} onClose={props.onClose} size={"lg"}>
 			<ModalComponent.Content w={"95%"} >
 				<ModalComponent.CloseButton />
-				<ModalComponent.Header>{"Transaction: " + transaction_number}</ModalComponent.Header>
+				<ModalComponent.Header>{language.dashboard.modal.title + ": " + transaction_number}</ModalComponent.Header>
 				<ModalComponent.Body>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelBeneficiaryName }</Text>
-						<Text textAlign={"right"} >{ fullname }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelAccountNumber }</Text>
-						<Text textAlign={"right"} >{ accountnumber }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"} borderBottomWidth={"1"} borderBottomColor={"coolGray.300"}>
-						<Text bold>{ language.dashboard.modalLabelBank }</Text>
-						<Text textAlign={"right"}>{ bankname }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelSendAmount }</Text>
-						<Text textAlign={"right"} >{ formatCurrency(transfer_amount, "en-AU", "AUD").full } { language.dashboard.audCode }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelRate }</Text>
-						<Text textAlign={"right"} >{ formatCurrency(rate, "en-AU", "AUD").full } { language.dashboard.thbCode }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelFees }</Text>
-						<Text textAlign={"right"} >{ formatCurrency(fee_AUD, "en-AU", "AUD").full } { language.dashboard.audCode }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelTotalToPay }</Text>
-						<Text textAlign={"right"} >{ formatCurrency(amount_paid, "en-AU", "AUD").full } { language.dashboard.audCode }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"} borderBottomWidth={"1"} borderBottomColor={"coolGray.300"}>
-						<Text bold>{ language.dashboard.modalLabelReceivableAmount }</Text>
-						<Text textAlign={"right"}>{ formatCurrency(received_amount, "th-TH", "THB").full } { language.dashboard.thbCode }</Text>
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelStatus }</Text>
-						{ statusBadge }
-					</HStack>
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelCreatedDate }</Text>
-						<Text textAlign={"right"} >{ dateCR.toLocaleString(auth.lang, dateOptions) }</Text>
-					</HStack>
-					{ status == 'Completed' && ( 
-					<HStack justifyContent={"space-between"} py={"4"}>
-						<Text bold>{ language.dashboard.modalLabelCompletedDate }</Text>
-						<Text textAlign={"right"} >{ dateCO.toLocaleString(auth.lang, dateOptions) }</Text>
-					</HStack>)}
+					<LabelValue label={language.dashboard.modal.beneficiaryName} value={fullname} />
+					<LabelValue label={language.dashboard.modal.accountNumber} value={accountnumber} />
+					<LabelValue label={language.dashboard.modal.bank} value={bankname} />
+					<Divider />
+					<LabelValue label={language.dashboard.modal.sendAmount} value={transfer_amount} />
+					<LabelValue label={language.dashboard.modal.rate} value={rate} />
+					<LabelValue label={language.dashboard.modal.fees} value={fee_AUD} />
+					<LabelValue label={language.dashboard.modal.totalToPay} value={amount_paid} />
+					<LabelValue label={language.dashboard.modal.receivableAmount} value={received_amount} />
+					<LabelValue label={language.dashboard.modal.status} value={badge} />
+					<LabelValue label={language.dashboard.modal.createdDate} value={dateCR} />
+					<LabelValue label={language.dashboard.modal.completedDate} value={dateCO} />
 				</ModalComponent.Body>
 			</ModalComponent.Content>
 		</ModalComponent>
 	)
 }
 
-export default React.memo(Modal);
+export default memo(Modal);

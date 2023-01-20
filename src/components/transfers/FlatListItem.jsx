@@ -1,8 +1,10 @@
-import React from 'react'
-import { Avatar, HStack, Pressable, Spacer, Text } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
+import React, { memo } from 'react'
 
+//components
+import { Avatar, HStack, Pressable, Spacer, Text } from 'native-base'
+import Icon from '../../components/common/Icon'
+
+//data
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { beneficiaryObj } from '../../data/recoil/beneficiaries'
 import { stepTwoButtonAtom } from '../../data/recoil/transfer'
@@ -26,13 +28,13 @@ const FlatListItem = (props) => {
 				</HStack>
 				<Spacer />
 				{ beneficiary.fullname != fullname ? (
-					<Ionicon name="ellipse-outline" size={36} color={"#CCC"} />
+					<Icon type={"Ionicon"} name="ellipse-outline" size={36} color={"#CCC"} />
 				) : (
-					<Ionicon name="checkmark-circle" size={36} color={"#16A34A"} />
+					<Icon type={"Ionicon"} name="checkmark-circle" size={36} color={"#16A34A"} />
 				)}
 			</HStack>
 		</Pressable>
 	)
 }
 
-export default React.memo(FlatListItem)
+export default memo(FlatListItem)

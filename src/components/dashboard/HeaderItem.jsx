@@ -1,17 +1,21 @@
-import React from 'react'
-import { Box, Heading } from 'native-base';
-import { AuthContext } from '../../data/Context';
+import React, { useContext, memo } from 'react'
+
+//components
+import ListHeader from '../common/ListHeader'
+
+//data
+import { AuthContext } from '../../data/Context'
 
 const HeaderItem = (props) => {
-	const { auth } = React.useContext(AuthContext)
-	const { header, styles } = props
-	let formattedDate = new Date(header).toLocaleDateString(auth.lang, {weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
-
+	const { auth } = useContext(AuthContext)
+	const { header, index } = props
+	let styles = {}, formattedDate = new Date(header).toLocaleDateString(auth.lang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+	
+	if(index == 0) { styles={ roundedTop: "8" } }
+	
 	return (
-		<Box backgroundColor={"primary.200"} p={"4"} w={"100%"} {...styles}>
-			<Heading size={"sm"}>{formattedDate}</Heading>
-		</Box>
+		<ListHeader title={formattedDate} index={index} styles={styles} />
 	)
 }
 
-export default React.memo(HeaderItem)
+export default memo(HeaderItem)
