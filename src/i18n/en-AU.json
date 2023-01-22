@@ -23,8 +23,6 @@
 				"logoAlt": "Own Money Services",
 				"underLogo": "Account Registration",
 				"buttonRegister": "Sign Up",
-				"buttonRegisterLoading": "Processing",
-				"buttonRegisterComplete": "Account Registered",
 				"buttonBackToLogin": "Back to Sign In"
 			},
 			"labels": {
@@ -51,8 +49,6 @@
 				"logoAlt": "Own Money Services",
 				"underLogo": "If you have forgotten your password, enter your email below to reset it.",
 				"buttonResetPassword": "Reset Password",
-				"buttonResetLoading": "Processing",
-				"buttonResetSent": "Request Sent!",
 				"buttonBackToLogin": "Back to Login"
 			},
 			"labels": {
@@ -89,11 +85,15 @@
 		"termsAndConditions": {
 			"labelAccept": "I agree to terms and conditions.",
 			"buttonSubmit": "Proceed",
-			"errorMessageAccept": "You must agree before submitting. Please scroll down."
+			"Accept": "You must agree before submitting. Please scroll down."
 		},
 		"loading": {
 			"title": "Welcome",
 			"subtitle": "Loading, Please wait."
+		},
+		"unloading": {
+			"title": "Logging Out",
+			"subtitle": "Unloading, Please wait."
 		},
 		"dashboard": {
 			"ui": {
@@ -293,26 +293,33 @@
 			}
 		},
 		"transferProgress": {
-			"labelAmount": "Amount",
-			"labelBeneficiary": "Beneficiary",
-			"labelReview": "Review",
-			"labelFinish": "Finish"
+			"labels": {
+				"amount": "Amount",
+				"beneficiary": "Beneficiary",
+				"review": "Review",
+				"finish": "Finish"
+			}
 		},
 		"transferStepOne": {
-			"instructionTop": "Enter the amount to transfer",
-			"currentRate": "Current rate",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"headingTransferDetails": "Transfer Details",
-			"labelDailyLimit": "Your daily limit",
-			"labelRemainingLimit": "Remaining limit",
-			"labelLimitAfterTransfer": "Limit after transfer",
-			"labelFee": "Fee",
-			"labelYourRate": "Your Rate",
-			"errorMessageInvalidFormat": "Invalid format! Please only use positive and valid money values.",
-			"errorMessageLimitExceeded": "You cannot transfer more than your daily limit. Please contact Own Money Services if you require assistance.",
-			"buttonNext": "Next",
-			"buttonReset": "Reset"
+			"ui": {
+				"buttonNext": "Next",
+				"buttonReset": "Reset",
+				"instructionTop": "Enter the amount to transfer"
+			},
+			"headings": {
+				"transferDetails": "Transfer Details"
+			},
+			"labels": {
+				"dailyLimit": "Your daily limit",
+				"remainingLimit": "Remaining limit",
+				"limitAfterTransfer": "Limit after transfer",
+				"fee": "Fee",
+				"yourRate": "Your Rate"
+			},
+			"errors": {
+				"invalidFormat": "Invalid format! Please only use positive and valid money values.",
+				"limitExceeded": "You cannot transfer more than your daily limit. Please contact Own Money Services if you require assistance."
+			}
 		},
 		"transferSteptwo": {
 			"titleTop": "Select the beneficiary for this transfer",
@@ -320,54 +327,63 @@
 			"buttonNext": "Next"
 		},
 		"transferStepthree": {
-			"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen",
-			"headerFrom": "From",
-			"headerTo": "To",
-			"headerAmounts": "Amounts",
-			"headerTotals": "Totals",
-			"listDataSenderLabel": "Sender",
-			"listDataReceiverLabel": "Receiver",
-			"listDataAccountNumberLabel": "Account Number",
-			"listDataBankNameLabel": "Bank Name",
-			"listDataAmountToSendLabel": "Amount To Send",
-			"listDataYourRateLabel": "Your Rate",
-			"listDataFeesLabel": "Fees",
-			"listDataTotalToPayLabel": "Total To Pay",
-			"listDataReceivableAmountLabel": "Receivable Amount",
-			"listDataPurposeOfTransferLabel": "Purpose of Transfer",
-			"listDataPurposeOfTransferPlaceholder": "Please Select Purpose",
-			"listDataTermsStatement": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility.",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"errorMessageSelectReason": "Please select a reason for this transfer",
-			"errorMessageAcceptTerms": "Please agree to the terms and conditions",
-			"buttonPrevious": "Previous",
-			"buttonNext": "Next"
+			"ui": {
+				"buttonPrevious": "Previous",
+				"buttonNext": "Next",
+				"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen"
+			},
+			"headings": {
+				"from": "From",
+				"to": "To",
+				"amounts": "Amounts",
+				"totals": "Totals"
+			},
+			"labels": {
+				"sender": "Sender",
+				"receiver": "Receiver",
+				"accountnumber": "Account Number",
+				"bankname": "Bank Name",
+				"amounttosend": "Amount To Send",
+				"yourrate": "Your Rate",
+				"fees": "Fees",
+				"totaltopay": "Total To Pay",
+				"receivableamount": "Receivable Amount",
+				"purpose": "Purpose of Transfer",
+				"terms": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility."
+			},
+			"placeholders": {
+				"purpose": "Please Select Purpose"
+			},
+			"errors": {
+				"selectReason": "Please select a reason for this transfer",
+				"acceptTerms": "Please agree to the terms and conditions"
+			}
 		},
 		"transferStepFour": {
-			"headerFrom": "From",
-			"headerTo": "To",
-			"headerAmounts": "Amounts",
-			"headerTotals": "Totals",
-			"listDataSenderLabel": "Sender",
-			"listDataReceiverLabel": "Receiver",
-			"listDataAccountNumberLabel": "Account Number",
-			"listDataBankNameLabel": "Bank Name",
-			"listDataAmountToSendLabel": "Amount To Send",
-			"listDataYourRateLabel": "Current Rate",
-			"listDataFeesLabel": "Fees",
-			"listDataTotalToPayLabel": "Total To Pay",
-			"listDataReceivableAmountLabel": "Receivable Amount",
-			"listDataPurposeOfTransferLabel": "Purpose of Transfer",
-			"listDataTermsStatement": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility.",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"buttonNewTransfer": "New Transfer"
+			"ui": {
+				"buttonProceedToPayment": "Proceed To Payment"
+			},
+			"headings": {
+				"from": "From",
+				"to": "To",
+				"amounts": "Amounts",
+				"totals": "Totals"
+			},
+			"labels": {
+				"sender": "Sender",
+				"receiver": "Receiver",
+				"accountnumber": "Account Number",
+				"bankname": "Bank Name",
+				"amounttosend": "Amount To Send",
+				"yourrate": "Current Rate",
+				"fees": "Fees",
+				"totaltopay": "Total To Pay",
+				"receivableamount": "Receivable Amount",
+				"purpose": "Purpose of Transfer",
+				"terms": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility."
+			}
 		},
 		"transactionsList": {
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"labelLoading": "Loading",
 			"labelLoadMore": "Load more"
 		},
 		"transactionsDetail": {
@@ -437,60 +453,83 @@
 			}
 		},
 		"profileEdit": {
-			"listDataHeaderPersonalDetails": "Personal Details",
-			"listDataHeaderContactDetails": "Contact Details",
-			"listDataHeaderAddressDetails": "Address Details",
-			"listDataHeaderAccountInfo": "Account Info",
-			"listDataFirstNameLabel": "First Name",
-			"listDataFirstNamePlaceholder": "First Name",
-			"listDataFirstNameErrorRequired": "Please provide yout First Name",
-			"listDataMiddleNameLabel": "Middle Name",
-			"listDataMiddleNamePlaceholder": "Middle Name",
-			"listDataMiddleNamErrorRequired": "Please provide your Middle Name",
-			"listDataLastNameLabel": "Last Name",
-			"listDataLastNamePlaceholder": "Last Name",
-			"listDataLastNameErrorRequired": "Please provide your Last Name",
-			"listDataNickNameLabel": "Nickname (Optional)",
-			"listDataNickNamePlaceholder": "Nickname (Optional)",
-			"listDataDateOfBirthLabel": "Date of Birth",
-			"listDataDateOfBirthModalTitle": "Select Date",
-			"listDataDateOfBirthErrorRequired": "Please provide your Date Of Birth",
-			"listDataOccupationLabel": "Occupation",
-			"listDataOccupationPlaceholder": "Occupation",
-			"listDataOccupationErrorRequired": "Please provide your Occupation",
-			"listDataPhoneLabel": "Phone Number",
-			"listDataPhonePlaceholder": "Phone Number",
-			"listDataPhoneErrorRequired": "Please provide your Phone Number",
-			"listDataPhoneErrorDigits": "Please only use digits for Phone Number",
-			"listDataPhoneErrorMax": "Your phone number must be 10 digits exactly including Area Code",
-			"listDataPhoneErrorMin": "Your phone number must be 10 digits exactly including Area Code",
-			"listDataEmailLabel": "Email",
-			"listDataEmailSubLabel": "Note: Your email address is the username you use to login into our app. To change your email, please contact Customer Support.",
-			"listDataAddressLabel": "Australian Residential Address",
-			"listDataAddressPlaceholder": "Australian Residential Address",
-			"listDataAddressErrorRequired": "Please provide your Australian Residential Address",
-			"listDataSuburbLabel": "City/Suburb",
-			"listDataSuburbPlaceholder": "City/Suburb",
-			"listDataSuburbErrorRequired": "Please provide your City/Suburb",
-			"listDataStateLabel": "State",
-			"listDataStatePlaceholder": "State",
-			"listDataStateErrorRequired": "Please select your State",
-			"listDataPostCodeLabel": "Post Code",
-			"listDataPostCodePlaceholder": "Post Code",
-			"listDataPostCodeErrorRequired": "Please provide your Postcode",
-			"buttonBack": "Back",
-			"buttonSave": "Save"
+			"ui": {
+				"buttonBack": "Back",
+				"buttonSave": "Save",
+				"dateofbirthTitle": "Select Date"
+			},
+			"headings": {
+				"personaldetails": "Personal Details",
+				"contactdetails": "Contact Details",
+				"addressdetails": "Address Details",
+				"accountinfo": "Account Info"
+			},
+			"labels": {
+				"firstname": "First Name",
+				"middlename": "Middle Name",
+				"lastname": "Last Name",
+				"nickname": "Nickname (Optional)",
+				"dateofbirth": "Date of Birth",
+				"occupation": "Occupation",
+				"phone": "Phone Number",
+				"email": "Email",
+				"emailhelper": "Note: Your email address is the username you use to login into our app. To change your email, please contact Customer Support.",
+				"address": "Australian Residential Address",
+				"suburb": "City/Suburb",
+				"state": "State",
+				"postcode": "Post Code"
+			},
+			"placeholders": {
+				"firstname": "First Name",
+				"middlename": "Middle Name",
+				"lastname": "Last Name",
+				"nickname": "Nickname (Optional)",
+				"occupation": "Occupation",
+				"phone": "Phone Number",
+				"address": "Australian Residential Address",
+				"suburb": "City/Suburb",
+				"state": "State",
+				"postcode": "Post Code"
+			},
+			"errors": {
+				"firstNameRequired": "Please provide yout First Name",
+				"middleNamRequired": "Please provide your Middle Name",
+				"lastNameRequired": "Please provide your Last Name",
+				"dateOfBirthRequired": "Please provide your Date Of Birth",
+				"occupationRequired": "Please provide your Occupation",
+				"phoneRequired": "Please provide your Phone Number",
+				"phoneDigits": "Please only use digits for Phone Number",
+				"phoneMax": "Your phone number must be 10 digits exactly including Area Code",
+				"phoneMin": "Your phone number must be 10 digits exactly including Area Code",
+				"addressRequired": "Please provide your Australian Residential Address",
+				"suburbRequired": "Please provide your City/Suburb",
+				"stateRequired": "Please select your State",
+				"postCodeRequired": "Please provide your Postcode"
+			}
 		},
 		"settings": {
-			"headerBack": "Back",
-			"sectionHeaderPreferences": "Preferences",
-			"sectionLabelLanguage": "Language",
-			"sectionHeaderAccount": "Account",
-			"sectionLabelLogout": "Logout",
-			"sectionLabelResetPin": "Reset Pin",
-			"sectionLabelResetPassword": "Reset Password",
-			"sectionHeaderAbout": "About",
-			"sectionLabelAppVersion": "App Version"
+			"ui": {
+				"alertLogoutTitle": "Logout?",
+				"alertLogout": "This will log out of your account and return you to the login screen. Are you sure?",
+				"alertResetPasswordTitle": "Reset Password?",
+				"alertResetPassword": "Would you would like to reset your password? To do this, we will send you an email with reset password link. Do you wish to proceed?",
+				"alertResetPinTitle": "Reset PIN?",
+				"alertResetPin": "Would you would like to reset your PIN code? If so, your existing PIN code will be removed and you will be able to create a new one. Do you wish to proceed?",
+				"buttonConfirm": "Confirm",
+				"buttonCancel": "Cancel"
+			},
+			"headings": {
+				"preferences": "Preferences",
+				"account": "Account",
+				"about": "About"
+			},
+			"labels": {
+				"language": "Language",
+				"logout": "Logout",
+				"resetpin": "Reset Pin",
+				"resetpassword": "Reset Password",
+				"appversion": "App Version"
+			}
 		},
 		"screens": {
 			"dashboard": "Dashboard",
@@ -529,6 +568,8 @@
 			"offlineTitle": "No Internet Connection",
 			"passwordMismatchMessage": "The password you entered does not match our records. Please re-enter your password.",
 			"passwordMismatchTitle": "Password",
+			"passwordResetMessage": "We will send an email to the address linked with your account, with a link to reset your password. If you change your mind, you can ignore this email and continue to use your current password. You will however need to set an new PIN Code.",
+			"passwordResetTitle": "Password Reset Requested",
 			"pinResetMessage": "Your PIN Code has been reset. Please login again to set a new one.",
 			"pinResetTitle": "PIN Code Reset",
 			"profileUpdatedMessage": "Your profile details have been updated.",

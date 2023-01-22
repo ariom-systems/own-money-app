@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -10,14 +10,15 @@ import AppSafeArea from '../../../components/common/AppSafeArea'
 import AlertBanner from '../../../components/common/AlertBanner'
 
 //data
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
+import { getNotice } from '../../../data/handlers/Status'
+import { validationRulesBeneficiaryAdd } from '../../../config'
 import { AuthContext } from '../../../data/Context'
 import { buildDataPath, sortByParam, addObjectExtraData, stringifyArray, mapActionsToConfig } from '../../../data/Actions'
 import { api, beneficiaryColumns, beneficiaryAddToolbarConfig } from '../../../config'
-import { useRecoilState, useRecoilValue } from 'recoil'
-import { loadingState, noticeState } from '../../../data/recoil/system'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
-import { validationRulesBeneficiaryAdd } from '../../../config'
-import { userState } from '../../../data/recoil/user'
+import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -42,28 +43,38 @@ export default function BeneficiariesAdd() {
 
 function BeneficiariesAddInner() {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = useContext(AuthContext)
+	const forceUpdate = useForceUpdate()
+	const { control, handleSubmit, formState } = useFormContext()
+	const { auth } = useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
-	const user = useRecoilValue(userState)
-	const notices = useRecoilValue(noticeState)
-	const { control, handleSubmit, setValue, formState } = useFormContext()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
+	const lang = useRecoilValue(langState)
 
 	let actions = [
 		() => handleBack(), , //note the double comma. second element is a spacer and has no action
-		() => handleSubmit(onSubmit, onError)
+		() => {
+			new Promise((resolve) => {
+				setLoading({ status: true, type: 'saving' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			})
+		}
 	]
 
 	const toolbarConfig = mapActionsToConfig(beneficiaryAddToolbarConfig, actions)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	const handleBack = () => {
 		navigation.goBack()
@@ -81,21 +92,19 @@ function BeneficiariesAddInner() {
 					let newList = [...beneficiaries, result]
 					newList.sort(sortByParam("initials", "firstname"))
 					setBeneficiaries((init) => ([ ...newList ]))
-					authDispatch({ type: 'SET_STATUS', payload: { data: 'beneficiarySaved' }})
+					setNotices((prev) => ([...prev, getNotice('beneficiarySaved', lang)]))
 					navigation.popToTop()
 				})
 			} else {
 				throw response.data
 			}
 		})
-		.catch(error => {
-			console.log(error)
-			authDispatch({ type: 'SET_STATUS_DETAILED', payload: { data: 'serverError', extra: error }})
-		})
+		.catch(error => console.log(error))
 	}
 
-	//TODO: improve the list of errors shown to the user
-	const onError = (errors, e) => console.log(errors, e)
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
 
 	return (
 		<AppSafeArea>

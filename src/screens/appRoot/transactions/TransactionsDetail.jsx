@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useEffect } from 'react';
+import React, { useEffect } from 'react';
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -10,12 +10,12 @@ import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner';
 
 //data
-import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
 import { useRecoilValue, useRecoilState, useResetRecoilState } from 'recoil'
-import { transactionObj } from '../../../data/recoil/transactions'
-import { noticeState, loadingState } from '../../../data/recoil/system'
-import { userState } from '../../../data/recoil/user'
+import { useForceUpdate } from '../../../data/Hooks'
 import { transactionsDetailToolbarConfig, TransactionTemplate } from '../../../config'
+import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
+import { transactionObj } from '../../../data/recoil/transactions'
+import { noticeState, loadingState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -25,13 +25,12 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransactionsDetail = () => {
 	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const resetTransaction = useResetRecoilState(transactionObj)
 	const transaction = useRecoilValue(transactionObj)
 	const notices = useRecoilValue(noticeState)
-	const [ loading, setLoading ] = useRecoilState(loadingState)
-
-	const user = useRecoilValue(userState)
-	const resetTransaction = useResetRecoilState(transactionObj)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const lang = useRecoilValue(langState)
 
 	const actions = [() => handleBack(navigation)]
 	const toolbarConfig = mapActionsToConfig(transactionsDetailToolbarConfig, actions)
@@ -41,12 +40,12 @@ const TransactionsDetail = () => {
 	const sections = mapSectionDataFromTemplate(TransactionTemplate, transaction, labels, headings)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	useEffect(() => {
 		setLoading({ status: false, text: 'none' })

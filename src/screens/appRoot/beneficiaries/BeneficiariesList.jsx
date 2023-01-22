@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer} from 'react'
+import React, { useEffect } from 'react'
 
 //components
 import AppSafeArea from '../../../components/common/AppSafeArea'
@@ -11,12 +11,12 @@ import Toolbar from '../../../components/common/Toolbar'
 
 //data
 import { useNavigation } from '@react-navigation/native'
+import { useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
 import { beneficiaryListToolbarConfig } from '../../../config'
 import { mapActionsToConfig } from '../../../data/Actions'
-import { useRecoilValue } from 'recoil'
-import { noticeState } from '../../../data/recoil/system'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
-import { userState } from '../../../data/recoil/user'
+import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -26,19 +26,20 @@ let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const BeneficiariesList = () => {
 	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
 	const notices = useRecoilValue(noticeState)
 	const beneficiaries = useRecoilValue(beneficiaryList)
-	const user = useRecoilValue(userState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const lang = useRecoilValue(langState)
+	
 	const actions = [() => navigation.navigate('BeneficiariesAdd')]
 	const toolbarConfig = mapActionsToConfig(beneficiaryListToolbarConfig, actions)
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<AppSafeArea>

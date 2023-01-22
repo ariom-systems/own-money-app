@@ -743,26 +743,27 @@ function toFixedWithoutRounding(input) {
  *  
  */
 export function localiseObjectData(input, template, lang) {
+	let output = cloneDeep(input)
 	const localiseFormats = template
-	for (const property in input) {
+	for (const property in output) {
 		if (property in localiseFormats) {
-			let rule = localiseFormats[property], value = input[property], newValue
+			let rule = localiseFormats[property], value = output[property], newValue
 			switch (rule.type) {
 				case 'currency':
 					newValue = formatCurrency(value, rule.options[0], rule.options[1]).full
-					input[property] = newValue + ' ' + rule.options[1]
+					output[property] = newValue + ' ' + rule.options[1]
 					break
 				case 'date':
 					if (value != '0000-00-00 00:00:00') {
 						let newValue = new Date(Date.parse(value.replace(' ', 'T'))), tmpLang = lang
 						if (rule.options.dateStyle == 'short') { tmpLang = 'en-GB' }
-						input[property] = newValue.toLocaleString(tmpLang, rule.options)
+						output[property] = newValue.toLocaleString(tmpLang, rule.options)
 					}
 					break
 			}
 		}
 	}
-	return input
+	return output
 }
 
 

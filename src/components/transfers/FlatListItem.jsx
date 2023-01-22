@@ -28,9 +28,9 @@ const FlatListItem = (props) => {
 				</HStack>
 				<Spacer />
 				{ beneficiary.fullname != fullname ? (
-					<Icon type={"Ionicon"} name="ellipse-outline" size={36} color={"#CCC"} />
+					<Icon type={"Ionicon"} name="ellipse-outline" fontSize={36} color={"#CCC"} />
 				) : (
-					<Icon type={"Ionicon"} name="checkmark-circle" size={36} color={"#16A34A"} />
+					<Icon type={"Ionicon"} name="checkmark-circle" fontSize={36} color={"#16A34A"} />
 				)}
 			</HStack>
 		</Pressable>

@@ -1,21 +1,24 @@
-import React, { useEffect, useState, useReducer } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 
 //components
-import { Alert, Box, Button, CloseIcon, Collapse, Factory, HStack, IconButton, Text, VStack } from 'native-base'
+import { Alert, Box, Button, CloseIcon, Collapse, HStack, IconButton, Text, VStack } from 'native-base'
 import Icon from './Icon'
 
 //data
-import { useRecoilValue, useRecoilState } from 'recoil'
-import { noticeState } from '../../data/recoil/system'
-import { userState } from '../../data/recoil/user'
+import { useRecoilValue, useRecoilState, useResetRecoilState } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { getNotice } from '../../data/handlers/Status'
 import { atomRemoveItemAtIndex } from '../../data/Actions'
+import { userState } from '../../data/recoil/user'
+import { noticeState, langState } from '../../data/recoil/system'
 
 export const AlertItem = (props) => {
-	const user = useRecoilValue(userState)
-	const { icon, title, message, style = "info", canClose = false, bannerAction = null, timeout = 10000, id } = props.data
-	const { label, fn } = bannerAction ?? { label: "none", fn: () => {} }
 	const [ show, setShow ] = useState(true)
 	const [ notices, setNotices ] = useRecoilState(noticeState)
+
+	const { icon, iconType = 'Ionicon', title, message, style = "info", canClose = false, bannerAction = null, timeout = 10000, id } = props.data
+	const { label, fn } = bannerAction ?? { label: "none", fn: () => {} }
 	const handleBannerAction = () => { fn() }
 
 	useEffect(() => {
@@ -38,7 +41,7 @@ export const AlertItem = (props) => {
 				<VStack space={"1"} flexShrink={"1"} w={"100%"}>
 					<HStack alignItems={"center"} flexShrink={"1"} space={"2"} justifyContent={"space-between"}>
 						<HStack alignItems={"center"} flexShrink={"1"} space={"2"}>
-							<Icon type={"Ionicon"} name={icon} fontSize={"lg"} />
+							<Icon type={iconType} name={icon} fontSize={"lg"} />
 							<Text fontSize={"md"} fontWeight={"medium"}>{title}</Text>
 						</HStack>
 						{ canClose && (
@@ -71,23 +74,56 @@ export const AlertItem = (props) => {
 }
 
 const AlertBanner = (props) => {
-	const notices = useRecoilValue(noticeState)
-	const user = useRecoilValue(userState)
-	let noticeList = noticeList = notices.map((element, index) => {
-		return <AlertItem key={index} index={index} data={element} />
-	})
+	const { auth } = useContext(AuthContext)
+	const lang = useRecoilValue(langState)
+	let notices = useRecoilValue(noticeState)
+	let noticeList = []
+	
 
-	useEffect(() => {
+	const removeDuplicates = (notices) => {
+		let unique = []
+		let output = notices.filter((notice) => {
+			const isDuplicate = unique.includes(notice['id'])
+			if (!isDuplicate) {
+				unique.push(notice['id'])
+				return true
+			}
+			return false
+		})
+		return output
+	}
+
+	if(auth.token != null) {
+		notices = removeDuplicates(notices)
 		noticeList = notices.map((element, index) => {
 			return <AlertItem key={index} index={index} data={element} />
 		})
-	}, [notices])
+	} else {
+		if (auth.status != null) {
+			let contextNotice = getNotice(auth.status, lang)
+			noticeList.push(<AlertItem key={'from_context'} index={0} data={contextNotice} />)
+		}
+	}
 
-	return noticeList.length > 0 ? (
+	useEffect(() => {
+		if (auth.token != null) {
+			notices = removeDuplicates(notices)
+			noticeList = notices.map((element, index) => {
+				return <AlertItem key={index} index={index} data={element} />
+			})
+		} else {
+			if (auth.status != null) {
+				let contextNotice = getNotice(auth.status, lang)
+				noticeList.push(<AlertItem key={'from_context'} index={0} data={contextNotice} />)
+			}
+		}
+	},[auth, notices])
+
+	return (
 		<VStack {...props} space={"4"}>
-			{noticeList}
+			{ noticeList }
 		</VStack>
-	) : ( null )
+	)
 }
 
 export default AlertBanner

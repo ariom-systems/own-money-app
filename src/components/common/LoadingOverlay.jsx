@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 
 //components
 import { Flex } from 'native-base'
@@ -6,9 +6,9 @@ import LoadingSpinner from './LoadingSpinner'
 
 //data
 import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
-import { loadingState } from '../../data/recoil/system'
+import { useForceUpdate } from '../../data/Hooks'
 import { traverseObjectByPath } from '../../data/Actions'
+import { loadingState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -17,18 +17,17 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 export default function LoadingOverlay() {
-	const user = useRecoilValue(userState)
+	const lang = useRecoilValue(langState)
 	const loading = useRecoilValue(loadingState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const forceUpdate = useForceUpdate()
 	let messageLabel = "something?"
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
-			navigation.setOptions()
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	switch(loading.type) {
 		case 'processing':

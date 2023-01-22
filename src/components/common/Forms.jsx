@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useReducer } from 'react'
+import React, { useState, useEffect } from 'react'
 
 //components
 import { Box, Button, Checkbox, FormControl, Heading, HStack, Input, InputGroup, InputLeftAddon, InputRightAddon, Text } from 'native-base'
@@ -8,11 +8,32 @@ import Icon from './Icon'
 
 //data
 import { useController } from 'react-hook-form'
+import { useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { traverseObjectByPath } from '../../data/Actions'
+import { langState } from '../../data/recoil/system'
+
+//lang
+import LocalizedStrings from 'react-native-localization'
+const auStrings = require('../../i18n/en-AU.json')
+const thStrings = require('../../i18n/th-TH.json')
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 export const ErrorMessage = (props) => {
+	const forceUpdate = useForceUpdate()
+	const lang = useRecoilValue(langState)
 	const { message, icon = "alert-circle-outline", errorStyles = null } = props
+	let label = traverseObjectByPath(language, message)
+
+	useEffect(() => {
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
+			forceUpdate()
+		}
+	}, [language, lang])
+
 	return (
-		<FormControl.ErrorMessage leftIcon={<Icon type={"Ionicon"} alignSelf={"flex-start"} mt={"0.5"} name={icon} />} _text={errorStyles}>{ message }</FormControl.ErrorMessage>
+		<FormControl.ErrorMessage leftIcon={<Icon type={"Ionicon"} alignSelf={"flex-start"} mt={"0.5"} name={icon} />} _text={errorStyles}>{ label }</FormControl.ErrorMessage>
 	)
 }
 
@@ -135,7 +156,7 @@ export const CheckInput = (props) => {
 			<HStack {...innerStyles}>
 				<Checkbox
 					name={ field.name }
-					accessibilityLabel={ label }
+					accessibilityLabel={ label ?? field.name + " checkbox" }
 					onChange={ field.onChange }
 					isChecked={ field.value }
 					value={ field.value }
@@ -143,7 +164,6 @@ export const CheckInput = (props) => {
 					disabled={disabledStyles}
 				/>
 				{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
-				{/* <FormControl.Label _text={{ ...labelStyles, color: errors ? "danger.600": "black" }}>{ label }</FormControl.Label>	 */}
 			</HStack>
 			{ helperText && <HelperText text={helperText} /> }
 			{ errors && <ErrorMessage message={ errors.message } errorStyles={errorStyles} />}
@@ -206,7 +226,7 @@ export const DatePickerInput = (props) => {
 	}
 
 	return (
-		<FormControl px={"4"} isRequired={required ? true : false} isInvalid={errors ? true : false} {...blockStyles}>
+		<FormControl isRequired={required ? true : false} isInvalid={errors ? true : false} {...blockStyles}>
 			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
 			<InputGroup w={"100%"}>
 				<Input value={visualDate.day} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"2"} />

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 //components
 import { Box, Heading, HStack, Popover, Pressable, Spacer, Text } from 'native-base'
@@ -7,11 +7,10 @@ import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
 
 //data
-import { AuthContext } from '../../data/Context'
-import { formatCurrency } from '../../data/Actions'
 import { useRecoilValue }  from 'recoil'
-import { globalState } from '../../data/recoil/system'
-import { userState } from '../../data/recoil/user'
+import { useForceUpdate } from '../../data/Hooks'
+import { formatCurrency } from '../../data/Actions'
+import { globalState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -20,15 +19,15 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ExchangeRate = (props) => {
-	const { nb, size = "lg" } = props
-	const { auth } = useContext(AuthContext)
+	const forceUpdate = useForceUpdate()
 	const globals = useRecoilValue(globalState)
-	const user = useRecoilValue(userState)
+	const lang = useRecoilValue(langState)
 	let formatted = formatCurrency(globals.rate, "th-TH", "THB")
 	let rateValue = formatted.symbol + formatted.value
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const { nb, size = "lg" } = props
+
 	//en-AU only returns 2 digit year values even though it is supposed to display 4 digits. Beyond our control.
-	let rateAsOf = new Date().toLocaleDateString(user.lang == 'en-AU' ? 'en-GB' : user.lang, { year: 'numeric', month: 'numeric', day: 'numeric'}).split(',')[0]
+	let rateAsOf = new Date().toLocaleDateString(lang == 'en-AU' ? 'en-GB' : lang, { year: 'numeric', month: 'numeric', day: 'numeric'}).split(',')[0]
 
 	switch(size) {
 		case "lg": xr = xrStyles.lg; break;
@@ -36,11 +35,11 @@ const ExchangeRate = (props) => {
 	}
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<Box backgroundColor={"gray.200"} w={"100%"} borderRadius={"8"} {...nb} {...xr.padding}>

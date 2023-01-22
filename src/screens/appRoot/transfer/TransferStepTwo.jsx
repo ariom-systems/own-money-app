@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useEffect, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -10,14 +10,13 @@ import AlertBanner from '../../../components/common/AlertBanner'
 import AppSafeArea from '../../../components/common/AppSafeArea'
 
 //data
-import { AuthContext } from '../../../data/Context'
-import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
-import { transferStepTwoToolbarConfig } from '../../../config'
 import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
+import { transferStepTwoToolbarConfig } from '../../../config'
+import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
+import { noticeState, langState } from '../../../data/recoil/system'
 import { stepAtom, stepTwoButtonAtom } from '../../../data/recoil/transfer'
-import { noticeState } from '../../../data/recoil/system'
-import { userState } from '../../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -27,13 +26,12 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferStepTwo = () => {
 	const navigation = useNavigation()
-	const { auth } = useContext(AuthContext)
-	const beneficiaries = useRecoilValue(beneficiaryList)
+	const forceUpdate = useForceUpdate()
 	const setStep = useSetRecoilState(stepAtom)
+	const beneficiaries = useRecoilValue(beneficiaryList)
 	const buttonState = useRecoilValue(stepTwoButtonAtom)
 	const notices = useRecoilValue(noticeState)
-	const user = useRecoilValue(userState)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const lang = useRecoilValue(langState)
 
 	const actions = [
 		() => handlePrevious(),,
@@ -45,12 +43,12 @@ const TransferStepTwo = () => {
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	const handleNext = () => {
 		setStep(2)

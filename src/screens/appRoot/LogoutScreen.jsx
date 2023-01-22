@@ -2,33 +2,53 @@ import React, { useContext, useEffect, memo } from 'react'
 
 //components
 import AppSafeArea from '../../components/common/AppSafeArea'
-import { Center, Heading, HStack, Spinner, Text, VStack } from 'native-base'
+import LoadingSpinner from '../../components/common/LoadingSpinner'
 
 //data
 import { AuthContext } from '../../data/Context'
+import { useResetRecoilState } from 'recoil'
+import { userState } from '../../data/recoil/user'
+import { globalState} from '../../data/recoil/system'
+import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
+import { transactionList, transactionObj } from '../../data/recoil/transactions'
+
+//lang
+import LocalizedStrings from 'react-native-localization'
+const auStrings = require('../../i18n/en-AU.json')
+const thStrings = require('../../i18n/th-TH.json')
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const LogoutScreen = () => {
 	const { authDispatch } = useContext(AuthContext)
+	const resetUser = useResetRecoilState(userState)
+	const resetGlobals = useResetRecoilState(globalState)
+	const resetBeneficiaries = useResetRecoilState(beneficiaryList)
+	const resetBeneficiary = useResetRecoilState(beneficiaryObj)
+	const resetTransactions = useResetRecoilState(transactionList)
+	const resetTransaction = useResetRecoilState(transactionObj)
 
 	useEffect(() => {
-		authDispatch({ type: 'SET_STATUS', payload: { data: 'logout' }})
-		authDispatch({ type: 'LOGOUT'})
+		resetUser()
+		resetGlobals()
+		resetBeneficiaries()
+		resetBeneficiary()
+		resetTransactions()
+		resetTransaction()
+
+		// authDispatch({ type: 'SET_STATUS', payload: { data: 'logout' }}) //leave this here
+		// authDispatch({ type: 'LOGOUT'})
+
+		/**
+		 * const reset = await keychainReset('token')
+		authDispatch('')
+
+		 */
 	},[])
 
 
 	return (
-		<AppSafeArea>
-			<Center safeArea flex={1} justifyContent={"center"}>
-				<VStack flex="1" space={"4"} w={"100%"} alignItems="center" justifyContent={"center"}>
-					<VStack p={"10"} backgroundColor={"white"} rounded={"2xl"} space={"3"}>
-						<HStack space={"3"} alignItems={"center"}>
-							<Spinner size={"lg"} />
-							<Heading color={"primary.500"} fontSize={"xl"}>Logging Out</Heading>
-						</HStack>
-						<Text>Please wait.</Text>
-					</VStack>
-				</VStack>	
-			</Center>
+		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
+			<LoadingSpinner message={language.unloading.title} subtitle={language.unloading.subtitle} />
 		</AppSafeArea>
 	)
 }

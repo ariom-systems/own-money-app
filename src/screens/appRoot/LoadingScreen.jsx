@@ -13,11 +13,11 @@ import Config from 'react-native-config'
 import * as Hooks from '../../data/Hooks'
 import { keychainReset, buildDataPath, sortByParam, addExtraRecordData, stringifyArray, dateFormat } from '../../data/Actions'
 import { getNotice } from '../../data/handlers/Status'
-import { useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { userState } from '../../data/recoil/user'
 import { beneficiaryList } from '../../data/recoil/beneficiaries'
 import { transactionList } from '../../data/recoil/transactions'
-import { globalState, noticeState } from '../../data/recoil/system'
+import { globalState, noticeState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -33,6 +33,7 @@ const LoadingScreen = () => {
 	const setNotices = useSetRecoilState(noticeState)
 	const setTransactions = useSetRecoilState(transactionList)
 	const setBeneficiaries = useSetRecoilState(beneficiaryList)
+	const lang = useRecoilValue(langState)
 
 	Hooks.useEffectOnce(() => {
 		console.log('--statring preflight check--')
@@ -55,16 +56,16 @@ const LoadingScreen = () => {
 					
 					delete newObj.daily_limit
 					setUser((initial) => ({...initial, ...newObj}))
-					authDispatch({ type: 'SET_LANG', payload: { lang: newObj.lang }})
+					authDispatch({ type: 'SET_LANG', payload: { lang: lang }})
 					
 					if(app_flags === null) {
 						console.log("New user found!")
-						setNotices((prev) => ([...prev, getNotice('verifyIdentity', auth.lang)]))
-						setNotices((prev) => ([...prev, getNotice('redirectToTermsConditions', auth.lang)]))
+						setNotices((prev) => ([...prev, getNotice('verifyIdentity', lang)]))
+						setNotices((prev) => ([...prev, getNotice('redirectToTermsConditions', lang)]))
 						resolve('🔒 Redirect To Terms')
 					} else {
 						if(!app_flags.hasOwnProperty('idUploaded')) {
-							setNotices((prev) => ([...prev, getNotice('verifyIdentity', auth.lang)]))
+							setNotices((prev) => ([...prev, getNotice('verifyIdentity', lang)]))
 						}
 					}
 					resolve('✅ Loaded User Data 👤')
@@ -145,7 +146,8 @@ const LoadingScreen = () => {
 	const handleLogout = async (reason) => {
 		const reset = await keychainReset('token') //shutup vscode, await DOES do something here
 		if(reset === true) {
-			authDispatch({ type: 'SET_STATUS', payload: { data: reason }})
+			//TODO: update this to use the new Alert system
+			authDispatch({ type: 'SET_STATUS', payload: { data: reason }}) //leave this here
 			authDispatch({ type: 'LOGOUT'})
 		}
 	}

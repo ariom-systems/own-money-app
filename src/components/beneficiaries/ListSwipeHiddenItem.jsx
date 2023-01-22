@@ -1,17 +1,18 @@
-import React, { createRef, useContext, useEffect, useState, useReducer } from 'react'
+import React, { createRef, useContext, useEffect, useState } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { Button, Heading, HStack, Pressable, Text, VStack } from 'native-base'
+import { Button, HStack, Pressable, Text, VStack } from 'native-base'
 import AlertModal from '../common/AlertModal'
 import Icon from '../common/Icon'
 
 //data
 import { AuthContext } from '../../data/Context'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState } from 'recoil'
 import { userState } from '../../data/recoil/user'
-import { loadingState } from '../../data/recoil/system'
+import { loadingState, langState } from '../../data/recoil/system'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
+import { useForceUpdate } from '../../data/Hooks'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -20,39 +21,50 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ListSwipeHiddenItem = (props) => {
-	const { auth } = useContext(AuthContext)
-	let { id, fullname } = props.data.item
-	let index = props.data.index
-	const setBeneficiary = useSetRecoilState(beneficiaryObj)
-	const beneficiaries = useRecoilValue(beneficiaryList)
-	const user = useRecoilValue(userState)
-	const setLoading = useSetRecoilState(loadingState)
 	const navigation = useNavigation()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const forceUpdate = useForceUpdate()
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const setBeneficiary = useRecoilValue(beneficiaryObj)
+	const beneficiaries = useRecoilValue(beneficiaryList)
+	const lang = useRecoilValue(langState)
+	let { fullname } = props.data.item
+	let index = props.data.index
 
 	//AlertDialog
 	const [ isOpen, setIsOpen ] = useState(false)
 	const onClose = () => setIsOpen(false)
 	const cancelRef = createRef(null)
-	let deleteMessage = ""
+	let deleteMessage = language.formatString(language.beneficiaryList.ui.alertDeleteMessage, fullname)
 
 	const handleDeletePress = (item) => {
-		fullname = item.fullname
-		deleteMessage = language.formatString(language.beneficiaryList.ui.alertDeleteMessage, fullname)
 		setIsOpen(!isOpen)
 	}
 
 	const handleEdit = (item) => {
-		setBeneficiary(item)
-		setLoading({ status: true, type: "loading" })
-		navigation.navigate('BeneficiariesEdit')
+		new Promise((resolve) => {
+			setLoading({ status: true, type: 'loading' })
+			forceUpdate()
+			setTimeout(() => {
+				if (loading.status == false) { resolve() }
+			}, 1000)
+		}).then(result => {
+			setBeneficiary(item)
+			navigation.navigate('BeneficiariesEdit')
+		})
 	}
 	
 	const handleDelete = (item) => { 
-		onClose()
-		setLoading({ status: true, type: "deleting" })
-		setBeneficiary(item)
-		navigation.navigate('BeneficiariesDelete')
+		new Promise((resolve) => {
+			onClose()
+			setLoading({ status: true, type: "deleting" })
+			forceUpdate()
+			setTimeout(() => {
+				if (loading.status == false) { resolve() }
+			}, 1000)
+		}).then(result => {
+			setBeneficiary(item)
+			navigation.navigate('BeneficiariesDelete')
+		})
 	}
 
 	let corners
@@ -71,11 +83,11 @@ const ListSwipeHiddenItem = (props) => {
 	}, [language, props.data.item])
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<HStack backgroundColor={"coolGray.100"} key={ index } justifyContent={"flex-end"} flex={"1"}

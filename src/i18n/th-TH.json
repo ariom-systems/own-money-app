@@ -23,8 +23,6 @@
 				"logoAlt": "โอนมันนี่เซอร์วิสเซส",
 				"underLogo": "สมัครสมาชิก",
 				"buttonRegister": "สมัคร",
-				"buttonRegisterLoading": "กำลังดำเนินการ",
-				"buttonRegisterComplete": "ส่งข้อมูลเรียบร้อย",
 				"buttonBackToLogin": "กลับไปยังหน้า เข้าระบบ"
 			},
 			"labels": {
@@ -51,8 +49,6 @@
 				"logoAlt": "โอนมันนี่เซอร์วิสเซส",
 				"underLogo": "ลืมรหัสผ่าน? กรอกอีเมลและรีเซ็ตรหัสผ่าน",
 				"buttonResetPassword": "รีเซ็ตรหัสผ่าน",
-				"buttonResetLoading": "กำลังดำเนินการ",
-				"buttonResetSent": "ส่งข้อมูลเรียบร้อย",
 				"buttonBackToLogin": "กลับไปยังหน้า เข้าระบบ"
 			},
 			"labels": {
@@ -89,11 +85,15 @@
 		"termsAndConditions": {
 			"labelAccept": "ฉันยอมรับข้อตกลงและเงื่อนไข",
 			"buttonSubmit": "ดำเนินต่อ",
-			"errorMessageAccept": "คุณต้องยอมรับก่อนที่จะส่ง"
+			"accept": "คุณต้องยอมรับก่อนที่จะส่ง"
 		},
 		"loading": {
 			"title": "ยินดีต้อนรับ",
 			"subtitle": "กำลังโหลด กรุณารอสักครู่"
+		},
+		"unloading": {
+			"title": "ออกจากระบบ",
+			"subtitle": "ขนถ่าย โปรดรอ"
 		},
 		"dashboard": {
 			"ui": {
@@ -122,7 +122,6 @@
 				"createdDate": "เวลาที่ทำรายการ",
 				"completedDate": "เวลาที่ปลายทางได้รับเงิน"
 			}
-
 		},
 		"beneficiaryList": {
 			"ui": {
@@ -182,8 +181,8 @@
 			"labels": {
 				"firstName": "ชื่อ",
 				"lastName": "นามสกุล",
-				"thaiName": "ชื่อ-สกุล ภาษาไทย (Optional)",
-				"phone": "เบอร์โทรศัพท์ ผู้รับปลายทางที่ไทย (Optional)",
+				"thaiName": "ชื่อ-สกุล ภาษาไทย (ไม่จำเป็น)",
+				"phone": "เบอร์โทรศัพท์ ผู้รับปลายทางที่ไทย (ไม่จำเป็น)",
 				"accountNumber": "เลขบัญชี (ตัวเลขเท่านั้น)",
 				"accountType": "ประเภทบัญชี",
 				"bankName": "ธนาคาร",
@@ -198,8 +197,8 @@
 			"placeholders": {
 				"firstName": "ชื่อ",
 				"lastName": "นามสกุล",
-				"thaiName": "ชื่อ-สกุล ภาษาไทย (Optional)",
-				"phone": "เบอร์โทรศัพท์ที่ไทย (Optional)",
+				"thaiName": "ชื่อ-สกุล ภาษาไทย (ไม่จำเป็น)",
+				"phone": "เบอร์โทรศัพท์ที่ไทย (ไม่จำเป็น)",
 				"accountNumber": "เลขบัญชี (ตัวเลขเท่านั้น)",
 				"accountType": "ประเภทบัญชี",
 				"bankName": "- เลือกธนาคาร -",
@@ -244,8 +243,8 @@
 			"labels": {
 				"firstName": "ชื่อ",
 				"lastName": "นามสกุล",
-				"thaiName": "ชื่อ-สกุล ภาษาไทย (Optional)",
-				"phone": "เบอร์โทรศัพท์ที่ไทย (Optional)",
+				"thaiName": "ชื่อ-สกุล ภาษาไทย (ไม่จำเป็น)",
+				"phone": "เบอร์โทรศัพท์ที่ไทย (ไม่จำเป็น)",
 				"accountNumber": "เลขบัญชี (ตัวเลขเท่านั้น)",
 				"accountType": "ประเภทบัญชี",
 				"bankName": "ธนาคาร",
@@ -260,8 +259,8 @@
 			"placeholders": {
 				"firstName": "ชื่อ",
 				"lastName": "นามสกุล",
-				"thaiName": "ชื่อ-สกุล ภาษาไทย (Optional)",
-				"phone": "เบอร์โทรศัพท์ที่ไทย (Optional)",
+				"thaiName": "ชื่อ-สกุล ภาษาไทย (ไม่จำเป็น)",
+				"phone": "เบอร์โทรศัพท์ที่ไทย (ไม่จำเป็น)",
 				"accountNumber": "เลขบัญชี (ตัวเลขเท่านั้น)",
 				"accountType": "ประเภทบัญชี",
 				"bankName": "- เลือกธนาคาร -",
@@ -294,26 +293,33 @@
 			}
 		},
 		"transferProgress": {
-			"labelAmount": "ยอดโอน",
-			"labelBeneficiary": "ผู้รับปลายทาง",
-			"labelReview": "รีวิว",
-			"labelFinish": "เสร็จสิ้น"
+			"labels": {
+				"amount": "ยอดโอน",
+				"beneficiary": "ผู้รับปลายทาง",
+				"review": "รีวิว",
+				"finish": "เสร็จสิ้น"
+			}
 		},
 		"transferStepOne": {
-			"instructionTop": "กรอกยอดที่ต้องการโอน",
-			"currentRate": "อัตราปัจจุบัน",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"headingTransferDetails": "รายละเอียดการโอน",
-			"labelDailyLimit": "ขีดจำกัดรายวันของคุณ",
-			"labelRemainingLimit": "วงเงินคงเหลือ",
-			"labelLimitAfterTransfer": "วงเงินหลังโอน",
-			"labelFee": "ค่าธรรมเนียม",
-			"labelYourRate": "อัตราของคุณ",
-			"errorMessageInvalidFormat": "กรุณากรอกยอดเงินให้ถูกต้อง",
-			"errorMessageLimitExceeded": "ยอดเงินเกินลิมิตต่อวัน หากต้องการโอนมากกว่าลิมิตต่อวันกรุณาติดต่อเจ้าหน้าที่",
-			"buttonNext": "ต่อไป",
-			"buttonReset": "รีเซ็ต"
+			"ui": {
+				"buttonNext": "ต่อไป",
+				"buttonReset": "รีเซ็ต",
+				"instructionTop": "กรอกยอดที่ต้องการโอน"
+			},
+			"headings": {
+				"transferDetails": "รายละเอียดการโอน"
+			},
+			"labels": {
+				"dailyLimit": "ขีดจำกัดรายวันของคุณ",
+				"remainingLimit": "วงเงินคงเหลือ",
+				"limitAfterTransfer": "วงเงินหลังโอน",
+				"fee": "ค่าธรรมเนียม",
+				"yourRate": "อัตราของคุณ"
+			},
+			"errors": {
+				"invalidFormat": "กรุณากรอกยอดเงินให้ถูกต้อง",
+				"limitExceeded": "ยอดเงินเกินลิมิตต่อวัน หากต้องการโอนมากกว่าลิมิตต่อวันกรุณาติดต่อเจ้าหน้าที่"
+			}
 		},
 		"transferSteptwo": {
 			"titleTop": "เลือกผู้รับปลายทาง",
@@ -321,49 +327,61 @@
 			"buttonNext": "ต่อไป"
 		},
 		"transferStepthree": {
-			"titleTop": "กรุณาเช็ครายละเอียดการโอนให้ถูกต้อง",
-			"headerFrom": "จาก",
-			"headerTo": "ไปยัง",
-			"headerAmounts": "ยอดโอน",
-			"headerTotals": "ยอดรวม",
-			"listDataSenderLabel": "ผู้ส่ง",
-			"listDataReceiverLabel": "ผู้รับ",
-			"listDataAccountNumberLabel": "เลขบัญชี",
-			"listDataBankNameLabel": "ธนาคาร",
-			"listDataAmountToSendLabel": "ยอดเงินโอน",
-			"listDataYourRateLabel": "อัตราของคุณ",
-			"listDataFeesLabel": "ค่าธรรมเนียม",
-			"listDataTotalToPayLabel": "ยอดที่ต้องชำระ",
-			"listDataReceivableAmountLabel": "ยอดเงินที่จะได้รับ",
-			"listDataPurposeOfTransferLabel": "เหตุผลการโอน",
-			"listDataPurposeOfTransferPlaceholder": "กรุณากรอกเหตุผลการโอน",
-			"listDataTermsStatement": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"errorMessageSelectReason": "กรุณาเลือกเหตุผลการโอนเงิน",
-			"errorMessageAcceptTerms": "กรุณากดยอมรับ term and conditions",
-			"buttonPrevious": "ย้อนกลับ",
-			"buttonNext": "ต่อไป"
+			"ui": {
+				"buttonPrevious": "ย้อนกลับ",
+				"buttonNext": "ต่อไป",
+				"titleTop": "กรุณาเช็ครายละเอียดการโอนให้ถูกต้อง"
+			},
+			"headings": {
+				"from": "จาก",
+				"to": "ไปยัง",
+				"amounts": "ยอดโอน",
+				"totals": "ยอดรวม"
+			},
+			"labels": {
+				"sender": "ผู้ส่ง",
+				"receiver": "ผู้รับ",
+				"accountnumber": "เลขบัญชี",
+				"bankname": "ธนาคาร",
+				"amounttosend": "ยอดเงินโอน",
+				"yourrate": "อัตราของคุณ",
+				"fees": "ค่าธรรมเนียม",
+				"totaltopay": "ยอดที่ต้องชำระ",
+				"receivableamount": "ยอดเงินที่จะได้รับ",
+				"purpose": "เหตุผลการโอน",
+				"terms": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ"
+			},
+			"placeholders": {
+				"purpose": "กรุณากรอกเหตุผลการโอน"
+			},
+			"errors": {
+				"selectReason": "กรุณาเลือกเหตุผลการโอนเงิน",
+				"acceptTerms": "กรุณากดยอมรับ term and conditions"
+			}
 		},
 		"transferStepFour": {
-			"headerFrom": "จาก",
-			"headerTo": "ไปยัง",
-			"headerAmounts": "ยอดโอน",
-			"headerTotals": "ยอดรวม",
-			"listDataSenderLabel": "ผู้ส่ง",
-			"listDataReceiverLabel": "ผู้รับ",
-			"listDataAccountNumberLabel": "เลขบัญชี",
-			"listDataBankNameLabel": "ธนาคาร",
-			"listDataAmountToSendLabel": "ยอดโอนเงิน",
-			"listDataYourRateLabel": "อัตราแลกเปลี่ยน",
-			"listDataFeesLabel": "ค่าธรรมเนียม",
-			"listDataTotalToPayLabel": "ยอดที่ต้องชำระ",
-			"listDataReceivableAmountLabel": "ยอดเงินที่จะได้รับ",
-			"listDataPurposeOfTransferLabel": "เหตุผลการโอน",
-			"listDataTermsStatement": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ",
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"buttonNewTransfer": "ทำรายการโอน รายการใหม่"
+			"ui": {
+				"buttonProceedToPayment": "ทำรายการโอน รายการใหม่"
+			},
+			"headings": {
+				"from": "จาก",
+				"to": "ไปยัง",
+				"amounts": "ยอดโอน",
+				"totals": "ยอดรวม"
+			},
+			"labels": {
+				"sender": "ผู้ส่ง",
+				"receiver": "ผู้รับ",
+				"accountnumber": "เลขบัญชี",
+				"bankname": "ธนาคาร",
+				"amounttosend": "ยอดโอนเงิน",
+				"yourrate": "อัตราแลกเปลี่ยน",
+				"fees": "ค่าธรรมเนียม",
+				"totaltopay": "ยอดที่ต้องชำระ",
+				"receivableamount": "ยอดเงินที่จะได้รับ",
+				"purpose": "เหตุผลการโอน",
+				"terms": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ"
+			}
 		},
 		"transactionsList": {
 			"currencyCodeAUD": "AUD",
@@ -415,7 +433,7 @@
 				"firstname": "ชื่อ",
 				"middlename": "ชื่อกลาง",
 				"lastname": "นามสกุล",
-				"nickname": "ชื่อเล่น (Optional)",
+				"nickname": "ชื่อเล่น (ไม่จำเป็น)",
 				"dateofbirth": "ว/ด/ป เกิด",
 				"occupation": "อาชีพ",
 				"phone": "เบอร์โทรศัพท์",
@@ -438,60 +456,83 @@
 			}
 		},
 		"profileEdit": {
-			"listDataHeaderPersonalDetails": "ข้อมูลส่วนตัว",
-			"listDataHeaderContactDetails": "ข้อมูลการติดต่อ",
-			"listDataHeaderAddressDetails": "ที่อยู่",
-			"listDataHeaderAccountInfo": "ข้อมูลบัญชีปลายทาง",
-			"listDataFirstNameLabel": "ชื่อ",
-			"listDataFirstNamePlaceholder": "ชื่อ",
-			"listDataFirstNameErrorRequired": "กรุณากรอกชื่อ",
-			"listDataMiddleNameLabel": "ชื่อกลาง",
-			"listDataMiddleNamePlaceholder": "ชื่อกลาง",
-			"listDataMiddleNamErrorRequired": "กรุณากรอกชื่อกลาง",
-			"listDataLastNameLabel": "นามสกุล",
-			"listDataLastNamePlaceholder": "นามสกุล",
-			"listDataLastNameErrorRequired": "กรุณากรอกนามสกุล",
-			"listDataNickNameLabel": "ชื่อเล่น (Optional)",
-			"listDataNickNamePlaceholder": "ชื่อเล่น (Optional)",
-			"listDataDateOfBirthLabel": "ว/ด/ป เกิด",
-			"listDataDateOfBirthModalTitle": "เลือก ว/ด/ป เกิด",
-			"listDataDateOfBirthErrorRequired": "กรุณากรอก ว/ด/ป เกิด",
-			"listDataOccupationLabel": "อาชีพ",
-			"listDataOccupationPlaceholder": "อาชีพ",
-			"listDataOccupationErrorRequired": "กรุณากรอกอาชีพ",
-			"listDataPhoneLabel": "เบอร์โทรศัพท์",
-			"listDataPhonePlaceholder": "เบอร์โทรศัพท์",
-			"listDataPhoneErrorRequired": "กรุณากรอกเบอร์โทรศัพท์",
-			"listDataPhoneErrorDigits": "กรุณากรอกเฉพาะตัวเลขเท่านั้น",
-			"listDataPhoneErrorMax": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
-			"listDataPhoneErrorMin": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
-			"listDataEmailLabel": "Email",
-			"listDataEmailSubLabel": "หมายเหตุ: email ใช้เพื่อ login เพื่อเข้าระบบ หากต้องการเปลี่ยนแปลงอีเมลกรุณาติดต่อเจ้าหน้าที่",
-			"listDataAddressLabel": "ที่อยู่ออสเตรเลีย (Address, Street)",
-			"listDataAddressPlaceholder": "ที่อยู่ออสเตรเลีย (Address, Street)",
-			"listDataAddressErrorRequired": "กรุณากรอกที่อยู่ออสเตรเลีย (Address, Street)",
-			"listDataSuburbLabel": "City/Suburb",
-			"listDataSuburbPlaceholder": "City/Suburb",
-			"listDataSuburbErrorRequired": "Please provide your City/Suburb",
-			"listDataStateLabel": "State",
-			"listDataStatePlaceholder": "State",
-			"listDataStateErrorRequired": "Please select your State",
-			"listDataPostCodeLabel": "Post Code",
-			"listDataPostCodePlaceholder": "Post Code",
-			"listDataPostCodeErrorRequired": "Please provide your Postcode",
-			"buttonBack": "ย้อนกลับ",
-			"buttonSave": "บันทึก"
+			"ui": {
+				"buttonBack": "ย้อนกลับ",
+				"buttonSave": "บันทึก",
+				"dateofbirthtitle": "เลือก ว/ด/ป เกิด"
+			},
+			"headings": {
+				"personaldetails": "ข้อมูลส่วนตัว",
+				"contactdetails": "ข้อมูลการติดต่อ",
+				"addressdetails": "ที่อยู่",
+				"accountinfo": "ข้อมูลบัญชีปลายทาง"
+			},
+			"labels": {
+				"firstname": "ชื่อ",
+				"middlename": "ชื่อกลาง",
+				"lastname": "นามสกุล",
+				"nickname": "ชื่อเล่น (ไม่จำเป็น)",
+				"dateofbirth": "ว/ด/ป เกิด",
+				"occupation": "อาชีพ",
+				"phone": "เบอร์โทรศัพท์",
+				"email": "อีเมล",
+				"emailhelper": "หมายเหตุ: email ใช้เพื่อ login เพื่อเข้าระบบ หากต้องการเปลี่ยนแปลงอีเมลกรุณาติดต่อเจ้าหน้าที่",
+				"address": "ที่อยู่ออสเตรเลีย (Address, Street)",
+				"suburb": "เมือง/ชานเมือง",
+				"state": "รัฐ / ดินแดน",
+				"postcode": "รหัสไปรษณีย์"
+			},
+			"placeholders": {
+				"firstname": "ชื่อ",
+				"middlename": "ชื่อกลาง",
+				"lastname": "นามสกุล",
+				"nickname": "ชื่อเล่น (ไม่จำเป็น)",
+				"occupation": "อาชีพ",
+				"phone": "เบอร์โทรศัพท์",
+				"address": "ที่อยู่ออสเตรเลีย (Address, Street)",
+				"suburb": "เมือง/ชานเมือง",
+				"state": "รัฐ / ดินแดน",
+				"postcode": "รหัสไปรษณีย์"
+			},
+			"errors": {
+				"firstNameRequired": "กรุณากรอกชื่อ",
+				"middleNamRequired": "กรุณากรอกชื่อกลาง",
+				"lastNameRequired": "กรุณากรอกนามสกุล",
+				"dateOfBirthRequired": "กรุณากรอก ว/ด/ป เกิด",
+				"occupationRequired": "กรุณากรอกอาชีพ",
+				"phoneRequired": "กรุณากรอกเบอร์โทรศัพท์",
+				"phoneDigits": "กรุณากรอกเฉพาะตัวเลขเท่านั้น",
+				"phoneMax": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
+				"phoneMin": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
+				"addressRequired": "กรุณากรอกที่อยู่ออสเตรเลีย (Address, Street)",
+				"suburbRequired": "Please provide your City/Suburb",
+				"stateRequired": "Please select your State",
+				"postCodeRequired": "Please provide your Postcode"
+			}
 		},
 		"settings": {
-			"headerBack": "ย้อนกลับ",
-			"sectionHeaderPreferences": "ตั้งค่า",
-			"sectionLabelLanguage": "ภาษา",
-			"sectionHeaderAccount": "บัญชี",
-			"sectionLabelLogout": "x Logout x",
-			"sectionLabelResetPin": "เปลี่ยน PIN Code",
-			"sectionLabelResetPassword": "เปลี่ยนรหัสผ่าน",
-			"sectionHeaderAbout": "เกี่ยวกับ",
-			"sectionLabelAppVersion": "App Version"
+			"ui": {
+				"alertLogoutTitle": "ออกจากระบบ?",
+				"alertLogout": "การดำเนินการนี้จะออกจากระบบบัญชีของคุณและกลับไปที่หน้าจอเข้าสู่ระบบ คุณแน่ใจไหม?",
+				"alertResetPasswordTitle": "รีเซ็ตรหัสผ่าน?",
+				"alertResetPassword": "คุณต้องการรีเซ็ตรหัสผ่านของคุณหรือไม่? ในการทำเช่นนี้ เราจะส่งอีเมลพร้อมลิงก์รีเซ็ตรหัสผ่านให้คุณ คุณต้องการดำเนินการต่อหรือไม่?",
+				"alertResetPinTitle": "รีเซ็ต PIN ไหม",
+				"alertResetPin": "คุณต้องการรีเซ็ตรหัส PIN ของคุณหรือไม่ หากเป็นเช่นนั้น รหัส PIN ที่มีอยู่ของคุณจะถูกลบออก และคุณจะสามารถสร้างใหม่ได้ คุณต้องการดำเนินการต่อหรือไม่?",
+				"buttonConfirm": "ยืนยัน",
+				"buttonCancel": "ยกเลิก"
+			},
+			"headings": {
+				"preferences": "ตั้งค่า",
+				"account": "บัญชี",
+				"about": "เกี่ยวกับ"
+			},
+			"labels": {
+				"language": "ภาษา",
+				"logout": "ออกจากระบบ",
+				"resetpin": "รีเซ็ตรหัส PIN",
+				"resetpassword": "เปลี่ยนรหัสผ่าน",
+				"appversion": "เวอร์ชันแอป"
+			}
 		},
 		"screens": {
 			"dashboard": "หน้าหลัก",
@@ -530,6 +571,8 @@
 			"offlineTitle": "No Internet Connection",
 			"passwordMismatchMessage": "อีเมล/รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
 			"passwordMismatchTitle": "รหัสผ่าน",
+			"passwordResetMessage": "เราจะส่งอีเมลไปยังที่อยู่ที่เชื่อมโยงกับบัญชีของคุณ พร้อมด้วยลิงก์เพื่อรีเซ็ตรหัสผ่านของคุณ หากคุณเปลี่ยนใจ คุณไม่ต้องสนใจอีเมลนี้และใช้รหัสผ่านปัจจุบันของคุณต่อไป อย่างไรก็ตาม คุณจะต้องตั้งรหัส PIN ใหม่",
+			"passwordResetTitle": "ร้องขอการรีเซ็ตรหัสผ่าน",
 			"pinResetMessage": "เปลี่ยน PIN Code ใหม่สำเร็จ กรุณาล็อคอินด้วย PIN Code ใหม่",
 			"pinResetTitle": "เปลี่ยน PIN Code",
 			"profileUpdatedMessage": "แก้ไขข้อมูลสำเร็จ",

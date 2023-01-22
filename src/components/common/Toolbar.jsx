@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react"
+import React, { useEffect } from "react"
 
 //components
 import {  HStack, Pressable, Spacer, Text } from 'native-base'
@@ -7,8 +7,9 @@ import Icon from './Icon'
 
 //data
 import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useForceUpdate } from '../../data/Hooks'
 import { traverseObjectByPath } from '../../data/Actions'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -37,7 +38,7 @@ const Toolbar = (props) => {
 	}
 	
 	return (
-		<HStack key={id+'_'+Math.random()} {...nb} w={"100%"} justifyContent={"center"} alignItems={"center"} bgColor={"primary.700:alpha.90"} p={"4"} rounded={"8"} space={"2"}>
+		<HStack key={id + '_' + Math.random()} w={"100%"} justifyContent={"center"} alignItems={"center"} bgColor={"primary.700:alpha.90"} p={"4"} rounded={"8"} space={"2"} {...nb}>
 			{toolbarContents}
 		</HStack>
 	)
@@ -46,8 +47,8 @@ const Toolbar = (props) => {
 export default Toolbar
 
 export const ToolbarItem = (props) => {
-	const user = useRecoilValue(userState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const forceUpdate = useForceUpdate()
+	const lang = useRecoilValue(langState)
 	let { id, label = null, labelObj = null, icon = null, action, extraProps = null, iconProps = null, 
 		labelProps, space = 2, iconPosition = "left", style = "primary", variant = "solid",
 		flex = "1", isDisabled = false, isPressed = false } = props
@@ -68,14 +69,15 @@ export const ToolbarItem = (props) => {
 		case 'solid': theme = { ...styleObj.solid }; break
 		case 'subtle': theme = { ...styleObj.subtle }; break
 		case 'outline': theme = { ...styleObj.outline }; break
+		case 'outlineDark': theme = { ...styleObj.outlineDark }; break
 	}
 
-	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+	useEffect(() => {	
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<Pressable isDisabled={isDisabled} onPress={action} flex={flex}>

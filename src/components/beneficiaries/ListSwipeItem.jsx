@@ -1,32 +1,57 @@
-import React, { useContext, useEffect, useReducer } from 'react'
-import { Avatar, HStack, Pressable, Text, VStack } from 'native-base'
-import { useNavigation } from '@react-navigation/native'
+import React, { useEffect } from 'react'
 
-import { AuthContext } from '../../data/Context'
-import { useRecoilValue, useSetRecoilState} from 'recoil'
-import { loadingState } from '../../data/recoil/system'
+//components
+import { useNavigation } from '@react-navigation/native'
+import { Avatar, HStack, Pressable, Text, VStack } from 'native-base'
+
+//data
+import { useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
 import { beneficiaryObj, beneficiaryList } from '../../data/recoil/beneficiaries'
 import { userState } from '../../data/recoil/user'
+import { loadingState, langState } from '../../data/recoil/system'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ListSwipeItem = (props) => {
+	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
+	const [ beneficiary, setBeneficiary] = useRecoilState(beneficiaryObj)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const beneficiaries = useRecoilValue(beneficiaryList)
+	const user = useRecoilValue(userState)
+	const lang = useRecoilValue(langState)
+
 	let { id, status, initials, fullname } = props.data.item
 	let index = props.data.index
-	const beneficiaries = useRecoilValue(beneficiaryList)
-	const setBeneficiary = useSetRecoilState(beneficiaryObj)
-	const setLoading = useSetRecoilState(loadingState)
-	const user = useRecoilValue(userState)
-	const navigation = useNavigation()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+
+	useEffect(() => {
+		if (loading == true) {
+			new Promise((resolve) => {
+				setLoading({ status: false, type: 'none' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading == false) { resolve() }
+				}, 1000)
+			})
+		}
+	}, [beneficiary])
 
 	const handlePress = (item) => {
-		setBeneficiary(item)
-		setLoading({ status: true, type: 'loading' })
-		navigation.navigate('BeneficiariesDetail')
+		new Promise((resolve) => {
+			setLoading({ status: true, type: 'loading' })
+			forceUpdate()
+			setTimeout(() => {
+				if (loading.status == false) { resolve() }
+			}, 1000)
+		}).then(result => {
+			setBeneficiary(item)
+			navigation.navigate('BeneficiariesDetail')
+		})
 	}
 
 	let corners
@@ -39,11 +64,11 @@ const ListSwipeItem = (props) => {
 	}
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<Pressable key={ index } onPress={() => handlePress({...props.data.item, index: props.data.index }) }>

@@ -1,14 +1,15 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useEffect, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { Badge, Divider, HStack, Modal as ModalComponent, Text } from 'native-base'
+import { Badge, Divider, Modal as ModalComponent, } from 'native-base'
 import LabelValue from '../common/LabelValue'
 
 //data
-import { formatCurrency } from '../../data/Actions'
 import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useForceUpdate } from '../../data/Hooks'
+import { formatCurrency } from '../../data/Actions'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -18,8 +19,8 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const Modal = (props) => {
 	const navigation = useNavigation()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
-	const user = useRecoilValue(userState)
+	const forceUpdate = useForceUpdate()
+	const lang = useRecoilValue(langState)
 	let { accountnumber, amount_paid, bankname, completed_date, completed_time, created_date, created_time, 
 		fee_AUD, fullname, rate, received_amount, status, transaction_number, transfer_amount } = props.data
 
@@ -40,17 +41,17 @@ const Modal = (props) => {
 	fee_AUD = formatCurrency(fee_AUD, "en-AU", "AUD").full + " " + language.misc.aud
 	amount_paid = formatCurrency(amount_paid, "en-AU", "AUD").full + " " + language.misc.aud
 	received_amount = formatCurrency(received_amount, "th-TH", "THB").full + " " + language.misc.thb
-	dateCR = dateCR.toLocaleString(user.lang, dateOptions)
-	dateCO = dateCO.toLocaleString(user.lang, dateOptions)
+	dateCR = dateCR.toLocaleString(lang, dateOptions)
+	dateCO = dateCO.toLocaleString(lang, dateOptions)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
 		forceUpdate()
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<ModalComponent isOpen={props.isOpen} onClose={props.onClose} size={"lg"}>

@@ -1,4 +1,4 @@
-import React from "react"
+import React from 'react'
 
 //components
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
@@ -11,9 +11,16 @@ import LoadingOverlay from './LoadingOverlay'
 import { useRecoilValue } from 'recoil'
 import { loadingState } from '../../data/recoil/system'
 
+//lang
+import LocalizedStrings from 'react-native-localization'
+const auStrings = require('../../i18n/en-AU.json')
+const thStrings = require('../../i18n/th-TH.json')
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
+
 const AppSafeArea = ({styles, children}) => {
 	const insets = useSafeAreaInsets()
 	const loading = useRecoilValue(loadingState)
+
 	return (
 		<KeyboardAvoidingView>
 			{ loading.status && <LoadingOverlay /> }

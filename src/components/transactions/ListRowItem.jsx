@@ -1,17 +1,17 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useEffect, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { Avatar, Badge, HStack, Pressable, Spacer, Text, VStack } from 'native-base'
+import { Pressable } from 'native-base'
 import TransactionItem from '../common/TransactionItem'
 
 //data
-import { formatCurrency, localiseObjectData } from '../../data/Actions'
 import { useSetRecoilState, useRecoilValue } from 'recoil'
-import { transactionObj } from '../../data/recoil/transactions'
-import { loadingState } from '../../data/recoil/system'
+import { useForceUpdate } from '../../data/Hooks'
+import { formatCurrency, localiseObjectData } from '../../data/Actions'
 import { TransactionObjFormats } from '../../config'
-import { userState } from '../../data/recoil/user'
+import { transactionObj } from '../../data/recoil/transactions'
+import { loadingState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -21,10 +21,10 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ListRowItem = (props) => {
 	const navigation = useNavigation()
-	const user = useRecoilValue(userState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const forceUpdate = useForceUpdate()
 	const setTransaction = useSetRecoilState(transactionObj)
 	const setLoading = useSetRecoilState(loadingState)
+	const lang = useRecoilValue(langState)
 	let data = props.data.item
 	let index = props.data.index
 	let listLength = props.data.section.data.length - 1 //now THATS a mouthfull
@@ -34,20 +34,20 @@ const ListRowItem = (props) => {
 
 	const handlePress = (item) => {
 		setTransaction(item)
-		localiseObjectData(item, TransactionObjFormats, user.lang)
+		localiseObjectData(item, TransactionObjFormats, lang)
 		setLoading({ status: true, text: 'Loading' })
 		navigation.navigate('TransactionsDetail')
 	}
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
-		<Pressable bgColor={"white"} px={"4"} onPress={() => handlePress(props.data.item) } borderBottomRadius={ index == listLength ? "8" : "0"}>
+		<Pressable key={index} bgColor={"white"} px={"4"} onPress={() => handlePress(props.data.item) } borderBottomRadius={ index == listLength ? "8" : "0"}>
 			<TransactionItem {...data} />
 		</Pressable>
 	)

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useReducer, useRef, memo } from 'react'
+import React, { useContext, useState, useEffect, useRef, memo } from 'react'
 
 //components
 import { Button, Factory, HStack, Pressable, Text, VStack } from 'native-base'
@@ -9,13 +9,14 @@ import { LanguageToggle } from '../../components/common/LanguageToggle'
 import Icon from '../../components/common/Icon'
 
 //data
+import { useResetRecoilState, useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
-import { keychainSave, keychainReset, log } from '../../data/Actions'
-import { useResetRecoilState } from 'recoil'
-import { userState } from '../../data/recoil/user'
-import { globalState, noticeState } from '../../data/recoil/system'
+import { keychainSave, keychainReset} from '../../data/Actions'
 import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
 import { transactionList, transactionObj } from '../../data/recoil/transactions'
+import { globalState, noticeState, langState } from '../../data/recoil/system'
+import { userState } from '../../data/recoil/user'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -24,20 +25,21 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const PinCodeScreen = ({ navigation }) => {
-
+	const forceUpdate = useForceUpdate()
 	const { auth, authDispatch } = useContext(AuthContext)
-	const [ resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions, resetTransaction ] = 
-		[useResetRecoilState(userState), useResetRecoilState(globalState), useResetRecoilState(noticeState), 
-			useResetRecoilState(beneficiaryList), useResetRecoilState(beneficiaryObj), 
-			useResetRecoilState(transactionList), useResetRecoilState(transactionObj)]
-		
+	const resetUser = useResetRecoilState(userState)
+	const resetGlobals = useResetRecoilState(globalState)
+	const resetNotices = useResetRecoilState(noticeState)
+	const resetBeneficiaries = useResetRecoilState(beneficiaryList)
+	const resetBeneficiary = useResetRecoilState(beneficiaryObj)
+	const resetTransactions = useResetRecoilState(transactionList)
+	const resetTransaction = useResetRecoilState(transactionObj)
+	const lang = useRecoilValue(langState)
 	const [ show1, setShow1 ] = useState(false)
 	const [ show2, setShow2 ] = useState(false)
 	const [ hasPin, setHasPin ] = useState(false)
 	const [ key, setKey ] = useState(0)
 	const [ biometry, setBiometry ] = useState(null)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
-
 	const onClose1 = () => setShow1(false)
 	const onClose2 = () => setShow2(false)
 	const pincodeRef = useRef()
@@ -71,11 +73,11 @@ const PinCodeScreen = ({ navigation }) => {
 	}, [])
 
 	useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
 	const handlePinSet = async (pin) => {
 		//use our own keychain entry. don't have time to figure out how to use the one in react-native-pincode
@@ -94,11 +96,11 @@ const PinCodeScreen = ({ navigation }) => {
 	}
 
 	const handleResetPinAction = async () => {
-		await keychainReset('pin')
-		await keychainReset('token')
+		keychainReset('pin')
+		keychainReset('token')
 		await deleteUserPinCode('com.ariom.ownmoney')
 		authDispatch({ type: 'RESET_PIN' })
-		authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' }})
+		authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' }}) //leave this here
 		authDispatch({ type: 'LOGOUT' })
 	}
 

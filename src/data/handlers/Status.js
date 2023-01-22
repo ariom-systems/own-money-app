@@ -23,7 +23,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.serverErrorMessage,
 					title: language.notices.serverErrorTitle,
 					style: 'warning',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'offline':
@@ -44,7 +45,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.sessionExpiredMessage,
 					title: language.notices.sessionExpiredTitle,
 					style: 'info',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//LoginScreen.jsx / Register.jsx
@@ -55,7 +57,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.noEmailMessage,
 					title: language.notices.noEmailTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'noPassword':
@@ -65,7 +68,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.noPasswordConfirmMessage,
 					title: language.notices.noPasswordConfirmTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break	
 			case 'badUser':
@@ -75,7 +79,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.badUserMessage,
 					title: language.notices.badUserTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//LoginScreen.jsx
@@ -86,7 +91,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.passwordMismatchMessage,
 					title: language.notices.passwordMismatchTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'verifyIdentity':
@@ -107,10 +113,12 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: '',
+					iconType: '',
 					message: language.notices.registerIncompleteMessage,
 					title: language.notices.registerIncompleteTitle,
 					style: 'info',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'redirectToTermsConditions':
@@ -128,30 +136,36 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: '',
+					iconType: '',
 					message: language.notices.noPasswordConfirmMessage,
 					title: language.notices.noPasswordConfirmTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'noPhone':
 				return {
 					id: reasonCode,
 					icon: '',
+					iconType: '',
 					message: language.notices.noPhoneMessage,
 					title: language.notices.noPhoneTitle,
 					style: 'error',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'invalidReferrer':
 				return {
 					id: reasonCode,
 					icon: '',
+					iconType: '',
 					message: language.notices.invalidReferrerMessage,
 					title: language.notices.invalidReferrerTitle,
 					style: 'warning',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			case 'registerComplete':
@@ -161,7 +175,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.accountRegisteredMessage,
 					title: language.notices.accountRegisteredTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//ForgotPasswordScreen.jsx
@@ -172,7 +187,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.resetRequestedMessage,
 					title: language.notices.resetRequestedTitle,
 					style: 'info',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//SettingsScreen.jsx
@@ -183,10 +199,10 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.logoutMessage,
 					title: language.notices.logoutTitle,
 					style: 'info',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
-			//PinCodeScreen.jsx
 			case 'pinReset':
 				return {
 					id: reasonCode,
@@ -197,6 +213,16 @@ export function getNotice(reasonCode, currentLang) {
 					canClose: true
 				}
 			break
+			case 'passwordReset':
+				return {
+					id: reasonCode,
+					icon: 'key-outline',
+					message: language.notices.passwordResetMessage,
+					title: language.notices.passwordResetTitle,
+					style: 'info',
+					canClose: true
+				}
+				break
 			//BeneficiariesAdd.jsx
 			case 'beneficiarySaved':
 				return {
@@ -205,7 +231,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.beneficiarySavedMessage,
 					title: language.notices.beneficiarySavedTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//BeneficiariesDelete.jsx
@@ -216,7 +243,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.beneficiaryDeletedMessage,
 					title: language.notices.beneficiaryDeletedTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//BeneficiariesEdit.jsx
@@ -227,7 +255,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.beneficiaryUpdatedMessage,
 					title: language.notices.beneficiaryUpdatedTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//ProfileDetails.jsx
@@ -238,7 +267,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.profileUpdatedMessage,
 					title: language.notices.profileUpdatedTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			//TransferStepThree.jsx
@@ -249,7 +279,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.transferCompleteMessage,
 					title: language.notices.transferCompleteTitle,
 					style: 'success',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 			default:
@@ -259,7 +290,8 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.defaultMessage,
 					title: language.notices.defaultTitle,
 					style: 'warning',
-					canClose: true
+					//canClose: true
+					canClose: false
 				}
 			break
 		}

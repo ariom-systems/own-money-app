@@ -5,7 +5,6 @@ export const globalState = atom({
 	default: {
 		rate: 0,
 		steps: {},
-		lang: 'en-AU',
 		lastDailyLimitReset: 0
 	}
 })
@@ -26,4 +25,9 @@ export const noticeState = atom({
 export const profileNavState = atom({
 	key: 'profileNav',
 	default: false
+})
+
+export const langState = atom({
+	key: 'langstate',
+	default: 'en-AU'
 })

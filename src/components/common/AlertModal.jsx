@@ -1,8 +1,10 @@
 import React from 'react'
-import { AlertDialog } from 'native-base'
+
+//components
+import { AlertDialog, Text } from 'native-base'
 
 const AlertModal = (props) => {
-	let { show, ldRef = "", close, header, content, children } = props
+	let { show, ldRef = "", close, header, content = "something", children } = props
 
 	return (
 		<AlertDialog isOpen={show} leastDestructiveRef={ldRef} onClose={close}>
@@ -12,7 +14,7 @@ const AlertModal = (props) => {
 					{header}
 				</AlertDialog.Header>
 				<AlertDialog.Body>
-					{content}
+					<Text>{content}</Text>
 				</AlertDialog.Body>
 				<AlertDialog.Footer justifyContent={"center"}>
 					{ children }

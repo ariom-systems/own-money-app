@@ -1,15 +1,16 @@
-import React, { useContext, memo } from 'react'
+import React, { memo } from 'react'
 
 //components
 import ListHeader from '../common/ListHeader'
 
 //data
-import { AuthContext } from '../../data/Context'
+import { useRecoilValue } from 'recoil'
+import { langState } from '../../data/recoil/system'
 
 const HeaderItem = (props) => {
-	const { auth } = useContext(AuthContext)
+	const lang = useRecoilValue(langState)
 	const { header, index } = props
-	let styles = {}, formattedDate = new Date(header).toLocaleDateString(auth.lang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
+	let styles = {}, formattedDate = new Date(header).toLocaleDateString(lang, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })
 	
 	if(index == 0) { styles={ roundedTop: "8" } }
 	

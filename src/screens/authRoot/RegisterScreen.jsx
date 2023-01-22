@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useReducer, memo } from 'react'
+import React, { useContext, useState, useEffect, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -7,15 +7,17 @@ import { Button, HStack, Image, Input, Text, VStack } from 'native-base'
 import * as Forms from '../../components/common/Forms'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 import image from '../../assets/img/logo.png'
+import Toolbar from '../../components/common/Toolbar'
 
 //data
-import { AuthContext } from '../../data/Context'
-import { useForm} from 'react-hook-form'
 import Config from 'react-native-config'
-import { buildDataPath } from '../../data/Actions'
-import { api, validationRulesRegister } from '../../config'
-import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useForm} from 'react-hook-form'
+import { useRecoilValue, useRecoilState} from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { api, validationRulesRegister, registerToolbarConfig } from '../../config'
+import { buildDataPath, mapActionsToConfig } from '../../data/Actions'
+import { loadingState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -25,10 +27,26 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const RegisterScreen = () => {
 	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
 	const { auth, authDispatch } = useContext(AuthContext)
-	const user = useRecoilValue(userState)
-	const [ registered, setRegistered ] = useState("")
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const lang = useRecoilValue(langState)
+
+	let actions = [
+		() => {
+			new Promise((resolve) => {
+				setLoading({ status: true, type: 'processing' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			})
+		},
+		() => navigation.goBack()
+	]
+	const toolbarConfig = mapActionsToConfig(registerToolbarConfig, actions)
 
 	const { control, handleSubmit, getValues, formState } = useForm({
 		mode: 'onBlur',
@@ -43,34 +61,36 @@ const RegisterScreen = () => {
 	})
 
 	const onSubmit = async (data) => {
-		console.log(data)
-		authDispatch({ type: 'LOADING', payload: { data: true }})
-		let reset = new Promise((resolve, reject) => {
+		new Promise((resolve, reject) => {
 			api.post(Config.BASEURL + '/register', {
 				email: data.email,
 				password: data.password,
 				passwordConfirm: data.passwordConfirm,
 				phone: data.phone,
 				referrer: data.referrer,
-				lang: user.lang
+				lang: lang
 			})
 			.then(response => {
 				if(response.ok == true) {
 					//get the 'notices' array. this endpoint will always return one notice.
 					let notices = response.data.notices
 					if(notices.length == 1) {
-						
-						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] }})
-						authDispatch({ type: 'LOADING', payload: { data: false }})
-						setRegistered(language.register.buttonRegisterComplete)
+						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] } }) //leave this here
 					}
 					resolve(true)
 				}
 			})
+			.catch(response => {
+				console.log(response)
+			})
+		}).then(result => {
+			navigation.goBack()
 		})
 	}
 
-	const onError = (error) => console.log("error:", error)
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
 
 	const emailRemote = {
 		validate: {
@@ -97,8 +117,8 @@ const RegisterScreen = () => {
 	}
 
 	useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
 	}, [language, auth])
@@ -106,10 +126,8 @@ const RegisterScreen = () => {
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
 			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
-				
 				<Image source={image} resizeMode={"contain"} alt={language.register.ui.logoAlt} size={"md"} />
-				<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.register.ui.underLogo}</Text>
-				
+				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.register.ui.underLogo}</Text>
 				<Forms.TextInput
 					name={"email"}
 					control={control}
@@ -120,7 +138,6 @@ const RegisterScreen = () => {
 					inputAttributes={{ keyboardType: "email-address", size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-
 				<Forms.TextInput
 					name={"password"}
 					control={control}
@@ -131,7 +148,6 @@ const RegisterScreen = () => {
 					inputAttributes={{ type: "password", size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-
 				<Forms.TextInput
 					name={"passwordConfirm"}
 					control={control}
@@ -142,7 +158,6 @@ const RegisterScreen = () => {
 					inputAttributes={{ type: "password", size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-
 				<Forms.TextInput
 					name={"phone"}
 					control={control}
@@ -153,7 +168,6 @@ const RegisterScreen = () => {
 					inputAttributes={{ keyboardType: "phone-pad", size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-
 				<Forms.TextInput
 					name={"referrer"}
 					control={control}
@@ -163,24 +177,7 @@ const RegisterScreen = () => {
 					inputAttributes={{ size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-				<HStack w={"100%"} px={"4%"} space={"4%"}>
-					<Button mt={"2"} flex={"1"} onPress={handleSubmit(onSubmit, onError)}
-						isLoading={ auth.loading ? true : false }
-						isLoadingText={language.register.ui.buttonRegisterLoading}
-						isDisabled={registered !== "" ? true : false }
-						>
-						{registered !== "" ? registered : language.register.ui.buttonRegister }
-					</Button>
-					<Button mt={"2"} flex={"1"} variant={"outline"}
-						onPress={() => {
-							if(!auth.loading) {
-								authDispatch({ type: 'CLEAR_STATUS' })
-								navigation.goBack()
-							}
-						}}>
-						{language.register.ui.buttonBackToLogin}
-					</Button>
-				</HStack>
+				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
 				<HStack>
 					<LanguageToggle />
 				</HStack>

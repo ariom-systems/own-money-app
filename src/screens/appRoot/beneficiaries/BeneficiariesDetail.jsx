@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useReducer, useRef } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -12,13 +12,12 @@ import Toolbar from '../../../components/common/Toolbar'
 import ListHeader from '../../../components/common/ListHeader'
 
 //data
-import { AuthContext } from '../../../data/Context'
-import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
-import { useRecoilValue, useSetRecoilState } from 'recoil'
-import { loadingState, noticeState } from '../../../data/recoil/system'
-import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
 import { BeneficiaryTemplate, beneficiaryDetailToolbarConfig } from '../../../config'
-import { userState } from '../../../data/recoil/user'
+import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
+import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -28,37 +27,37 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 export default function BeneficiariesDetail() {
 	const navigation = useNavigation()
-	const { auth } = useContext(AuthContext)
-	const beneficiary = useRecoilValue(beneficiaryObj)
-	const user = useRecoilValue(userState)
-	const setLoading = useSetRecoilState(loadingState)
-	const notices = useRecoilValue(noticeState)
-	const [ isOpen, setIsOpen ] = useState(false)
-	const onClose = () => setIsOpen(false)
+	const forceUpdate = useForceUpdate()
 	const cancelRef = useRef(null)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
-	let deleteMessage = ""
+	const [ isOpen, setIsOpen ] = useState(false)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const beneficiary = useRecoilValue(beneficiaryObj)
+	const notices = useRecoilValue(noticeState)
+	const lang = useRecoilValue(langState)
+	
+	const onClose = () => setIsOpen(false)
 	
 	let labels = language.beneficiaryDetail.labels
 	let headings = language.beneficiaryDetail.headings
 	let sections = mapSectionDataFromTemplate(BeneficiaryTemplate, beneficiary, labels, headings)
 	sections = sections.map((section, index) => ({ ...section, index }))
-
+	
 	let actions = [
 		() => handleBack(navigation),, //note the double comma. second element is a spacer and has no action
 		() => handleEdit(),
 		() => setIsOpen(!isOpen)
 	]
-
 	const toolbarConfig = mapActionsToConfig(beneficiaryDetailToolbarConfig, actions)
-
+	
+	let deleteMessage = language.formatString(language.beneficiaryDetail.ui.alertDeleteMessage, beneficiary.fullname || "no name")
+	
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	useEffect(() => {
 		setLoading({ status: false, type: "none" })
@@ -66,14 +65,33 @@ export default function BeneficiariesDetail() {
 
 	useEffect(() => {
 		if(beneficiary.fullname != "") {
-			deleteMessage = language.formatString(language.beneficiaryDetail.ui.alertDeleteMessage, beneficiary.fullname ?? "no name")
+			deleteMessage = language.formatString(language.beneficiaryDetail.ui.alertDeleteMessage, beneficiary.fullname || "no name")
 		}
 	}, [language, beneficiary])
 
 
 	const handleEdit = () => {
-		setLoading({ status: true, type: 'loading' })
-		navigation.navigate('BeneficiariesEdit')
+		new Promise((resolve) => {
+			setLoading({ status: true, type: 'loading' })
+			forceUpdate()
+			setTimeout(() => {
+				if (loading.status == false) { resolve() }
+			}, 1000)
+		}).then(result => {
+			navigation.navigate('BeneficiariesEdit')
+		})
+	}
+
+	const handleDelete = () => {
+		new Promise((resolve) => {
+			setLoading({ status: true, type: 'loading' })
+			forceUpdate()
+			setTimeout(() => {
+				if (loading.status == false) { resolve() }
+			}, 1000)
+		}).then(result => {
+			navigation.navigate('BeneficiariesDelete')
+		})
 	}
 
 	const handleBack = () => {
@@ -81,9 +99,6 @@ export default function BeneficiariesDetail() {
 		navigation.popToTop()
 	}
 
-	const handleDelete = () => {
-		navigation.navigate('BeneficiariesDelete')
-	}
 
 	return (
 		<AppSafeArea>
@@ -106,13 +121,14 @@ export default function BeneficiariesDetail() {
 				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start" }}
 			/>
 			<AlertModal show={isOpen} close={onClose} ldRef={cancelRef}
+				content={ deleteMessage }
 				header={(
 					<HStack>
 						<Icon type={"Ionicon"} name={"alert-circle"} fontSize={"2xl"} mr={"1"} color={"danger.600"} />
 						<Heading fontSize={"lg"} mt={"0.5"} pr={"4"}>{language.beneficiaryDetail.ui.alertDeleteHeading} { beneficiary.fullname }?</Heading>
 					</HStack>
 				)}
-				content={deleteMessage}>
+			>
 				<Button.Group space={2}>
 					<Button variant="unstyled" colorScheme="coolGray" onPress={onClose} ref={cancelRef}>{language.beneficiaryDetail.ui.alertDeleteButtonCancel }</Button>
 					<Button colorScheme="danger" onPress={() => { onClose(); handleDelete() }}>{language.beneficiaryDetail.ui.alertDeleteButtonConfirm }</Button>

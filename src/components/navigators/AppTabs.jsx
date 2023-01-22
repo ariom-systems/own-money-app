@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useContext, useEffect, memo } from 'react'
 import { useWindowDimensions } from 'react-native'
 
 //screens
@@ -15,10 +15,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import Icon from '../common/Icon'
 
 //data
-import { AuthContext } from '../../data/Context'
-import { useToken } from 'native-base'
 import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useToken } from 'native-base'
+import { useForceUpdate } from '../../data/Hooks'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -27,13 +27,12 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const AppTabs = () => {
-	const navigation = useNavigation()
 	const Tabs = createBottomTabNavigator()
-	const user = useRecoilValue(userState)
-	const { auth } = useContext(AuthContext)
-	const [active, inactive] = useToken('colors', ['primary.600', 'black'])
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
 	const { height, width } = useWindowDimensions()
+	const [ active, inactive ] = useToken('colors', ['primary.600', 'black'])
+	const lang = useRecoilValue(langState)
 
 	let tabBarStyle
 	if( height > width ) {
@@ -43,11 +42,11 @@ const AppTabs = () => {
 	}
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	const tabOptions = (navigation, icon) => ({
 		headerShown: true,

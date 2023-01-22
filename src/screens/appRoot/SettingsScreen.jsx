@@ -1,19 +1,23 @@
-import React, { useContext, useState, useEffect, useReducer } from 'react'
+import React, { useContext, useState, useEffect, useRef } from 'react'
 
 //components
-import { Box, Center, Divider, Factory, Heading, HStack, Pressable, StatusBar, Text, VStack } from 'native-base'
+import { useNavigation } from '@react-navigation/native'
+import { Button, Divider, Pressable, Spinner, Text, VStack } from 'native-base'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
+import AlertModal from '../../components/common/AlertModal'
+import ListHeader from '../../components/common/ListHeader'
+import LabelValue from '../../components/common/LabelValue'
 
 //data
-import { AuthContext } from '../../data/Context'
 import Config from 'react-native-config'
-import { hasUserSetPinCode } from '@haskkor/react-native-pincode'
+import { deleteUserPinCode } from '@haskkor/react-native-pincode'
+import { atom, useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { api } from '../../config'
 import { keychainReset } from '../../data/Actions'
-import { useResetRecoilState } from 'recoil'
-import { userState } from '../../data/recoil/user'
-import { globalState, noticeState } from '../../data/recoil/system'
-import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
-import { transactionList, transactionObj } from '../../data/recoil/transactions'
+import { langState } from '../../data/recoil/system'
+
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -21,91 +25,162 @@ const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-function SettingsScreen({navigation}) {
+const pinSpinnerState = atom({
+	key: 'pinSpinner',
+	default: false
+})
+
+const passwordSpinnerState = atom({
+	key: 'passwordSpinner',
+	default: false
+})
+
+function SettingsScreen() {
+	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
 	const { auth, authDispatch } = useContext(AuthContext)
-	const [ hasPin, setHasPin ] = useState(false)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
-	const [resetUser, resetGlobals, resetNotices, resetBeneficiaries, resetBeneficiary, resetTransactions, resetTransaction] =
-		[ useResetRecoilState(userState), useResetRecoilState(globalState),
-			useResetRecoilState(noticeState), useResetRecoilState(beneficiaryList),
-			useResetRecoilState(beneficiaryObj), useResetRecoilState(transactionList), useResetRecoilState(transactionObj)]
+	const [ pinSpinner, setPinSpinner ] = useRecoilState(pinSpinnerState)
+	const [ passwordSpinner, setPasswordSpinner ] = useRecoilState(passwordSpinnerState)
+	const lang = useRecoilValue(langState)
+	const [ showLogout, setShowLogout ] = useState(false)
+	const [ showResetPass, setShowResetPass ] = useState(false)
+	const [ showResetPin, setShowResetPin ] = useState(false)
+	const onCloseLogout = () => setShowLogout(false)
+	const onCloseResetPass = () => setShowResetPass(false)
+	const onCloseResetPin = () => setShowResetPin(false)
+	const refLogout = useRef()
+	const refResetPass = useRef()
+	const refResetPin = useRef()
 
-	useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
-			forceUpdate()
-		}
-	}, [language, auth])
-
-	const handleLogout = async () => {	
-		const reset = await keychainReset('token')
-		resetUser()
-		resetGlobals()
-		resetNotices()
-		resetBeneficiaries()
-		resetBeneficiary()
-		resetTransactions()
-		resetTransaction()
-		if(reset === true) {
-			navigation.navigate('LogoutScreen')
-		}
+	const handleLogout = () => {	
+		navigation.navigate('LogoutScreen')
 	}
 
-	const handleResetPin = async () => {
-
+	const handleResetPin = () => {
+		new Promise((resolve) => {
+		 	setPinSpinner(true)
+		 	forceUpdate()
+		 	setTimeout(() => {
+				resolve()
+			}, 2000)
+		}).then((result) => {
+			authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' } }) //leave this here
+			doPinReset()
+		})
 	}
 
 	const handleResetPassword = () => {
+		new Promise((resolve) => {
+			setPasswordSpinner(true)
+			forceUpdate()
+			setTimeout(() => {
+				resolve()
+			}, 2000)
+		}).then((result) => {
+			api.post(Config.BASEURL + '/forgotpassword', {
+				email: auth.email,
+				lang: lang
+			})
+			.then(response => {
+				if (response.ok == true) {
+					authDispatch({ type: 'SET_STATUS', payload: { data: 'passwordReset' } }) //leave this here
+					doPinReset()
+				}
+			})
+		})
+	}
 
+	const doPinReset = () => {
+		deleteUserPinCode('com.ariom.ownmoney')
+		keychainReset('pin')
+		keychainReset('token')
+		authDispatch({ type: 'RESET_PIN' })
+		authDispatch({ type: 'LOGOUT' })
 	}
 
 	useEffect(() => {
-		const checkKeychainForPin = async () => {
-			const result = await hasUserSetPinCode("com.acaregroup.OwnMoney")
-			if(result === true) {
-				setHasPin(true)
-			}
+		if(pinSpinner || passwordSpinner) {
+			setTimeout(() => {
+				if(pinSpinner == true || passwordSpinner == true) {
+					setPinSpinner(false)
+					setPasswordSpinner(false)
+				}
+			}, 5000)
 		}
-		checkKeychainForPin()
-	}, [])
+	}, [pinSpinner, passwordSpinner])
+
+	useEffect(() => {
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
+			forceUpdate()
+		}
+	}, [language, lang])
 
   	return (
-		<Center flex={1} justifyContent={"flex-start"}>
-			<VStack flex="1" w={"100%"} justifyContent={"flex-start"}>
-				<Box backgroundColor={"coolGray.300"} p={"4"} w={"100%"}>
-					<Heading size={"sm"}>{ language.settings.sectionHeaderPreferences }</Heading>
-				</Box>
-				<HStack w={"100%"} p={"4"} alignItems={"center"} justifyContent={"space-between"}>
-					<Text>{ language.settings.sectionLabelLanguage }</Text>
-					<Box>
-						<LanguageToggle />
-					</Box>
-				</HStack>
-				<Box backgroundColor={"coolGray.300"} p={"4"} w={"100%"}>
-					<Heading size={"sm"}>{ language.settings.sectionHeaderAccount }</Heading>
-				</Box>
-				<Pressable onPress={() => handleLogout() } p={"4"} >
-					<Text>{ language.settings.sectionLabelLogout }</Text>
-				</Pressable>
-				<Divider />
-				<Pressable onPress={() => handleResetPin() } p={"4"} >
-					<Text>{ language.settings.sectionLabelResetPin }</Text>
-				</Pressable>
-				<Divider />
-				<Pressable onPress={() => handleResetPassword() } p={"4"} >
-					<Text>{ language.settings.sectionLabelResetPassword }</Text>
-				</Pressable>
-				<Box backgroundColor={"coolGray.300"} p={"4"} w={"100%"}>
-					<Heading size={"sm"}>{ language.settings.sectionHeaderAbout }</Heading>
-				</Box>
-				<Box p={"4"}>
-					<VStack>
-						<Text fontSize={"xs"} color={"coolGray.500"}>{ language.settings.sectionLabelAppVersion }</Text>
-						<Text fontSize={"md"}>{ Config.MAJOR_VERSION+'.'+Config.MINOR_VERSION+'.'+Config.PATCH_VERSION+'-'+Config.STAGE+'.'+Config.BUILD_NUMBER}</Text>
-					</VStack>
-				</Box>					
-			</VStack>
-		</Center>
+		<VStack flex="1" w={"100%"} justifyContent={"flex-start"}>
+			<ListHeader title={language.settings.headings.preferences} />
+			<LabelValue label={language.settings.labels.language} styles={{ alignItems: "center", space: "4"}} labelStyles={{ flexShrink: 1, bold: false }}>
+				<LanguageToggle styles={{ flex: 1 }} />
+			</LabelValue>
+
+			<ListHeader title={language.settings.headings.account} />
+			<Pressable onPress={() => setShowLogout(!showLogout) }>
+				<LabelValue label={language.settings.labels.logout} labelStyles={{ bold: false }}/>
+			</Pressable>
+
+			<Divider />
+			<Pressable onPress={() => setShowResetPin(!showResetPin)}>
+				<LabelValue label={language.settings.labels.resetpin} labelStyles={{ bold: false }}>{ pinSpinner && <Spinner />}</LabelValue>
+			</Pressable>
+			<Divider />
+			<Pressable onPress={() => setShowResetPass(!showResetPass) }>
+					<LabelValue label={language.settings.labels.resetpassword} labelStyles={{ bold: false }}>{ passwordSpinner && <Spinner /> }</LabelValue>
+			</Pressable>
+
+			<ListHeader title={language.settings.headings.about} />
+			<LabelValue label={language.settings.labels.appversion} labelStyles={{ bold: false }} value={
+				Config.MAJOR_VERSION + '.' + Config.MINOR_VERSION + '.' + Config.PATCH_VERSION + '-' + Config.STAGE + '.' + Config.BUILD_NUMBER
+			} />
+
+			<AlertModal
+				show={showLogout}
+				close={onCloseLogout}
+				ldref={refLogout}
+				header={language.settings.ui.alertLogoutTitle}
+				content={<Text>{language.settings.ui.alertLogout}</Text>}
+			>
+				<Button.Group>
+					<Button onPress={() => { onCloseLogout(); handleLogout()} }>{language.settings.ui.buttonConfirm}</Button>
+					<Button onPress={onCloseLogout} ref={refLogout}>{language.settings.ui.buttonCancel}</Button>
+				</Button.Group>
+			</AlertModal>
+
+			<AlertModal
+				show={showResetPass}
+				close={onCloseResetPass}
+				ldref={refResetPass}
+				header={language.settings.ui.alertResetPasswordTitle}
+				content={<Text>{language.settings.ui.alertResetPassword}</Text>}
+			>
+				<Button.Group>
+					<Button onPress={() => { onCloseResetPass(); handleResetPassword() } }>{language.settings.ui.buttonConfirm}</Button>
+					<Button onPress={onCloseResetPass} ref={refResetPass}>{language.settings.ui.buttonCancel}</Button>
+				</Button.Group>
+			</AlertModal>
+
+			<AlertModal
+				show={showResetPin}
+				close={onCloseResetPin}
+				ldref={refResetPin}
+				header={language.settings.ui.alertResetPinTitle}
+				content={<Text>{language.settings.ui.alertResetPin}</Text>}
+			>
+				<Button.Group>
+					<Button onPress={() => { onCloseResetPin(); handleResetPin() } }>{language.settings.ui.buttonConfirm}</Button>
+					<Button onPress={onCloseResetPin} ref={refResetPin}>{language.settings.ui.buttonCancel}</Button>
+				</Button.Group>
+			</AlertModal>
+		</VStack>
   	)
 }
 

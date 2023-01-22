@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useContext, useEffect } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -10,14 +10,14 @@ import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner'
 
 //data
-import { AuthContext } from '../../../data/Context'
-import { api, beneficiaryEditToolbarConfig, validationRulesBeneficiaryEdit } from '../../../config'
-import { getNotice } from '../../../data/handlers/Status'
-import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData, mapActionsToConfig } from '../../../data/Actions'
 import { useRecoilState, useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
+import { AuthContext } from '../../../data/Context'
+import { getNotice } from '../../../data/handlers/Status'
+import { api, beneficiaryEditToolbarConfig, validationRulesBeneficiaryEdit } from '../../../config'
+import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData, mapActionsToConfig } from '../../../data/Actions'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
-import { loadingState, noticeState } from '../../../data/recoil/system'
-import { userState } from '../../../data/recoil/user'
+import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -39,24 +39,28 @@ export default function BeneficiariesEdit() {
 
 function BeneficiariesEditInner() {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = useContext(AuthContext)
+	const forceUpdate = useForceUpdate()
+	const { control, handleSubmit, setValue, formState } = useFormContext()
+	const { auth } = useContext(AuthContext)
 	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
-	const beneficiary = useRecoilValue(beneficiaryObj)
-	const user = useRecoilValue(userState)
 	const [ notices, setNotices ] = useRecoilState(noticeState)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
-	const { control, handleSubmit, setValue, formState } = useFormContext()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const beneficiary = useRecoilValue(beneficiaryObj)
+	const lang = useRecoilValue(langState)
 
 	let actions = [
 		() => handleBack(), , //note the double comma. second element is a spacer and has no action
-		handleSubmit((data) => { const doSubmit = new Promise((resolve, reject) => {
+		() => {
+			new Promise((resolve) => {
 				setLoading({ status: true, type: 'saving' })
 				forceUpdate()
-				resolve(data)
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
 			})
-			doSubmit.then(result => onSubmit(data))
-		})
+		}
 	]
 
 	const toolbarConfig = mapActionsToConfig(beneficiaryEditToolbarConfig, actions)
@@ -85,12 +89,12 @@ function BeneficiariesEditInner() {
 	},[beneficiary])
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	const handleBack = () => {
 		navigation.goBack()
@@ -107,8 +111,7 @@ function BeneficiariesEditInner() {
 					const newList = atomReplaceItemAtIndex(beneficiaries, data.index, newData)
 					setBeneficiaries(newList)
 					setLoading({ status: false, type: "" })
-					setNotices((prev) => ([...prev, getNotice('beneficiaryUpdated', user.lang)]))
-					authDispatch({ type: 'SET_STATUS', payload: { data: 'beneficiaryUpdated' }})
+					setNotices((prev) => ([...prev, getNotice('beneficiaryUpdated', lang)]))
 					navigation.popToTop()
 				} else {
 					throw response.data
@@ -118,14 +121,13 @@ function BeneficiariesEditInner() {
 			}
 			
 		})
-		.catch(error => {
-			console.log(error)
-			authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
-		})
+		.catch(error => console.log(error))
 	}
 
-	//TODO: improve the list of errors shown to the user
-	const onError = (errors, e) => console.log(errors, e)
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
+
 
 	return (
 		<AppSafeArea>

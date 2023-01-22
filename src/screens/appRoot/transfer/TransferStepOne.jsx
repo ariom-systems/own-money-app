@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 
 //components
-import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { Button, HStack, ScrollView, Text, VStack } from 'native-base'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { HStack, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import CurrencyConverter from '../../../components/transfers/CurrencyConverter'
 import TransferDetails from '../../../components/transfers/TransferDetails'
@@ -12,14 +12,14 @@ import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner'
 
 //data
-import { AuthContext } from '../../../data/Context'
-import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
-import { transferStepOneToolbarConfig } from '../../../config'
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil'
-import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
+import { useForceUpdate } from '../../../data/Hooks'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
+import { transferStepOneToolbarConfig } from '../../../config'
+import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
+import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
-import { noticeState } from '../../../data/recoil/system'
+import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -28,8 +28,12 @@ const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferStepOne = () => {
-	const [ aud, thb, user, ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(userState) ]
-	const [ fee, rate, limit ] = [ useRecoilValue(feeSelector), useRecoilValue(rateSelector), useRecoilValue(limitSelector) ]
+	const aud = useRecoilValue(audAtom)
+	const thb = useRecoilValue(thbSelector)
+	const user = useRecoilValue(userState)
+	const fee = useRecoilValue(feeSelector)
+	const rate = useRecoilValue(rateSelector)
+	
 	const methods = useForm({
 		mode: 'all',
 		criteriaMode: 'all',
@@ -52,31 +56,32 @@ export default TransferStepOne
 
 const TransferStepOneInner = () => {
 	const navigation = useNavigation()
-	const { auth } = useContext(AuthContext)
-	const notices = useRecoilValue(noticeState)
-	const setStep = useSetRecoilState(stepAtom)
-	const user = useRecoilValue(userState)
+	const forceUpdate = useForceUpdate()
+	const { handleSubmit, reset, formState } = useFormContext()
 	const [ buttonState, setButtonState] = useRecoilState(stepOneButtonAtom)
 	const [ aud, setAud ] = useRecoilState(audAtom)
 	const [ thb, setThb ] = useRecoilState(thbSelector)
-	const { handleSubmit, setValue, getValues, reset, formState } = useFormContext()
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const setStep = useSetRecoilState(stepAtom)
+	const notices = useRecoilValue(noticeState)
+	const lang = useRecoilValue(langState)
 
 	const actions = [
 		() => handleCancel(),null,
-		handleSubmit((data) => onSubmit(data))
+		() => {
+			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+		}
 	]
 	const properties = [ {}, {}, { isDisabled: buttonState } ]
 	let toolbarConfig = mapActionsToConfig(transferStepOneToolbarConfig, actions)
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 	
 	let hasErrors
 
@@ -98,7 +103,10 @@ const TransferStepOneInner = () => {
 		setStep(1)
 	}
 
-	const onError = error => console.log(error)
+	const onError = (error) => {
+		console.log(error)
+		setLoading({ status: false, message: 'none' })
+	}
 
 	const handleCancel = () => { console.log('cancelled'); setAud(0); setThb(0); setStep(0); reset(); setButtonState(true); }
 
@@ -110,7 +118,7 @@ const TransferStepOneInner = () => {
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />
 						<VStack space={"4"} w={"100%"} alignItems={"center"}>
-							<Text textAlign={"center"}>{ language.transferStepOne.instructionTop }</Text>
+							<Text textAlign={"center"}>{ language.transferStepOne.ui.instructionTop }</Text>
 							<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
 								<ExchangeRate size={"sm"} />
 							</HStack>

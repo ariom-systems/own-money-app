@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useReducer, useRef, memo } from 'react'
+import React, { useContext, useEffect, useRef, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
 import AppSafeArea from '../../../components/common/AppSafeArea'
-import { Box, Button, Divider, HStack, ScrollView, Text, VStack } from 'native-base'
+import { Box, Divider, ScrollView, Text, VStack } from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import ReviewListHeader from '../../../components/transfers/ReviewListHeader'
 import ReviewListItem from '../../../components/transfers/ReviewListItem'
@@ -11,17 +11,18 @@ import * as Forms from '../../../components/common/Forms'
 import Toolbar from '../../../components/common/Toolbar'
 import AlertBanner from '../../../components/common/AlertBanner'
 
-
 //data
-import { AuthContext } from '../../../data/Context'
+
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
-import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, limitSelector, stepThreeButtonAtom } from '../../../data/recoil/transfer'
-import { globalState, loadingState, noticeState } from '../../../data/recoil/system'
-import { userState } from '../../../data/recoil/user'
-import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { useForceUpdate } from '../../../data/Hooks'
+import { AuthContext } from '../../../data/Context'
 import { api, validationRulesTransferStepThree, transferStepThreeToolbarConfig } from '../../../config'
 import { buildDataPath, formatCurrency, mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
+import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
+import { userState } from '../../../data/recoil/user'
+import { globalState, loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -31,10 +32,13 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferStepThree = () => {
 	const { auth } = useContext(AuthContext)
-	const [aud, thb, fee, rate ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(feeSelector), useRecoilValue(rateSelector) ]
+	const aud = useRecoilValue(audAtom)
+	const thb = useRecoilValue(thbSelector)
+	const fee = useRecoilValue(feeSelector)
+	const rate = useRecoilValue(rateSelector)
+	const beneficiary = useRecoilValue(beneficiaryObj)
 	const globals = useRecoilValue(globalState)
 	const user = useRecoilValue(userState)
-	const beneficiary = useRecoilValue(beneficiaryObj)
 
 	const methods = useForm({
 		mode: 'all',
@@ -45,7 +49,7 @@ const TransferStepThree = () => {
 			fee_AUD: fee,
 			rate: Number(rate).toFixed(2),
 			today_rate: Number(globals.rate).toFixed(2),
-			sender: user.firstname + " " + user.lastname,
+			sender: user.fullname,
 			receiver: beneficiary.fullname,
 			accountnumber: beneficiary.accountnumber,
 			branchname: beneficiary.branchname,
@@ -69,22 +73,27 @@ export default memo(TransferStepThree)
 
 const TransferStepThreeInner = () => {
 	const navigation = useNavigation()
-	const { auth, authDispatch } = useContext(AuthContext)
-	const { control, handleSubmit, getValues, formState} = useFormContext()
-	const [aud, thb, fee, rate ] = [ useRecoilValue(audAtom), useRecoilValue(thbSelector), useRecoilValue(feeSelector), useRecoilValue(rateSelector) ]
-	const [ globals, notices ] = [useRecoilValue(globalState), useRecoilValue(noticeState)]
+	const forceUpdate = useForceUpdate()
+	const { control, handleSubmit, formState} = useFormContext()
+	const { auth } = useContext(AuthContext)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
-	const user = useRecoilValue(userState)
-	const beneficiary = useRecoilValue(beneficiaryObj)
+	const [ buttonState, setButtonState ] = useRecoilState(stepThreeButtonAtom)
 	const setStep = useSetRecoilState(stepAtom)
-	const [buttonState, setButtonState] = useRecoilState(stepThreeButtonAtom)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
-
+	const aud = useRecoilValue(audAtom)
+	const thb = useRecoilValue(thbSelector)
+	const fee = useRecoilValue(feeSelector)
+	const rate = useRecoilValue(rateSelector)
+	const beneficiary = useRecoilValue(beneficiaryObj)
+	const notices = useRecoilValue(noticeState)
+	const user = useRecoilValue(userState)
+	const lang = useRecoilValue(langState)
 	const scrollRef = useRef()
 
 	const actions = [
 		() => handlePrevious(),null,
-		handleSubmit((data) => onSubmit(data))
+		() => {
+			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+		}
 	]
 	const properties = [{},{},{ isDisabled: buttonState }]
 	let toolbarConfig = mapActionsToConfig(transferStepThreeToolbarConfig, actions)
@@ -92,17 +101,12 @@ const TransferStepThreeInner = () => {
 
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-
-	}, [language, user])
-
-	useEffect(() => {
-		
-	},[loading])
+	}, [language, lang])
 
 	const onSubmit = (submitted) => {
 		setLoading((prev) => ({ ...prev, status: true }))
@@ -117,21 +121,21 @@ const TransferStepThreeInner = () => {
 			// 			api.put(buildDataPath('meta', auth.uid, 'edit', { endpoint: 'users' }), returnPayload)
 			// 			.then(response => {
 			// 				if (response.ok == true && response.data == true) {
-			// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'transferComplete' }})
+			// 					
 			// 					transferDispatch({ type: 'SET_STEP_THREE', payload: { data: submitted }})
 			// 					transferDispatch({ type: 'GO_TO', payload: { step: 3 }})
 			// 					setIsLoading(false)
 			// 					navigation.navigate('TransferStepFour')
 			// 				} else {
 			// 					scrollRef.current.scrollTo({x:0, y:0, animated: false})
-			// 					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
+			// 					
 			// 					console.log('🚫',response)
 			// 					setIsDisabled(true)
 			// 				}
 			// 			})
 			// 		} else {
 			// 			scrollRef.current.scrollTo({x:0, y:0, animated: false})
-			// 			authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
+			// 			
 			// 			console.log('🚫',response)
 			// 			setIsDisabled(true)
 			// 		}
@@ -144,7 +148,10 @@ const TransferStepThreeInner = () => {
 		
 	}
 
-	const onError = (error) => { console.log(error) }
+	const onError = (error) => {
+		console.log(error)
+		setLoading({ status: false, message: 'none' })
+	}
 
 	const handlePrevious = () => {
 		setStep(1)
@@ -163,35 +170,35 @@ const TransferStepThreeInner = () => {
 						</Box>
 						<VStack borderColor={"primary.600"} borderWidth={"1"} rounded={"8"} overflow={"hidden"}>
 
-							<ReviewListHeader title={ language.transferStepthree.headerFrom } style={{ roundedTop: "8" }} />
-							<ReviewListItem label={ language.transferStepthree.listDataSenderLabel } value={ user.firstname + " " + user.lastname } />
+							<ReviewListHeader title={ language.transferStepthree.headings.from } style={{ roundedTop: "8" }} />
+							<ReviewListItem label={ language.transferStepthree.labels.sender } value={ user.firstname + " " + user.lastname } />
 							
-							<ReviewListHeader title={ language.transferStepthree.headerTo } />
-							<ReviewListItem label={ language.transferStepthree.listDataReceiverLabel } value={ beneficiary.fullname } />
+							<ReviewListHeader title={ language.transferStepthree.headings.to } />
+							<ReviewListItem label={ language.transferStepthree.labels.receiver } value={ beneficiary.fullname } />
 							<Divider />
-							<ReviewListItem label={ language.transferStepthree.listDataAccountNumberLabel } value={ beneficiary.accountnumber } />
+							<ReviewListItem label={ language.transferStepthree.labels.accountnumber } value={ beneficiary.accountnumber } />
 							<Divider />
-							<ReviewListItem label={ language.transferStepthree.listDataBankNameLabel } value={ beneficiary.branchname } />
+							<ReviewListItem label={ language.transferStepthree.labels.bankname } value={ beneficiary.branchname } />
 
-							<ReviewListHeader title={ language.transferStepthree.headerAmounts } />
-							<ReviewListItem label={ language.transferStepthree.listDataAmountToSendLabel } value={ 
-								formatCurrency(aud, "en-AU", "AUD").full + ' ' + language.transferStepthree.currencyCodeAUD
+							<ReviewListHeader title={ language.transferStepthree.headings.amounts } />
+							<ReviewListItem label={ language.transferStepthree.labels.amounttosend } value={ 
+								formatCurrency(aud, "en-AU", "AUD").full + ' ' + language.misc.aud
 							} />
 							<Divider />
-							<ReviewListItem label={ language.transferStepthree.listDataYourRateLabel } value={
-								formatCurrency(rate, "th-TH", "THB").full + ' ' + language.transferStepthree.currencyCodeTHB
+							<ReviewListItem label={ language.transferStepthree.labels.yourrate } value={
+								formatCurrency(rate, "th-TH", "THB").full + ' ' + language.misc.thb
 							} />
 							<Divider />
-							<ReviewListItem label={ language.transferStepthree.listDataFeesLabel } value={
-								formatCurrency(fee, "en-AU", "AUD").full + ' ' + language.transferStepthree.currencyCodeAUD
+							<ReviewListItem label={ language.transferStepthree.labels.fees } value={
+								formatCurrency(fee, "en-AU", "AUD").full + ' ' + language.misc.aud
 							} />
 							
-							<ReviewListHeader title={ language.transferStepthree.headerTotals } />
-							<ReviewListItem label={ language.transferStepthree.listDataTotalToPayLabel } value={
-								formatCurrency(aud + fee, "en-AU", "AUD").full + ' ' + language.transferStepthree.currencyCodeAUD
+							<ReviewListHeader title={ language.transferStepthree.headings.totals } />
+							<ReviewListItem label={ language.transferStepthree.labels.totaltopay } value={
+								formatCurrency(aud + fee, "en-AU", "AUD").full + ' ' + language.misc.aud
 							} />
-							<ReviewListItem label={ language.transferStepthree.listDataReceivableAmountLabel } value={
-								formatCurrency(thb, "th-TH", "THB").full + ' ' + language.transferStepthree.currencyCodeTHB
+							<ReviewListItem label={ language.transferStepthree.labels.receivableamount } value={
+								formatCurrency(thb, "th-TH", "THB").full + ' ' + language.misc.thb
 							} />
 							<Forms.SelectInput
 								name={ "purpose" }
@@ -199,22 +206,22 @@ const TransferStepThreeInner = () => {
 								component={"Purpose"}
 								rules={ validationRulesTransferStepThree.purpose }
 								errors={ formState.errors.purpose }
-								label={ language.transferStepthree.listDataPurposeOfTransferLabel }
-								placeholder={ language.transferStepthree.listDataPurposeOfTransferPlaceholder }
+								label={ language.transferStepthree.labels.purpose }
+								placeholder={ language.transferStepthree.placeholders.purpose }
 								required={true}
 								context={"Transfers"}
 								labelStyles={{ fontSize: "md", color: "coolGray.500", flexGrow: "1", mb: "2"}}
-								blockStyles={{ mb: "4"}}
+								blockStyles={{ mb: "4", px: "4"}}
 							/>
 
 							<Forms.CheckInput
 								name={"termandconditions"}
 								control={control}
-								rules={ validationRulesTransferStepThree.termsandconditions }
+								rules={ validationRulesTransferStepThree.terms }
 								errors={ formState.errors.termandconditions }
-								label={ language.transferStepthree.listDataTermsStatement }
+								label={ language.transferStepthree.labels.terms }
 								labelStyles={{ fontSize: "xs", mt: "-0.5", ml: "2", w: "90%" }}
-								blockStyles={{ paddingBottom: "4"}}
+								blockStyles={{ pb: "4", pl: "4"}}
 							/>
 
 						</VStack>

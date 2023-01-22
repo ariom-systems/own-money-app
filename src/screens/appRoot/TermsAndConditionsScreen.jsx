@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useContext, useEffect, memo } from 'react'
 
 //components
 import AppSafeArea from '../../components/common/AppSafeArea'
@@ -14,7 +14,8 @@ import { buildDataPath } from '../../data/Actions'
 import { api } from '../../config'
 import { atom, useRecoilState } from 'recoil'
 import { noticeState } from '../../data/recoil/system'
-import Config from 'react-native-config'
+import { useForceUpdate } from '../../data/Hooks'
+
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -58,7 +59,7 @@ const TermsAndConditionsScreenInner = () => {
 	const [ acceptance, setAcceptance ] = useRecoilState(acceptanceState)
 	const [ scroll, setScroll ] = useRecoilState(scrollState)
 	const [ termsBanner, setTermsBanner ] = useRecoilState(noticeState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const forceUpdate = useForceUpdate()
 	let banner = termsBanner.find(element => element.id == "termsAndConditions"), 
 		blankBanner = {title: "", message: "", style: "default", icon: "help-circle-outline"}
 

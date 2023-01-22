@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from "react"
+import React, { useEffect } from "react"
 
 //components
 import { Divider, Factory, Flex, HStack, Text, VStack } from 'native-base'
@@ -7,7 +7,9 @@ import AlertLabel from '../common/AlertLabel'
 
 //data
 import { useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
 import { userState } from '../../data/recoil/user'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -16,23 +18,25 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const IdentitySection = ({section}) => {
+	const forceUpdate = useForceUpdate()
 	const user = useRecoilValue(userState)
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
+	const lang = useRecoilValue(langState)
 	let identitySection = section[0].data, identityStatus
-	const [type, expiry, issuer, number, uploaded, file ] = identitySection
+	let [ type, expiry, issuer, number, uploaded, file ] = identitySection
+	let none = language.misc.none
+
 	if (type.value == '' || expiry.value == '' || issuer.value == '' || number.value == '' || uploaded.value == '' || file.value == '' ) {	
 		let styles = { pt: "1", justifyContent: "center" }, iconStyles = { fontSize: "2xl"}, labelStyles = { fontSize: "lg" }
 		let label = language.profileDetails.ui.statusVerifyIdentity, icon = "alert-circle-outline"
 		identityStatus = <AlertLabel icon={icon} label={label} color={"error.600"} styles={styles} iconStyles={iconStyles} labelStyles={labelStyles} />
 	}
-	let none = language.misc.none
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<VStack space={"4"} px={"4"} py={"2"} bgColor={"white"} mb={"4"} roundedBottom={"8"}>

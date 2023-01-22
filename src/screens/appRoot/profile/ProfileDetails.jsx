@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -10,12 +10,12 @@ import ListHeader from '../../../components/common/ListHeader'
 import DetailRowItem from '../../../components/profile/DetailRowItem'
 
 //data
+import { useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
+import { ProfileObjFormats, UserTemplate, profileDetailToolbarConfig } from '../../../config'
 import { mapSectionDataFromTemplate, mapActionsToConfig, localiseObjectData } from '../../../data/Actions'
-import { ProfileObjFormats, UserTemplate } from '../../../config'
-import { useRecoilValue } from 'recoil'
 import { userState } from '../../../data/recoil/user'
-import { noticeState } from '../../../data/recoil/system'
-import { profileDetailToolbarConfig } from '../../../config'
+import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -25,25 +25,31 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ProfileDetails = () => {
 	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const user = useRecoilValue(userState)
 	const notices = useRecoilValue(noticeState)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const lang = useRecoilValue(langState)
 
 	let actions = [() => navigation.navigate('ProfileEdit', { showBack: true })]
 	const toolbarConfig = mapActionsToConfig(profileDetailToolbarConfig, actions)
 	
 	let labels = language.profileDetails.labels
 	let headings = language.profileDetails.headings
-	let localisedData = localiseObjectData(user, ProfileObjFormats, user.lang)
+	let localisedData = localiseObjectData(user, ProfileObjFormats, lang)
 	let sections = mapSectionDataFromTemplate(UserTemplate, localisedData, labels, headings)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
+
+	useEffect(() => {
+		setLoading({ status: false, type: "none" })
+	}, [user])
 
 	return (
 		<AppSafeArea>

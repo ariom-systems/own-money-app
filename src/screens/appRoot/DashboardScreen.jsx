@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 
 //components
 import AppSafeArea from '../../components/common/AppSafeArea'
@@ -10,13 +10,13 @@ import ListItem from '../../components/dashboard/ListItem'
 import ListHeader from '../../components/common/ListHeader'
 
 //data
-import { AuthContext } from '../../data/Context'
-import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
 import { selector, useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
-import { transactionList } from '../../data/recoil/transactions'
-import { noticeState } from '../../data/recoil/system'
+import { useForceUpdate } from '../../data/Hooks'
 import { dashboardToolbarConfig } from '../../config'
+import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
+import { transactionList } from '../../data/recoil/transactions'
+import { userState } from '../../data/recoil/user'
+import { noticeState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -34,19 +34,19 @@ const dashboardTransactions = selector({
 })
 
 const DashboardScreen = ({ navigation }) => {
-	const { auth } = useContext(AuthContext)
+	const forceUpdate = useForceUpdate()
 	const transactions = useRecoilValue(dashboardTransactions)
 	const user = useRecoilValue(userState)
 	const notices = useRecoilValue(noticeState)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const lang = useRecoilValue(langState)
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 
 	const actions = [() => navigation.navigate('Transactions', { screen: 'TransactionsList' })]

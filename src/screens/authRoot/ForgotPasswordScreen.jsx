@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useReducer, useState, memo } from 'react'
+import React, { useContext, useEffect, useState, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
@@ -7,14 +7,17 @@ import { Button, HStack, Image, Input, Text, VStack } from 'native-base'
 import * as Forms from '../../components/common/Forms'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 import image from '../../assets/img/logo.png'
+import Toolbar from '../../components/common/Toolbar'
 
 //data
-import { useForm } from 'react-hook-form'
-import { AuthContext } from '../../data/Context'
-import { api, validationRulesForgotPassword } from '../../config'
 import Config from 'react-native-config'
-import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useForm } from 'react-hook-form'
+import { useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { api, validationRulesForgotPassword, forgotPasswordToolbarConfig } from '../../config'
+import { mapActionsToConfig } from '../../data/Actions'
+import { loadingState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -24,12 +27,31 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const ForgotPasswordScreen = () => {
 	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
 	const { auth, authDispatch } = useContext(AuthContext)
-	const user = useRecoilValue(userState)
-	const [ requested, setRequested ] = useState("")
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const lang = useRecoilValue(langState)
 
-	const { control, handleSubmit, setError, formState } = useForm({
+	let actions = [
+		() => {
+			new Promise((resolve) => {
+				setLoading({ status: true, type: 'processing' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			})
+		},
+		() => {
+			authDispatch({ type: 'CLEAR_STATUS' })
+			navigation.goBack()
+		}
+	]
+	const toolbarConfig = mapActionsToConfig(forgotPasswordToolbarConfig, actions)
+
+	const { control, handleSubmit, formState } = useForm({
 		mode: 'onBlur',
 		criteriaMode: 'all',
 		defaultValues: {
@@ -38,41 +60,45 @@ const ForgotPasswordScreen = () => {
 	})
 
 	const onSubmit = async (data) => {
-		let reset = new Promise((resolve, reject) => {
+		new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
 			api.post(Config.BASEURL + '/forgotpassword', {
 				email: data.email,
-				lang: user.lang
+				lang: lang
 			})
 			.then(response => {
 				if(response.ok == true) {
 					//get the 'notices' array. this endpoint will always return one notice.
 					let notices = response.data.notices
 					if(notices.length == 1) {
-						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] }})
+						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] } }) //leave this here
 						authDispatch({ type: 'LOADING', payload: { data: false }})
-						setRequested(language.forgotPassword.buttonResetSent)
 					}
 					resolve(true)
 				}
 			})
+			.catch(errors => {
+				console.log(response)
+			})
 		})
 	}
 
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
+
 	useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
 			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
-				{ (auth.status !== null && auth.status !== "") && <Notice nb={{w:"100%", mb: "4"}} />}
 				<Image source={image} resizeMode={"contain"} alt={language.forgotPassword.ui.logoAlt} size={"160"} />
 				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"} px={"4%"}>{language.forgotPassword.ui.underLogo}</Text>
-				
 				<Forms.TextInput
 					name={"email"}
 					control={control}
@@ -83,30 +109,7 @@ const ForgotPasswordScreen = () => {
 					inputAttributes={{ keyboardType: "email-address", size: "lg", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
-				<HStack w={"100%"} px={"4%"} space={"4%"}>
-					<Button
-						mt={"2"}
-						flex={"1"}
-						onPress={handleSubmit(onSubmit)}
-						isLoading={ auth.loading ? true : false }
-						isLoadingText={language.forgotPassword.ui.buttonResetLoading}
-						isDisabled={requested !== "" ? true : false }
-						>
-							{ requested !== "" ? requested : language.forgotPassword.ui.buttonResetPassword }
-					</Button>
-					<Button
-						mt={"2"}
-						flex={"1"}
-						variant={"subtle"}
-						onPress={() => {
-							if(!auth.loading) {
-								authDispatch({ type: 'CLEAR_STATUS' })
-								navigation.goBack()
-							}
-						}}>
-							{language.forgotPassword.ui.buttonBackToLogin}
-					</Button>
-				</HStack>
+				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
 				<HStack>
 					<LanguageToggle />
 				</HStack>

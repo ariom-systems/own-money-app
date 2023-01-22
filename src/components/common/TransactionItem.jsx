@@ -1,11 +1,12 @@
-import React, { useEffect, useReducer } from 'react'
+import React, { useEffect } from 'react'
 
 //components
 import { Avatar, Badge, HStack, Spacer, Text, VStack } from 'native-base'
 
 //data
 import { useRecoilValue } from 'recoil'
-import { userState } from '../../data/recoil/user'
+import { useForceUpdate } from '../../data/Hooks'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -14,8 +15,8 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const TransactionItem = (props) => {
-	const [ignored, forceUpdate] = useReducer((x) => x + 1, 0)
-	const user = useRecoilValue(userState)
+	const forceUpdate = useForceUpdate()
+	const lang = useRecoilValue(langState)
 	let { index, initials, fullname, status, transfer_amount, received_amount } = props
 
 	let scheme, message
@@ -26,11 +27,11 @@ const TransactionItem = (props) => {
 	}
 
 	useEffect(() => {
-		if (language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang])
 
 	return (
 		<HStack key={index} alignItems={"center"} space={"3"} py={"4"}>

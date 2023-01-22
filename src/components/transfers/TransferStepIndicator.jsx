@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useReducer, memo } from 'react'
+import React, { useEffect, memo } from 'react'
 
 //components
 import { Box } from 'native-base'
 import StepIndicator from 'react-native-step-indicator'
 
 //data
-import { AuthContext } from '../../data/Context'
 import { useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
 import { stepAtom } from '../../data/recoil/transfer'
-import { userState } from '../../data/recoil/user'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -17,24 +17,23 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 const TransferStepIndicator = (props) => {
-	const { auth } = useContext(AuthContext)
-	const user = useRecoilValue(userState)
+	const forceUpdate = useForceUpdate()
 	const step = useRecoilValue(stepAtom)
-	const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+	const lang = useRecoilValue(langState)
 
 	let labels = [
-		language.transferProgress.labelAmount,
-		language.transferProgress.labelBeneficiary,
-		language.transferProgress.labelReview,
-		language.transferProgress.labelFinish
+		language.transferProgress.labels.amount,
+		language.transferProgress.labels.beneficiary,
+		language.transferProgress.labels.review,
+		language.transferProgress.labels.finish
 	]
 
 	useEffect(() => {
-		if(language.getLanguage() !== user.lang) {
-			language.setLanguage(user.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, user])
+	}, [language, lang, labels])
 
 	return (
 		<Box mt={"5%"} mx={"2.5%"} py={"4"} backgroundColor={"white"}>

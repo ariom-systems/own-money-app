@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useReducer } from 'react'
-import 'react-native-gesture-handler'
+import React, { useContext, useEffect} from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { ActivityIndicator, LogBox } from 'react-native'
 
@@ -9,22 +9,23 @@ import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { useFlipper } from '@react-navigation/devtools'
 
-//navigators
+//screens/navigators
 import AuthStack from './src/components/navigators/AuthStack'
 import AppStack from './src/components/navigators/AppStack'
-
-//screens
 import SplashScreen from './src/screens/SplashScreen';
 
-//data
-import { AuthContext, AuthProvider } from './src/data/Context'
+//components
 import { NativeBaseProvider, extendTheme, Text } from 'native-base'
+
+//data
+import RecoilFlipperClient from 'react-recoil-flipper-client'
+import { RecoilRoot, useRecoilValue } from 'recoil'
+import { useInterval, useForceUpdate } from './src/data/Hooks'
+import { AuthContext, AuthProvider } from './src/data/Context'
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
 import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
-import { initialCheckConnection } from './src/data/handlers/Connection'
-import * as Hooks from './src/data/Hooks';
-import { RecoilRoot } from 'recoil'
-import RecoilFlipperClient from 'react-recoil-flipper-client'
+import { initialCheckConnection, checkConnection } from './src/data/handlers/Connection'
+import { langState } from './src/data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -37,14 +38,16 @@ LogBox.ignoreLogs(["Duplicate atom key"])
 
 export default function App() {
 	return (
-        <RecoilRoot>
-            <RecoilFlipperClient />
-            <NativeBaseProvider theme={NativeBaseTheme}>
-                <AuthProvider>
-                    <RootNavigator />
-                </AuthProvider>
-            </NativeBaseProvider>
-        </RecoilRoot>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <RecoilRoot>
+                <RecoilFlipperClient />
+                <NativeBaseProvider theme={NativeBaseTheme}>
+                    <AuthProvider>
+                        <RootNavigator />
+                    </AuthProvider>
+                </NativeBaseProvider>
+            </RecoilRoot>
+        </GestureHandlerRootView>
 	)
 }
 
@@ -64,8 +67,9 @@ const RootNavigator = ({navigation}) => {
 }
 
 const AppNavigator = ({navigation}) => {    
+    const forceUpdate = useForceUpdate()
     const { auth, authDispatch } = useContext(AuthContext)
-    const [ ignored, forceUpdate] = useReducer((x) => x +1, 0)
+    const lang = useRecoilValue(langState)
 
     useEffect(() => {
         //check if we can connect to the API first
@@ -96,18 +100,18 @@ const AppNavigator = ({navigation}) => {
     }, [])
 
     useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
-    Hooks.useInterval(() => {
+    useInterval(() => {
         async function checkTokenExpiry(timestamp) {
             if(timestamp <= 0) {
                 const reset = await keychainReset('token') //shutup vscode, await DOES do something here
                 if(reset === true) {
-                    authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }})
+                    authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }}) //leave this here
                     authDispatch({ type: 'LOGOUT'})
                 }
             }
@@ -116,9 +120,6 @@ const AppNavigator = ({navigation}) => {
 	    const timeLeft = auth.expire - timeNow
         checkTokenExpiry(timeLeft)
     }, auth.expire > 0 ? 60000 : null)
-
-    // const scheme = useColorScheme()
-    // theme={scheme === 'dark' ? ReactNavigationThemeDark : ReactNavigationThemeDefault}
    
     if (auth.token === null) {
         return <AuthStack />

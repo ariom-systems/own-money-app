@@ -117,6 +117,11 @@ export const PressableStyles = {
 			bgColor: "transparent",
 			borderColor: "primary.100",
 			color: "primary.100"
+		},
+		outlineDark: {
+			bgColor: "transparent",
+			borderColor: "primary.600",
+			color: "primary.600"
 		}
 	},
 	disabled: {
@@ -126,14 +131,19 @@ export const PressableStyles = {
 			color: "primary.100:alpha.20"
 		},
 		subtle: {
-			bgColor: "primary.300",
-			borderColor: "primary.300",
-			color: "primary.800"
+			bgColor: "primary.300:alpha.70",
+			borderColor: "primary.300:alpha.70",
+			color: "primary.800:alpha.70"
 		},
 		outline: {
-			bgColor: "transparent",
-			borderColor: "primary.100",
-			color: "primary.100"
+			bgColor: "transparent:alpha.70",
+			borderColor: "primary.100:alpha.70",
+			color: "primary.100:alpha.70"
+		},
+		outlineDark: {
+			bgColor: "transparent:alpha.70",
+			borderColor: "primary.600:alpha.70",
+			color: "primary.600:alpha.70"
 		}
 	}
 }
@@ -158,111 +168,111 @@ export const ReactNavigationThemeDefault = {
 
 export const validationRulesLogin = {
 	email: {
-		required: language.login.errors.emailRequired,
-		pattern: { value: /\S+@\S+\.\S+/i, message: language.login.errors.emailPattern }
+		required: 'login.errors.emailRequired',
+		pattern: { value: /\S+@\S+\.\S+/i, message: 'login.errors.emailPattern' }
 	},
-	password: { required: language.login.errors.passwordRequired }
+	password: { required: 'login.errors.passwordRequired' }
 }
 
 export const validationRulesRegister = {
 	email: {
-		required: language.register.errors.emailRequired,
-		pattern: { value: /\S+@\S+\.\S+/i, message: language.register.errors.emailPattern }
+		required: 'register.errors.emailRequired',
+		pattern: { value: /\S+@\S+\.\S+/i, message: 'register.errors.emailPattern' }
 	},
-	password: { required: language.register.errors.passwordRequired },
-	passwordConfirm: { required: language.register.errors.passwordConfirmRequired },
+	password: { required: 'register.errors.passwordRequired' },
+	passwordConfirm: { required: 'register.errors.passwordConfirmRequired' },
 	phone: {
-		required: language.register.errors.phoneRequired,
-		pattern: { value: /^[0-9-]+$/, message: language.register.errors.phonePattern }
+		required: 'register.errors.phoneRequired',
+		pattern: { value: /^[0-9-]+$/, message: 'register.errors.phonePattern' }
 	}
 }
 
 export const validationRulesForgotPassword = {
 	email: {
-		required: language.forgotPassword.emailRequired,
-		pattern: { value: /\S+@\S+\.\S+/i, message: language.forgotPassword.emailPattern }
+		required: 'forgotPassword.errors.emailRequired',
+		pattern: { value: /\S+@\S+\.\S+/i, message: 'forgotPassword.errors.emailPattern' }
 	}
 }
 
 export const validationRulesBeneficiaryAdd = {
-	firstname: { required: language.beneficiaryAdd.errors.firstNameRequired },
-	lastname: { required: language.beneficiaryAdd.errors.lastNameRequired },
+	firstname: { required: 'beneficiaryAdd.errors.firstNameRequired' },
+	lastname: { required: 'beneficiaryAdd.errors.lastNameRequired' },
 	phone: {
-		pattern: { value: /[0-9-]+/, message: language.beneficiaryAdd.errors.phoneDigits },
-		minLength: { value: 10, message: language.beneficiaryAdd.errors.phoneMin },
-		maxLength: { value: 10, message: language.beneficiaryAdd.errors.phoneMax }
+		pattern: { value: /[0-9-]+/, message: 'beneficiaryAdd.errors.phoneDigits' },
+		minLength: { value: 10, message: 'beneficiaryAdd.errors.phoneMin' },
+		maxLength: { value: 10, message: 'beneficiaryAdd.errors.phoneMax' }
 	},
 	accountnumber: {
-		required: language.beneficiaryAdd.errors.accountNumberRequired,
-		pattern: { value: /\d+/, message: language.beneficiaryAdd.errors.accountNumberDigits },
-		minLength: { value: 10, message: language.beneficiaryAdd.errors.accountNumberMin },
-		maxLength: { value: 10, message: language.beneficiaryAdd.errors.accountNumberMax }
+		required: 'beneficiaryAdd.errors.accountNumberRequired',
+		pattern: { value: /\d+/, message: 'beneficiaryAdd.errors.accountNumberDigits' },
+		minLength: { value: 10, message: 'beneficiaryAdd.errors.accountNumberMin' },
+		maxLength: { value: 10, message: 'beneficiaryAdd.errors.accountNumberMax' }
 	},
-	accounttype: { required: language.beneficiaryAdd.errors.accountTypeRequired },
-	bankname: { required: language.beneficiaryAdd.errors.bankNameRequired },
-	branchname: { required: language.beneficiaryAdd.errors.branchNameRequired },
-	branchcity: { required: language.beneficiaryAdd.errors.branchCityRequired },
-	address: { required: language.beneficiaryAdd.errors.thaiAddressRequired },
-	state: { required: language.beneficiaryAdd.errors.provinceRequired },
-	city: { required: language.beneficiaryAdd.errors.districtRequired },
-	postcode: { required: language.beneficiaryAdd.errors.postCodeRequired }
+	accounttype: { required: 'beneficiaryAdd.errors.accountTypeRequired' },
+	bankname: { required: 'beneficiaryAdd.errors.bankNameRequired' },
+	branchname: { required: 'beneficiaryAdd.errors.branchNameRequired' },
+	branchcity: { required: 'beneficiaryAdd.errors.branchCityRequired' },
+	address: { required: 'beneficiaryAdd.errors.thaiAddressRequired' },
+	state: { required: 'beneficiaryAdd.errors.provinceRequired' },
+	city: { required: 'beneficiaryAdd.errors.districtRequired' },
+	postcode: { required: 'beneficiaryAdd.errors.postCodeRequired' }
 
 }
 
 export const validationRulesBeneficiaryEdit = {
-	firstname: { required: language.beneficiaryEdit.errors.firstNameRequired },
-	lastname: { required: language.beneficiaryEdit.errors.lastNameRequired },
+	firstname: { required: 'beneficiaryEdit.errors.firstNameRequired' },
+	lastname: { required: 'beneficiaryEdit.errors.lastNameRequired' },
 	phone: {
-		pattern: { value: /[0-9-]+/, message: language.beneficiaryEdit.errors.phoneDigits },
-		minLength: { value: 10, message: language.beneficiaryEdit.errors.phoneMin },
-		maxLength: { value: 10, message: language.beneficiaryEdit.errors.phoneMax }
+		pattern: { value: /[0-9-]+/, message: 'beneficiaryEdit.errors.phoneDigits' },
+		minLength: { value: 10, message: 'beneficiaryEdit.errors.phoneMin' },
+		maxLength: { value: 10, message: 'beneficiaryEdit.errors.phoneMax' }
 	},
 	accountnumber: {
-		required: language.beneficiaryEdit.errors.accountNumberRequired,
-		pattern: { value: /\d+/, message: language.beneficiaryEdit.errors.accountNumberDigits },
-		minLength: { value: 10, message: language.beneficiaryEdit.errors.accountNumberMin },
-		maxLength: { value: 10, message: language.beneficiaryEdit.errors.accountNumberMax }
+		required: 'beneficiaryEdit.errors.accountNumberRequired',
+		pattern: { value: /\d+/, message: 'beneficiaryEdit.errors.accountNumberDigits' },
+		minLength: { value: 10, message: 'beneficiaryEdit.errors.accountNumberMin' },
+		maxLength: { value: 10, message: 'beneficiaryEdit.errors.accountNumberMax' }
 	},
-	accounttype: { required: language.beneficiaryEdit.errors.accountTypeRequired },
-	bankname: { required: language.beneficiaryEdit.errors.bankNameRequired },
-	branchname: { required: language.beneficiaryEdit.errors.branchNameRequired },
-	branchcity: { required: language.beneficiaryEdit.errors.branchCityRequired },
-	address: { required: language.beneficiaryEdit.errors.thaiAddressRequired },
-	state: { required: language.beneficiaryEdit.errors.provinceRequired },
-	city: { required: language.beneficiaryEdit.errors.districtRequired },
-	postcode: { required: language.beneficiaryEdit.errors.postCodeRequired }
+	accounttype: { required: 'beneficiaryEdit.errors.accountTypeRequired' },
+	bankname: { required: 'beneficiaryEdit.errors.bankNameRequired' },
+	branchname: { required: 'beneficiaryEdit.errors.branchNameRequired' },
+	branchcity: { required: 'beneficiaryEdit.errors.branchCityRequired' },
+	address: { required: 'beneficiaryEdit.errors.thaiAddressRequired' },
+	state: { required: 'beneficiaryEdit.errors.provinceRequired' },
+	city: { required: 'beneficiaryEdit.errors.districtRequired' },
+	postcode: { required: 'beneficiaryEdit.errors.postCodeRequired' }
 }
 
 export const validationRulesTransferStepOne = {
-	aud: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: language.transferStepOne.errorMessageInvalidFormat }},
-	thb: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: language.transferStepOne.errorMessageInvalidFormat }}
+	aud: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: 'transferStepOne.errors.invalidFormat' }},
+	thb: { pattern: { value: /^(?!,\.$)[\d,]+[\.]?(\d{1,2})?$/, message: 'transferStepOne.errors.invalidFormat' }}
 }
 
 export const validationRulesTransferStepThree = {
-	purpose: { required: language.transferStepthree.errorMessageSelectReason },
-	termsandconditions: { required: language.transferStepthree.errorMessageAcceptTerms }
+	purpose: { required: 'transferStepthree.errorMessageSelectReason' },
+	termsandconditions: { required: 'transferStepthree.errorMessageAcceptTerms' }
 }
 
 export const validationRulesTermsAndConditions = {
-	accept: { required: language.termsAndConditions.errorMessageAccept }
+	accept: { required: 'termsAndConditions.errorMessageAccept' }
 }
 
 export const validationRulesProfileEdit = {
-	firstname: { required: language.profileEdit.listDataFirstNameErrorRequired },
-	middlename: { required: language.profileEdit.listDataMiddleNamErrorRequired },
-	lastname: { required: language.profileEdit.listDataLastNameErrorRequired },
-	dateofbirth: { required: language.profileEdit.listDataDateOfBirthErrorRequired },
-	occupation: { required: language.profileEdit.listDataOccupationErrorRequired },
+	firstname: { required: 'profileEdit.listDataFirstNameErrorRequired' },
+	middlename: { required: 'profileEdit.listDataMiddleNamErrorRequired' },
+	lastname: { required: 'profileEdit.listDataLastNameErrorRequired' },
+	dateofbirth: { required: 'profileEdit.listDataDateOfBirthErrorRequired' },
+	occupation: { required: 'profileEdit.listDataOccupationErrorRequired' },
 	phone: {
-		required: language.profileEdit.listDataPhoneErrorRequired,
-		pattern: { value: /[0-9-]+/, message: language.profileEdit.listDataPhoneErrorDigits },
-		minLength: { value: 10, message: language.profileEdit.listDataPhoneErrorMin },
-		maxLength: { value: 10, message: language.profileEdit.listDataPhoneErrorMax }
+		required: 'profileEdit.listDataPhoneErrorRequired',
+		pattern: { value: /[0-9-]+/, message: 'profileEdit.listDataPhoneErrorDigits' },
+		minLength: { value: 10, message: 'profileEdit.listDataPhoneErrorMin' },
+		maxLength: { value: 10, message: 'profileEdit.listDataPhoneErrorMax' }
 	},
-	address: { required: language.profileEdit.listDataAddressErrorRequired },
-	city: { required: language.profileEdit.listDataSuburbErrorRequired },
-	state: { required: language.profileEdit.listDataStateErrorRequired },
-	postcode: { required: language.profileEdit.listDataPostCodeErrorRequired }
+	address: { required: 'profileEdit.listDataAddressErrorRequired' },
+	city: { required: 'profileEdit.listDataSuburbErrorRequired' },
+	state: { required: 'profileEdit.listDataStateErrorRequired' },
+	postcode: { required: 'profileEdit.listDataPostCodeErrorRequired' }
 }
 
 /* DATA TEMPLATES */
@@ -424,6 +434,21 @@ export const ProfileObjFormats = {
 
 /* TOOLBAR CONFIGS */
 
+export const loginToolbarConfig = [
+	{ type: 'item', labelObj: 'login.ui.buttonLoginNormal', flex: 1 },
+	{ type: 'item', labelObj: 'login.ui.buttonRegister', flex: 1, variant: 'outlineDark' }
+]
+
+export const registerToolbarConfig = [
+	{ type: 'item', labelObj: 'register.ui.buttonRegister', flex: 1 },
+	{ type: 'item', labelObj: 'register.ui.buttonBackToLogin', flex: 1, variant: 'outlineDark' }
+]
+
+export const forgotPasswordToolbarConfig = [
+	{ type: 'item', labelObj: 'forgotPassword.ui.buttonResetPassword', flex: 1 },
+	{ type: 'item', labelObj: 'forgotPassword.ui.buttonBackToLogin', flex: 1, variant: 'outlineDark' }
+]
+
 export const dashboardToolbarConfig = [
 	{ type: 'item', labelObj: 'dashboard.ui.buttonViewTransactions', flex: 2, id: 'dashboard' }
 ]
@@ -452,25 +477,25 @@ export const beneficiaryAddToolbarConfig = [
 ]
 
 export const transferStepOneToolbarConfig = [
-	{ type: 'item', label: language.transferStepOne.buttonReset, icon: "reload-outline", variant: 'outline' },
+	{ type: 'item', labelObj: 'transferStepOne.ui.buttonReset', icon: "reload-outline", variant: 'outline' },
 	{ type: 'spacer' },
-	{ type: 'item', label: language.transferStepOne.buttonNext, icon: "chevron-forward-outline", iconPosition: 'right' }
+	{ type: 'item', labelObj: 'transferStepOne.ui.buttonNext', icon: "chevron-forward-outline", iconPosition: 'right' }
 ]
 
 export const transferStepTwoToolbarConfig = [
-	{ type: 'item', label: language.transferSteptwo.buttonPrevious, icon: "chevron-back-outline" },
+	{ type: 'item', labelObj: 'transferSteptwo.buttonPrevious', icon: "chevron-back-outline" },
 	{ type: 'spacer' },
-	{ type: 'item', label: language.transferSteptwo.buttonNext, icon: "chevron-forward-outline", iconPosition: 'right'}
+	{ type: 'item', labelObj: 'transferSteptwo.buttonNext', icon: "chevron-forward-outline", iconPosition: 'right'}
 ]
 
 export const transferStepThreeToolbarConfig = [
-	{ type: 'item', label: language.transferStepthree.buttonPrevious, icon: "chevron-back-outline" },
+	{ type: 'item', labelObj: 'transferStepthree.ui.buttonPrevious', icon: "chevron-back-outline" },
 	{ type: 'spacer' },
-	{ type: 'item', label: language.transferStepthree.buttonNext, icon: "chevron-forward-outline", iconPosition: 'right' }
+	{ type: 'item', labelObj: 'transferStepthree.ui.buttonNext', icon: "chevron-forward-outline", iconPosition: 'right' }
 ]
 
 export const transactionsListToolbarConfig = [
-	{ type: 'item', label: language.transactionsList.labelLoadMore, icon: "refresh-circle", flex: "2" },
+	{ type: 'item', labelObj: 'transactionsList.labelLoadMore', icon: "refresh-circle", flex: "2" },
 ]
 
 export const transactionsDetailToolbarConfig = [
