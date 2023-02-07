@@ -8,6 +8,11 @@ export const stepAtom = atom({
 	default: 0
 })
 
+export const transferAtom = atom({
+	key: 'transfer',
+	default: {}
+})
+
 export const audAtom = atom({
 	key: 'aud',
 	default: 0

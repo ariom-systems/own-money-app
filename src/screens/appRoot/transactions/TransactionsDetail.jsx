@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 //components
 import { useNavigation } from '@react-navigation/native'
 import AppSafeArea from '../../../components/common/AppSafeArea'
-import { Divider, SectionList, VStack } from 'native-base'
+import { Divider, SectionList, VStack, useBreakpointValue } from 'native-base'
 import ListHeader from '../../../components/common/ListHeader';
 import DetailRowItem from '../../../components/transactions/DetailRowItem'
 import Toolbar from '../../../components/common/Toolbar'
@@ -31,6 +31,7 @@ const TransactionsDetail = () => {
 	const transaction = useRecoilValue(transactionObj)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
+	const flexDir = useBreakpointValue({ base: 'row', sm: 'column', md: 'row' })
 
 	const actions = [() => handleBack(navigation)]
 	const toolbarConfig = mapActionsToConfig(transactionsDetailToolbarConfig, actions)

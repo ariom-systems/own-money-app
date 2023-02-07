@@ -2,6 +2,7 @@ import React, { useEffect } from "react"
 
 //components
 import { Divider, Factory, Flex, HStack, Text, VStack } from 'native-base'
+import { Image } from 'react-native'
 import Icon from '../common/Icon'
 import AlertLabel from '../common/AlertLabel'
 
@@ -22,14 +23,20 @@ const IdentitySection = ({section}) => {
 	const user = useRecoilValue(userState)
 	const lang = useRecoilValue(langState)
 	let identitySection = section[0].data, identityStatus
-	let [ type, expiry, issuer, number, uploaded, file ] = identitySection
+	let [ img_name, created_date, idtype, idnumber, idexpiry, idissuer ] = identitySection
 	let none = language.misc.none
 
-	if (type.value == '' || expiry.value == '' || issuer.value == '' || number.value == '' || uploaded.value == '' || file.value == '' ) {	
+	if (img_name.value == '' || created_date.value == '' || idtype.value == '' || idnumber.value == '' || idexpiry.value == '' || idissuer.value == '' ) {	
 		let styles = { pt: "1", justifyContent: "center" }, iconStyles = { fontSize: "2xl"}, labelStyles = { fontSize: "lg" }
 		let label = language.profileDetails.ui.statusVerifyIdentity, icon = "alert-circle-outline"
 		identityStatus = <AlertLabel icon={icon} label={label} color={"error.600"} styles={styles} iconStyles={iconStyles} labelStyles={labelStyles} />
 	}
+
+	useEffect(() => {
+		if (img_name.value != '') {
+
+		}
+	}, [identitySection])
 
 	useEffect(() => {
 		if (language.getLanguage() !== lang) {
@@ -44,39 +51,50 @@ const IdentitySection = ({section}) => {
 			<HStack justifyContent={"space-between"} space={"4"} mt={"2.5%"}>
 				<VStack flex={"1"} space={"4"}>
 					<VStack>
-						<Text fontSize={"xs"} color={"coolGray.500"}>{ type.label  }</Text>
-						<Text fontSize={"md"} color={type.value != "" ? "black" : "coolGray.300"}>{type.value || none}</Text>
+						<Text fontSize={"xs"} color={"coolGray.500"}>{ idtype.label  }</Text>
+						<Text fontSize={"md"} color={idtype.value != "" ? "black" : "coolGray.300"}>{idtype.value || none}</Text>
 					</VStack>
 					<Divider />
-					<VStack>
-						<Text fontSize={"xs"} color={"coolGray.500"}>{expiry.label}</Text>
-						<Text fontSize={"md"} color={expiry.value != "" ? "black" : "coolGray.300"}>{expiry.value || none}</Text>
+					<VStack w={"50%"}>
+						<Text fontSize={"xs"} color={"coolGray.500"}>{idnumber.label}</Text>
+						<Text fontSize={"md"} color={idnumber.value != "" ? "black" : "coolGray.300"}>{idnumber.value || none}</Text>
 					</VStack>
 					<Divider />
 				</VStack>
-				<Flex borderStyle={"dashed"} borderWidth={"1"} w={"50%"} h={"100%"} flexDirection={"row"} alignItems={"center"} justifyContent={"center"}>
-					<Icon type={"Material"} name={"image-not-supported"} fontSize={"6xl"} color={"coolGray.300"} />
-				</Flex>
+				{ img_name.value != "" && (
+					<Flex w={"50%"} h={"100%"} flexDirection={"column"} backgroundColor={"primary.100:alpha.50"}>
+						<Image
+							source={{ uri: 'https://ownservices.com.au/Cus_ID_api_test/' + img_name.value }}
+							style={{ width: "100%", height: 150, resizeMode: 'contain' }}
+							alt="scanned image" objectFit={"contain"}
+						/>
+					</Flex>
+				) || (
+					<Flex borderStyle={"dashed"} borderWidth={"1"} w={"50%"} h={"100%"} flexDirection={"row"} alignItems={"center"} justifyContent={"center"}>
+						<Icon type={"Material"} name={"image-not-supported"} fontSize={"6xl"} color={"coolGray.300"} />
+					</Flex>
+				)}
 			</HStack>
+
+
+
 			<HStack justifyContent={"space-between"}>
-				<VStack w={"50%"}>
-					<Text fontSize={"xs"} color={"coolGray.500"}>{number.label}</Text>
-					<Text fontSize={"md"} color={number.value != "" ? "black" : "coolGray.300"}>{number.value || none}</Text>
+				<VStack>
+					<Text fontSize={"xs"} color={"coolGray.500"}>{idexpiry.label}</Text>
+					<Text fontSize={"md"} color={idexpiry.value != "" ? "black" : "coolGray.300"}>{idexpiry.value || none}</Text>
 				</VStack>
 				<VStack w={"50%"}>
-					<Text fontSize={"xs"} color={"coolGray.500"}>{issuer.label}</Text>
-					<Text fontSize={"md"} color={issuer.value != "" ? "black" : "coolGray.300"}>{issuer.value || none}</Text>
+					<Text fontSize={"xs"} color={"coolGray.500"}>{idissuer.label}</Text>
+					<Text fontSize={"md"} color={idissuer.value != "" ? "black" : "coolGray.300"}>{idissuer.value || none}</Text>
 				</VStack>
 			</HStack>
+
+
 			<Divider />
 			<HStack justifyContent={"space-between"}>
 				<VStack w={"50%"}>
-					<Text fontSize={"xs"} color={"coolGray.500"}>{uploaded.label}</Text>
-					<Text fontSize={"md"} color={uploaded.value != "" ? "black" : "coolGray.300"}>{uploaded.value || none}</Text>
-				</VStack>
-				<VStack w={"50%"}>
-					<Text fontSize={"xs"} color={"coolGray.500"}>{file.label}</Text>
-					<Text fontSize={"md"} color={file.value != "" ? "black" : "coolGray.300"}>{file.value || none}</Text>
+					<Text fontSize={"xs"} color={"coolGray.500"}>{created_date.label}</Text>
+					<Text fontSize={"md"} color={created_date.value != "" ? "black" : "coolGray.300"}>{created_date.value || none}</Text>
 				</VStack>
 			</HStack>
 		</VStack>

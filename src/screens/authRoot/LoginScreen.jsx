@@ -19,9 +19,9 @@ import { useForceUpdate } from '../../data/Hooks'
 import { useRecoilState } from 'recoil'
 import { AuthContext } from '../../data/Context'
 import { getNotice } from '../../data/handlers/Status'
-import { api, validationRulesLogin, loginToolbarConfig } from '../../config'
+import { api, validationRulesLogin, loginToolbarConfig, Sizes } from '../../config'
 import { keychainSave, parseToken, mapActionsToConfig } from '../../data/Actions'
-import { loadingState, langState } from '../../data/recoil/system'
+import { loadingState, langState, noticeState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -36,7 +36,7 @@ import { keychainReset } from '../../data/Actions'
 const LoginScreen = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
-	const { control, handleSubmit, setError, formState } = useForm({
+	const { control, handleSubmit, setError, formState, reset } = useForm({
 		mode: 'onBlur',
 		criteriaMode: 'all',
 		defaultValues: {
@@ -45,27 +45,20 @@ const LoginScreen = () => {
 		}
 	})
 	const { auth, authDispatch } = useContext(AuthContext)
-	const [loading, setLoading] = useRecoilState(loadingState)
-	const [lang, setLang] = useRecoilState(langState)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const [ lang, setLang ] = useRecoilState(langState)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
 
 	let actions = [
 		() => {
-			new Promise((resolve) => {
-				setLoading({ status: true, type: 'processing' })
-				forceUpdate()
-				setTimeout(() => {
-					if (loading.status == false) { resolve() }
-				}, 1000)
-			}).then(result => {
-				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
-			})
+			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			reset({}, { keepValues: true})
 		},
 		() => navigation.navigate('Register')
 	]
 	const toolbarConfig = mapActionsToConfig(loginToolbarConfig, actions)
 
 	const onSubmit = async (data) => {
-		console.log('here')
 		let login = new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
 			api.post(Config.BASEURL + '/authenticate', {
@@ -85,9 +78,11 @@ const LoginScreen = () => {
 						}
 						resolve(authObj)
 					} else {
+						setLoading({ status: false, type: 'none' })
 						reject(response)
 					}
 				} else {
+					setLoading({ status: false, type: 'none' })
 					reject(response)
 				}
 			})
@@ -102,26 +97,19 @@ const LoginScreen = () => {
 			setPin(result).then(keychainResult => { authDispatch({ type: 'LOGIN', payload: result}) })
 		})
 		.catch(error => {
-			authDispatch({ type: 'LOGOUT'})
-			switch(error) {
-				case 'SERVER_ERROR':
-					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }}) //leave this here
-				break
-				default:
-					let authErrors = error.data.notices
-					if(authErrors.length == 1) {
-						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors[0] } }) //leave this here
-						const notice = getNotice(authErrors[0].reason, lang)
-						setError(authErrors[0].origin, { type: 'custom', message: notice.message })
-					} else {
-						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors } }) //leave this here
-						authErrors.forEach(e => {
-							const notice = getNotice(e.reason, lang)
-							setError(e.origin, { type: 'custom', message: notice.message })
-						})
-					}
-				break
+			let authErrors = error.data.notices
+			if(authErrors.length == 1) {
+				const notice = getNotice(authErrors[0].reason, lang)
+				setNotices((prev) => ([notice]))
+				setError(authErrors[0].origin, { type: 'custom', message: notice.message })
+			} else {
+				authErrors.forEach(e => {
+					const notice = getNotice(e.reason, lang)
+					setNotices((prev) => ([...prev, notice]))
+					setError(e.origin, { type: 'custom', message: notice.message })
+				})
 			}
+			authDispatch({ type: 'LOGOUT' })
 		})
 	}
 
@@ -156,10 +144,10 @@ const LoginScreen = () => {
 
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
-			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
-				{ auth.status != null ? <AlertBanner mx={"4"} /> : null }
+			<VStack space={Sizes.spacing} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
+				{ notices && <AlertBanner w={"100%"} />}
 				<Image source={image} resizeMode={"contain"} alt={language.login.ui.logoAlt} size={"160"} />
-				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.login.ui.underLogo}</Text>
+				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={Sizes.headings}>{language.login.ui.underLogo}</Text>
 				<Forms.TextInput
 					name={ "email" }
 					control={ control }
@@ -167,7 +155,7 @@ const LoginScreen = () => {
 					errors={ formState.errors.email }
 					label={ language.login.labels.email }
 					required={true}
-					inputAttributes={{ keyboardType: "email-address", size: "lg", w: "100%"}}
+					inputAttributes={{ keyboardType: "email-address" }}
 					blockStyles={{ px: "4%" }}
 				/>
 				<Forms.TextInput
@@ -177,13 +165,13 @@ const LoginScreen = () => {
 					errors={ formState.errors.password }
 					label={language.login.labels.password }
 					required={true}
-					inputAttributes={{ type: "password", size: "lg", w: "100%" }}
+					inputAttributes={{ type: "password" }}
 					blockStyles={{ px: "4%" }}
 				/>
 				<Pressable alignSelf={"flex-end"} mt={"1"} mr={"4"} onPress={() => navigation.navigate('ForgotPassword')}>
 					<Text fontSize={"xs"} fontWeight={"500"} color={"indigo.500"} >{language.login.ui.forgotPassword}</Text>
 				</Pressable>
-				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
+				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: ["2", "1","0"]  }} />
 				<HStack>
 					<LanguageToggle />
 				</HStack>

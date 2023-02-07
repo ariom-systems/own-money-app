@@ -57,7 +57,6 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.noEmailMessage,
 					title: language.notices.noEmailTitle,
 					style: 'error',
-					//canClose: true
 					canClose: false
 				}
 			break
@@ -68,7 +67,6 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.noPasswordConfirmMessage,
 					title: language.notices.noPasswordConfirmTitle,
 					style: 'error',
-					//canClose: true
 					canClose: false
 				}
 			break	
@@ -79,7 +77,6 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.badUserMessage,
 					title: language.notices.badUserTitle,
 					style: 'error',
-					//canClose: true
 					canClose: false
 				}
 			break
@@ -91,7 +88,6 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.passwordMismatchMessage,
 					title: language.notices.passwordMismatchTitle,
 					style: 'error',
-					//canClose: true
 					canClose: false
 				}
 			break
@@ -107,6 +103,16 @@ export function getNotice(reasonCode, currentLang) {
 						label: language.notices.statusVerifyIdentityButton,
 						fn: () => Navigation.navigate('Your Profile', { screen: 'ProfileDetails' })
 					}
+				}
+			break
+			case 'statusInactive':
+				return {
+					id: reasonCode,
+					icon: 'alert-circle-outline',
+					message: language.notices.accountInactiveMessage,
+					title: language.notices.accountInactiveTitle,
+					style: 'info',
+					canClose: false
 				}
 			break
 			case 'registerIncomplete':
@@ -267,8 +273,7 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.profileUpdatedMessage,
 					title: language.notices.profileUpdatedTitle,
 					style: 'success',
-					//canClose: true
-					canClose: false
+					canClose: true
 				}
 			break
 			//TransferStepThree.jsx

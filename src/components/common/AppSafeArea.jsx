@@ -2,7 +2,7 @@ import React from 'react'
 
 //components
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
-import { ImageBackground } from 'react-native'
+import { ImageBackground, Platform } from 'react-native'
 import FocusRender from 'react-navigation-focus-render'
 import { KeyboardAvoidingView, StatusBar, View } from 'native-base'
 import LoadingOverlay from './LoadingOverlay'
@@ -22,7 +22,7 @@ const AppSafeArea = ({styles, children}) => {
 	const loading = useRecoilValue(loadingState)
 
 	return (
-		<KeyboardAvoidingView>
+		<KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
 			{ loading.status && <LoadingOverlay /> }
 			<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{ width: '100%', height: '100%' }} resizeMode={"cover"}>
 				<StatusBar barStyle={"dark-content"} />

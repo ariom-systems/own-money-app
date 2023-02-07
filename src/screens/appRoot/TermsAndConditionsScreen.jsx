@@ -1,26 +1,27 @@
 import React, { useContext, useEffect, memo } from 'react'
 
 //components
+import { useNavigation } from '@react-navigation/native'
 import AppSafeArea from '../../components/common/AppSafeArea'
-import { Box, Button, Center, Image, Text, VStack } from 'native-base'
+import { Box, Button, Image, Text, View, VStack } from 'native-base'
 import WebView from 'react-native-webview'
 import image from '../../assets/img/logo.png'
 import * as Forms from '../../components/common/Forms'
-import { useNavigation } from '@react-navigation/native'
+import { AlertItem } from '../../components/common/AlertBanner'
+import Toolbar from '../../components/common/Toolbar'
 
 //data
-import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { buildDataPath } from '../../data/Actions'
-import { api } from '../../config'
 import { atom, useRecoilState } from 'recoil'
-import { noticeState } from '../../data/recoil/system'
+import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { api, Sizes, termsAndConditionsToolbarConfig } from '../../config'
+import { buildDataPath, mapActionsToConfig, mapPropertiesToConfig } from '../../data/Actions'
+import { noticeState, loadingState } from '../../data/recoil/system'
 
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import { AuthContext } from '../../data/Context'
-import { AlertItem } from '../../components/common/AlertBanner'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -36,6 +37,11 @@ const acceptanceState = atom({
 		scrolled: false,
 		checked: false
 	}
+})
+
+const buttonDisabledState = atom({
+	key: 'button',
+	default: true
 })
 
 const TermsAndConditionsScreen = () => {
@@ -55,14 +61,32 @@ export default memo(TermsAndConditionsScreen)
 const TermsAndConditionsScreenInner = () => {
 	const navigation = useNavigation()
 	const { auth } = useContext(AuthContext)
-	const { handleSubmit, setError, clearErrors, formState } = useFormContext()
+	const { handleSubmit } = useFormContext()
 	const [ acceptance, setAcceptance ] = useRecoilState(acceptanceState)
 	const [ scroll, setScroll ] = useRecoilState(scrollState)
+	const [ buttonState, setButtonState ] = useRecoilState(buttonDisabledState)
 	const [ termsBanner, setTermsBanner ] = useRecoilState(noticeState)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const forceUpdate = useForceUpdate()
-	let banner = termsBanner.find(element => element.id == "termsAndConditions"), 
-		blankBanner = {title: "", message: "", style: "default", icon: "help-circle-outline"}
 
+	let banner = termsBanner.find(element => element.id == "termsAndConditions")
+	let blankBanner = {title: "", message: "", style: "default", icon: "help-circle-outline"}
+
+	const properties = [{ isDisabled: buttonState }]
+	let actions = [() => {
+		new Promise((resolve) => {
+			console.log('✅ sending acceptance to API')
+			setLoading({ status: true, type: 'processing' })
+			forceUpdate()
+			setTimeout(() => {
+				resolve(true)
+			}, 1000)
+		}).then(result => {
+			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+		})
+	}]
+	let toolbarConfig = mapActionsToConfig(termsAndConditionsToolbarConfig, actions)
+	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
 	useEffect(() => {
 		banner =  
@@ -78,11 +102,15 @@ const TermsAndConditionsScreenInner = () => {
 	 	}
 	}, [scroll])
 
+	useEffect(() => { 
+		const unsubscribe = navigation.addListener('focus', () => {
+			console.log('🔏 Showing Terms and Conditions screen')
+		})
+		return unsubscribe
+	}, [])
+
 	const onSubmit = (data) => {
-		if(acceptance.scrolled != true || acceptance.checked != true) {
-			setError('accepted', { type: 'custom', message: language.termsAndConditions.errorMessageAccept })
-		} else {
-			clearErrors('accepted')
+		if(acceptance.scrolled == true || acceptance.checked == true) {
 			//this should be the first component to modify this field. we require the user to accept the terms
 			//before letting them do anything else in the application.
 			let newFlags = {
@@ -90,22 +118,26 @@ const TermsAndConditionsScreenInner = () => {
 			}
 			api.put(buildDataPath('users', auth.uid, 'edit'), newFlags)
 			.then(response => {
-				if(response.data == true) {
+				if(response.ok == true) {
+					console.log(' acceptance recieved by API')
+					navigation.navigate('AppDrawer')
 					let newBanners = termsBanner.filter((obj) => { return obj.id !== 'termsAndConditions' })
 					setTermsBanner(previous => (newBanners))
-					navigation.navigate('AppDrawer')
+					setLoading({ status: false, message: 'none' })
 				}
 			})
 		}
 	}
 
+	const onError = (error) => { console.error(error) }
+
 	return (
 		<AppSafeArea>
-			<Center flex={"1"} p={"2.5%"} h={"100%"} alignContent={"center"}>
+			<View h={"100%"} justifyContent={"center"} px={Sizes.padding}>
 				<VStack w={"100%"} h={"90%"} p={"4"} bgColor={"white"} rounded={"8"}>
 					{ acceptance.checked || <AlertItem data={banner} /> }
 					<Box w={"100%"} alignItems={"center"}>
-						<Image source={image} resizeMode={"contain"} alt={language.login.logoAlt} size={"100"} />
+						<Image source={image} resizeMode={"contain"} alt={language.login.ui.logoAlt} size={"100"} />
 					</Box>
 					<WebView
 						source={{ uri: 'https://api.ownservices.com.au/checkterms/get'}}
@@ -119,21 +151,18 @@ const TermsAndConditionsScreenInner = () => {
 						}}
 						onMessage={(event) => {
 							if (event.nativeEvent.data == 'true') {
+								console.log('☑️  T&C checkbox: checked')
 								setAcceptance(previous => ({ ...previous, checked: true }))
-								clearErrors('accepted')
+								setButtonState(false)
 							} else if (event.nativeEvent.data == 'false') {
 								setAcceptance(previous => ({ ...previous, checked: false }))
+								setButtonState(true)
 							}
 						}}
 					/>
-					{formState.errors.accepted && <Forms.ErrorMessageBlock message={language.termsAndConditions.errorMessageAccept} errorStyles={{ marginBottom: "4"}} />}
-					<Box w={"100%"} justifyContent={"center"} flexDirection={"row"}>
-						<Button onPress={handleSubmit(onSubmit)} w={"50%"} >
-							<Text fontSize={"17"} color={"#FFFFFF"}>{language.termsAndConditions.buttonSubmit}</Text>
-						</Button>
-					</Box>
+					<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: ["2", "1", "0"] }} />
 				</VStack>
-			</Center>
+			</View>
 		</AppSafeArea>
 	)
 }

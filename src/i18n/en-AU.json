@@ -297,6 +297,7 @@
 				"amount": "Amount",
 				"beneficiary": "Beneficiary",
 				"review": "Review",
+				"payment": "Payment",
 				"finish": "Finish"
 			}
 		},
@@ -330,7 +331,8 @@
 			"ui": {
 				"buttonPrevious": "Previous",
 				"buttonNext": "Next",
-				"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen"
+				"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen",
+				"pleasecomplete": "Please Complete"
 			},
 			"headings": {
 				"from": "From",
@@ -348,6 +350,7 @@
 				"fees": "Fees",
 				"totaltopay": "Total To Pay",
 				"receivableamount": "Receivable Amount",
+				"dailylimitremaining": "Daily Account Limit After This Transfer",
 				"purpose": "Purpose of Transfer",
 				"terms": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility."
 			},
@@ -444,25 +447,29 @@
 				"date_regis": "Date Registered",
 				"date_regis_completed": "Date Verified",
 				"status": "Account Status",
-				"identity_uploaded": "Uploaded",
-				"identity_type": "Type",
-				"identity_number": "Number",
-				"identity_expiry": "Expiry",
-				"identity_issuer": "Issuer",
-				"identity_file": "File"
+				"img_name": "File",
+				"created_date": "Uploaded",
+				"idtype": "Type",
+				"idnumber": "Number",
+				"idexpiry": "Expiry",
+				"idissuer": "Issuer"
 			}
 		},
 		"profileEdit": {
 			"ui": {
 				"buttonBack": "Back",
 				"buttonSave": "Save",
-				"dateofbirthTitle": "Select Date"
+				"buttonUploadFile": "Scan Document",
+				"dateofbirthTitle": "Select Date",
+				"identityTitle": "Please verify your identity",
+				"identityDescription": "Select a document type below, and use your devices camera to scan your proof of identity."
 			},
 			"headings": {
 				"personaldetails": "Personal Details",
 				"contactdetails": "Contact Details",
 				"addressdetails": "Address Details",
-				"accountinfo": "Account Info"
+				"accountinfo": "Account Info",
+				"identityInfo": "Proof of Identity"
 			},
 			"labels": {
 				"firstname": "First Name",
@@ -477,7 +484,14 @@
 				"address": "Australian Residential Address",
 				"suburb": "City/Suburb",
 				"state": "State",
-				"postcode": "Post Code"
+				"postcode": "Post Code",
+				"img_name": "File",
+				"created_date": "Uploaded",
+				"idtype": "Type",
+				"idnumber": "Number",
+				"idexpiry": "Expiry",
+				"idissuer": "Issuer",
+				"identityHelper": "Note: If you need to change or update your proof of identity, please contact Customer Support."
 			},
 			"placeholders": {
 				"firstname": "First Name",
@@ -489,7 +503,10 @@
 				"address": "Australian Residential Address",
 				"suburb": "City/Suburb",
 				"state": "State",
-				"postcode": "Post Code"
+				"postcode": "Post Code",
+				"idtype": "Type",
+				"idnumber": "Number",
+				"idissuer": "Issuer"
 			},
 			"errors": {
 				"firstNameRequired": "Please provide yout First Name",
@@ -503,8 +520,12 @@
 				"phoneMin": "Your phone number must be 10 digits exactly including Area Code",
 				"addressRequired": "Please provide your Australian Residential Address",
 				"suburbRequired": "Please provide your City/Suburb",
-				"stateRequired": "Please select your State",
-				"postCodeRequired": "Please provide your Postcode"
+				"stateRequired": "Please select your State/Territory",
+				"postCodeRequired": "Please provide your Postcode",
+				"idtypeRequired": "Please select an document type",
+				"idnumberRequired": "Please enter the identity number on the document",
+				"idexpiryRequired": "Please enter the expiry date of the document",
+				"idissuerRequired": "Please select the issuing organisation name"
 			}
 		},
 		"settings": {
@@ -540,6 +561,8 @@
 			"settings": "Settings"
 		},
 		"notices": {
+			"accountInactiveMessage": "Your account is inactive. If you are seeing this, please contact Own Money Services.",
+			"accountInactiveTitle": "Account Inactive",
 			"accountRegisteredMessage": "Please check your email to activate your account. Please also check your junk mail if it doesn't appear in you email.",
 			"accountRegisteredTitle": "Account Registered",
 			"badUserMessage": "There seems to be an problem with your email address.",

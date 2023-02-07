@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 
 //components
 import {  HStack, Pressable, Spacer, Text } from 'native-base'
-import { PressableStyles } from '../../config'
+import { PressableStyles, Sizes } from '../../config'
 import Icon from './Icon'
 
 //data
@@ -38,7 +38,7 @@ const Toolbar = (props) => {
 	}
 	
 	return (
-		<HStack key={id + '_' + Math.random()} w={"100%"} justifyContent={"center"} alignItems={"center"} bgColor={"primary.700:alpha.90"} p={"4"} rounded={"8"} space={"2"} {...nb}>
+		<HStack key={id + '_' + Math.random()} w={"100%"} justifyContent={"center"} alignItems={"center"} bgColor={"primary.700:alpha.90"} p={"4"} rounded={"8"} space={Sizes.spacingSmall} {...nb}>
 			{toolbarContents}
 		</HStack>
 	)
@@ -92,8 +92,8 @@ export const ToolbarItem = (props) => {
 						{...extraProps}
 						space={space}
 					>
-						{icon && <Icon type={"Ionicon"} {...iconProps} name={icon} color={theme.color} fontSize={"xl"} />}
-						{label && <Text borderColor={"black"} {...labelProps} color={theme.color}>{label}</Text>}
+						{icon && <Icon type={"Ionicon"} name={icon} color={theme.color} fontSize={Sizes.icons} {...iconProps} />}
+						{label && <Text borderColor={"black"} color={theme.color} fontSize={Sizes.buttons} {...labelProps}>{label}</Text>}
 					</HStack>
 				)
 			}}

@@ -3,19 +3,18 @@ import React, { useContext, useEffect, memo } from 'react'
 //components
 import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView, Text, VStack} from 'native-base'
+import { ScrollView, VStack} from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import AlertBanner from '../../../components/common/AlertBanner'
 import Toolbar from '../../../components/common/Toolbar'
-import Icon from '../../../components/common/Icon'
 
 //data
-import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { AuthContext } from '../../../data/Context'
 import { transferStepFourToolbarConfig } from '../../../config'
 import { mapActionsToConfig } from '../../../data/Actions'
-import { stepAtom, transferAtom, audAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom, stepTwoButtonAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { transferAtom } from '../../../data/recoil/transfer'
 import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
@@ -24,20 +23,14 @@ const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const TransferStepFour = () => {
+const TransferStepFive = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
+	const transfer = useRecoilValue(transferAtom)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
-	
-	//temp
-	const resetTransfer = useResetRecoilState(transferAtom)
-	const resetAUD = useResetRecoilState(audAtom)
-	const resetStepOneButton = useResetRecoilState(stepOneButtonAtom)
-	const resetStepTwoButton = useResetRecoilState(stepTwoButtonAtom)
-	const resetStepThreeButton = useResetRecoilState(stepThreeButtonAtom)
-	
-	const actions = [() => handleNewTransfer() ]
+
+	const actions = [ () => navigation.navigate('TransferStepOne') ]
 	let toolbarConfig = mapActionsToConfig(transferStepFourToolbarConfig, actions)
 	
 	useEffect(() => {
@@ -48,16 +41,6 @@ const TransferStepFour = () => {
 		}
 	}, [language, lang])
 
-	const handleNewTransfer = () => {
-		setStep(0)
-		resetTransfer()
-		resetAUD()
-		resetStepOneButton()
-		resetStepTwoButton()
-		resetStepThreeButton()
-		navigation.navigate('TransferStepOne')
-	}
-
 	return (
 		<AppSafeArea>
 			<ScrollView>
@@ -65,9 +48,9 @@ const TransferStepFour = () => {
 					{notices && <AlertBanner />}
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />
-					</VStack>
-					<VStack space={"4"} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
-						<Text>Under Construction</Text>
+						<VStack space={"4"} w={"100%"} alignItems={"center"}>
+							
+						</VStack>
 					</VStack>
 					<Toolbar config={toolbarConfig} />
 				</VStack>
@@ -142,4 +125,4 @@ const TransferStepFour = () => {
 	)
 }
 
-export default memo(TransferStepFour)
+export default memo(TransferStepFive)

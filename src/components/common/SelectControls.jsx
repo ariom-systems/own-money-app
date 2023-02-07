@@ -6,7 +6,7 @@ import { Select } from 'native-base'
 //data
 import { buildDataPath } from '../../data/Actions'
 import { AuthContext } from '../../data/Context'
-import { api } from '../../config'
+import { api, Sizes } from '../../config'
 import { useFormContext } from 'react-hook-form'
 
 export const Controlled = (props) => {
@@ -18,31 +18,33 @@ export const Controlled = (props) => {
 		case 'District': return <District {...props} /> ; break
 		case 'Purpose': return <Purpose {...props} />; break
 		case 'State': return <State {...props} />; break
+		case 'IDType': return <IDType {...props} />; break
+		case 'IDIssuer': return <IDIssuer {...props} />; break
 	}
 }
 
-export const AccountType = (props) => {
+const SelectControlScaffold = (props) => {
 	const { auth } = useContext(AuthContext)
-	const [ accountType, setAccountType ] = useState({
+	const [accountType, setAccountType] = useState({
 		loaded: false,
-		types: [],
+		data_types: [],
 		error: null
 	})
 
 	useEffect(() => {
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		api.get(buildDataPath('globals', null, 'account_types'))
+		api.get(buildDataPath('globals', null, props.endpoint))
 			.then(response => {
-				let types = []
+				let data_types = []
 				if (Array.isArray(response.data)) {
 					response.data[0].options.map((element, index) => {
 						const value = element.value
 						const label = element.label
-						types.push(<Select.Item key={index} label={label} value={value} />)
+						data_types.push(<Select.Item fontSize={Sizes.inputs} key={index} label={label} value={value} />)
 					})
 					setAccountType({
 						loaded: true,
-						types: types
+						data_types: data_types
 					})
 				}
 			}, error => {
@@ -53,296 +55,58 @@ export const AccountType = (props) => {
 			})
 	}, [])
 
-	const placeholder = props.placeholder
-	const { error, loaded, types } = accountType
+	const { error, loaded, data_types } = accountType
 	if (error) {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={props.placeholder} isDisabled={props.isDisabled}>
+				<Select.Item fontSize={Sizes.inputs} label={error.message} value={"nothing"} />
 			</Select>
 		)
 	} else if (!loaded) {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={props.placeholder} isDisabled={props.isDisabled}>
+				<Select.Item fontSize={Sizes.inputs} label={"loading..."} value={"loading"} />
 			</Select>
 		)
 	} else {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={props.placeholder} selectedValue={props.value} value={props.value} onValueChange={
 				(itemValue) => {
 					props.onValueChange(itemValue)
-				}}>
-				{types}
+				}} isDisabled={props.isDisabled}>
+				{data_types}
 			</Select>
 		)
 	}
 }
 
+export const AccountType = (props) => {
+	return <SelectControlScaffold endpoint={'account_types'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
+}
 
 export const BankName = (props) => {
-	const { auth } = useContext(AuthContext)
-	const [ bankName, setBankName ] = useState({
-		loaded: false,
-		names: [],
-		error: null
-	})
-
-	useEffect(() => {
-		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		api.get(buildDataPath('globals', null, 'bank_names'))
-			.then(response => {
-				let names = []
-				if (Array.isArray(response.data)) {
-					response.data[0].options.map((element, index) => {
-						const value = element.value
-						const label = element.label
-						names.push(<Select.Item key={index} label={label} value={value} />)
-					})
-					setBankName({
-						loaded: true,
-						names: names
-					})
-				}
-			}, error => {
-				setBankName({
-					loaded: true,
-					error
-				})
-			})
-	}, [])
-	
-	const placeholder = props.placeholder
-	const { error, loaded, names } = bankName
-	if (error) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
-			</Select>
-		)
-	} else if (!loaded) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
-			</Select>
-		)
-	} else {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
-				(itemValue) => {
-					props.onValueChange(itemValue)
-				}}>
-				{names}
-			</Select>
-		)
-	}
+	return <SelectControlScaffold endpoint={'bank_names'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
 }
-
 
 export const BranchCity = (props) => {
-	const { auth } = useContext(AuthContext)
-	const [ city, setCity ] = useState({
-		loaded: false,
-		cities: [],
-		error: null
-	})
-
-	useEffect(() => {
-		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		api.get(buildDataPath('globals', null, 'provinces'))
-		.then(response => {
-			let cities = []
-			if(Array.isArray(response.data)) {
-				response.data.map((element, index) => {
-					const value = element.name_en
-					const label = element.name_en + ' (' + element.name_th + ')'
-					cities.push(<Select.Item key={index} label={label} value={value}/>)
-				})
-				setCity({
-					loaded: true,
-					cities: cities
-				})
-			}
-		}, error => {
-			setCity({
-				loaded: true,
-				error
-			})
-		})
-	}, [])
-
-	const placeholder = props.placeholder
-	const { error, loaded, cities } = city
-	if(error) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
-			</Select>
-		)
-	} else if(!loaded) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
-			</Select>
-		)
-	} else {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
-				(itemValue) => {
-					props.onValueChange(itemValue)
-				}}>
-				{cities}
-			</Select>
-		)
-	}
+	return <SelectControlScaffold endpoint={'branch_cities'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
 }
 
-
-export const Province = (props) => {
-	const { setValue } = useFormContext()
-	const { auth } = useContext(AuthContext)
-	const [ province, setProvince ] = useState({
-		loaded: false,
-		provinces: [],
-		error: null
-	})
-
-	useEffect(() => {
-		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		getProvinces()
-	}, [])
-
-	const getProvinces = () => {
-		api.get(buildDataPath('globals', null, 'provinces'))
-		.then(response => {
-			let list = []
-			if(response.ok == true) {
-				if(Array.isArray(response.data)) {
-					response.data.map((element, index) => {
-						const value = element.name_en
-						const label = element.name_en + ' (' + element.name_th + ')'
-						list.push(<Select.Item key={index} label={label} value={value}/>)
-					})
-					setProvince({...province, loaded: true, provinces: list})
-				}
-			}
-		})
-		.catch(error => console.log(error))
-	}
-
-	const handleChange = (value) => {
-		setValue('state', value, { shouldTouch: true })
-	}
-
-	const placeholder = props.placeholder
-	const { error, loaded, provinces } = province
-
-	if (error) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
-			</Select>
-		)
-	} else if (!loaded) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
-			</Select>
-		)
-	} else {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
-				(itemValue) => {
-					handleChange(itemValue)
-					props.onValueChange(itemValue)
-				}}>
-				{provinces}
-			</Select>
-		)
-	}
+export const State = (props) => {
+	return <SelectControlScaffold endpoint={'au_states'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
 }
 
-
-export const District = (props) => {
-	const { setValue, getValues, watch } = useFormContext()
-	const { auth } = useContext(AuthContext)
-	const state = watch("state")
-	const city = watch("city")
-	const [district, setDistrict] = useState({
-		loaded: false,
-		districts: [],
-		postcode: "",
-		error: null
-	})
-
-	useEffect(() => {
-		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		getDistricts()
-	}, [state])
-
-	const handleChange = (value) => {
-		setValue('city', value, { shouldTouch: true})
-		getPostcode()
-	}
-
-	const getDistricts = () => {
-		const province = getValues("state")
-		api.post(buildDataPath('globals', null, 'districts'), { province: province })
-		.then(response => {
-			if(response.ok == true) {
-				let list = []
-				if(Array.isArray(response.data)) {
-					response.data.map((item, index) => {
-						const label = item.district + ' (' + item.name_th + ')'
-						const value = item.district
-						list.push(<Select.Item key={index} label={label} value={value} />)
-					})
-					setDistrict({...district, loaded: true, districts: list})
-				}
-			}
-		})
-		.catch(error => console.log(error))
-	}
-	
-	const getPostcode = () => {
-		api.post(buildDataPath('globals', null, 'postcode'), { district: city })
-		.then(response => {
-			if(response.ok == true) {
-				setValue("postcode", response.data[0].zip_code)
-			}
-		})
-		.catch(error => console.log(error))
-	}
-	
-	const placeholder = props.placeholder
-	
-	const { error, loaded, districts } = district
-	if (error) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
-			</Select>
-		)
-	} else if (!loaded) {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
-			</Select>
-		)
-	} else {
-		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
-				(itemValue) => {
-					handleChange(itemValue)
-					props.onValueChange(itemValue)
-				}}>
-				{districts}
-			</Select>
-		)
-	}	
+export const IDType = (props) => {
+	return <SelectControlScaffold endpoint={'id_types'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
 }
 
+export const IDIssuer = (props) => {
+	return <SelectControlScaffold endpoint={'issuer_types'} placeholder={props.placeholder} value={props.value} onValueChange={props.onValueChange} isDisabled={props.isDisabled} />
+}
+
+//not using the scaffold as we're pulling data from another table
 export const Purpose = (props) => {
+	const { setValue } = useFormContext()
 	const { auth } = useContext(AuthContext)
 	const [purpose, setPurpose] = useState({
 		loaded: false,
@@ -375,6 +139,10 @@ export const Purpose = (props) => {
 			})
 	}, [])
 
+	const handleChange = (value) => {
+		setValue('purpose', value, { shouldTouch: true })
+	}
+
 	const placeholder = props.placeholder
 	const { error, loaded, purposes } = purpose
 	if (error) {
@@ -393,6 +161,7 @@ export const Purpose = (props) => {
 		return (
 			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
 				(itemValue) => {
+					handleChange(itemValue)
 					props.onValueChange(itemValue)
 				}}>
 				{purposes}
@@ -401,60 +170,147 @@ export const Purpose = (props) => {
 	}
 }
 
-export const State = (props) => {
+//not using the scaffold as we're pulling data from another table
+export const Province = (props) => {
+	const { setValue } = useFormContext()
 	const { auth } = useContext(AuthContext)
-	const [state, setState] = useState({
+	const [ province, setProvince ] = useState({
 		loaded: false,
-		states: [],
+		provinces: [],
 		error: null
 	})
 
 	useEffect(() => {
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
-		api.get(buildDataPath('globals', null, 'au_states'))
-			.then(response => {
-				let states = []
-				if (Array.isArray(response.data)) {
-					response.data[0].options.map((element, index) => {
-						const value = element.value
-						const label = element.label
-						states.push(<Select.Item key={index} label={label} value={value} />)
-					})
-					setState({
-						loaded: true,
-						states: states
-					})
-				}
-			}, error => {
-				setState({
-					loaded: true,
-					error
-				})
-			})
+		getProvinces()
 	}, [])
 
+	const getProvinces = () => {
+		api.get(buildDataPath('globals', null, 'provinces'))
+		.then(response => {
+			let list = []
+			if(response.ok == true) {
+				if(Array.isArray(response.data)) {
+					response.data.map((element, index) => {
+						const value = element.name_en
+						const label = element.name_en + ' (' + element.name_th + ')'
+						list.push(<Select.Item fontSize={Sizes.inputs} key={index} label={label} value={value}/>)
+					})
+					setProvince({...province, loaded: true, provinces: list})
+				}
+			}
+		})
+		.catch(error => console.log(error))
+	}
+
+	const handleChange = (value) => {
+		setValue('state', value, { shouldTouch: true })
+	}
+
 	const placeholder = props.placeholder
-	const { error, loaded, states } = state
+	const { error, loaded, provinces } = province
+
 	if (error) {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={error.message} value={"nothing"} />
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder}>
+				<Select.Item fontSize={Sizes.inputs} label={error.message} value={"nothing"} />
 			</Select>
 		)
 	} else if (!loaded) {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder}>
-				<Select.Item label={"loading..."} value={"loading"} />
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder}>
+				<Select.Item fontSize={Sizes.inputs} label={"loading..."} value={"loading"} />
 			</Select>
 		)
 	} else {
 		return (
-			<Select fontSize={"lg"} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
 				(itemValue) => {
+					handleChange(itemValue)
 					props.onValueChange(itemValue)
 				}}>
-				{states}
+				{provinces}
 			</Select>
 		)
 	}
+}
+
+//not using the scaffold as we're pulling data from multiple tables
+export const District = (props) => {
+	const { setValue, getValues, watch } = useFormContext()
+	const { auth } = useContext(AuthContext)
+	const state = watch("state")
+	const city = watch("city")
+	const [district, setDistrict] = useState({
+		loaded: false,
+		districts: [],
+		postcode: "",
+		error: null
+	})
+
+	useEffect(() => {
+		api.setHeader('Authorization', 'Bearer ' + auth.token)
+		getDistricts()
+	}, [state])
+
+	const handleChange = (value) => {
+		setValue('city', value, { shouldTouch: true})
+		getPostcode()
+	}
+
+	const getDistricts = () => {
+		const province = getValues("state")
+		api.post(buildDataPath('globals', null, 'districts'), { province: province })
+		.then(response => {
+			if(response.ok == true) {
+				let list = []
+				if(Array.isArray(response.data)) {
+					response.data.map((item, index) => {
+						const label = item.district + ' (' + item.name_th + ')'
+						const value = item.district
+						list.push(<Select.Item fontSize={Sizes.inputs} key={index} label={label} value={value} />)
+					})
+					setDistrict({...district, loaded: true, districts: list})
+				}
+			}
+		})
+		.catch(error => console.log(error))
+	}
+	
+	const getPostcode = () => {
+		api.post(buildDataPath('globals', null, 'postcode'), { district: city })
+		.then(response => {
+			if(response.ok == true) {
+				setValue("postcode", response.data[0].zip_code)
+			}
+		})
+		.catch(error => console.log(error))
+	}
+	
+	const placeholder = props.placeholder
+	
+	const { error, loaded, districts } = district
+	if (error) {
+		return (
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder}>
+				<Select.Item fontSize={Sizes.inputs} label={error.message} value={"nothing"} />
+			</Select>
+		)
+	} else if (!loaded) {
+		return (
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder}>
+				<Select.Item fontSize={Sizes.inputs} label={"loading..."} value={"loading"} />
+			</Select>
+		)
+	} else {
+		return (
+			<Select _selectedItem={{ fontSize: Sizes.inputs }} placeholder={placeholder} selectedValue={props.value} value={props.value} onValueChange={
+				(itemValue) => {
+					handleChange(itemValue)
+					props.onValueChange(itemValue)
+				}}>
+				{districts}
+			</Select>
+		)
+	}	
 }

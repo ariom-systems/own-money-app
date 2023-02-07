@@ -35,6 +35,8 @@ let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 LogBox.ignoreLogs(["Could not find Fiber with id"])
 LogBox.ignoreLogs(["Duplicate atom key"])
+LogBox.ignoreLogs(["Font failed to load"])
+LogBox.ignoreLogs([`TypeError: Cannot read property 'createElement' of undefined, js engine: hermes`])
 
 export default function App() {
 	return (

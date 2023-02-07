@@ -1,5 +1,5 @@
 import React from 'react'
-import { FormControl, Input, InputGroup, VStack } from 'native-base'
+import { FormControl, Input, InputGroup, VStack, useMediaQuery } from 'native-base'
 import { Controller, useFormContext } from 'react-hook-form'
 
 import { AuSVG } from '../../assets/img/AuSVG'
@@ -7,7 +7,7 @@ import { ThSVG } from '../../assets/img/ThSVG'
 import { ErrorMessage, TextInputLeft, TextInputRight } from '../common/Forms'
 
 import { formatCurrency } from '../../data/Actions'
-import { validationRulesTransferStepOne } from '../../config'
+import { Sizes, validationRulesTransferStepOne } from '../../config'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { audAtom, thbSelector} from '../../data/recoil/transfer'
 import { globalState } from '../../data/recoil/system'
@@ -17,6 +17,18 @@ const CurrencyConverter = () => {
 	const [ aud, setAud ] = useRecoilState(audAtom)
 	const [ thb, setThb ] = useRecoilState(thbSelector)
 	const globals = useRecoilValue(globalState)
+
+	const [xs, base] = useMediaQuery([{
+		maxWidth: 380
+	}, {
+		minWidth: 381
+	}])
+	let leftWidth, rightWidth
+	switch (true) {
+		case xs: direction = 'column'; spacing = 'flex-start'; break
+		case base: direction = 'row'; spacing = 'center'; break
+		default: direction = 'row'; spacing = 'center'; break
+	}
 
 	let [hasErrors, errorMsg ] = [false, ""]
 	if(formState.errors.aud || formState.errors.thb) {
@@ -30,7 +42,7 @@ const CurrencyConverter = () => {
 	return (
 		<VStack>
 			<FormControl isInvalid={ (hasErrors) ? true : false} >
-				<VStack space={"4"} px={"4"}>
+				<VStack space={"4"}>
 					<InputGroup>
 						<TextInputLeft value={"$"} hasErrors={hasErrors} />
 						<Controller
@@ -42,7 +54,7 @@ const CurrencyConverter = () => {
 									_focus={hasErrors ? { borderColor: "danger.600"} : { borderColor: "coolGray.300"}}
 									borderColor={hasErrors ? "danger.600" : "coolGray.300"}
 									color={hasErrors ? "danger.600" : "black"}
-									fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
+									fontSize={Sizes.inputs} w={"60%"} placeholder={"0.00"} rounded={"none"}
 									value={value}
 									onChangeText={onChange}
 									onChange={(e) => {
@@ -67,7 +79,7 @@ const CurrencyConverter = () => {
 									_focus={hasErrors ? { borderColor: "danger.600"} : { borderColor: "coolGray.300"}}
 									borderColor={hasErrors ? "danger.600" : "coolGray.300"}
 									color={hasErrors ? "danger.600" : "black"}
-									fontSize={"lg"} w={"60%"} placeholder={"0.00"} rounded={"none"}
+									fontSize={Sizes.inputs} w={"60%"} placeholder={"0.00"} rounded={"none"}
 									value={value}
 									onChangeText={onChange}
 									onChange={(e) => {

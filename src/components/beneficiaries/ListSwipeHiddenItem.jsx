@@ -93,14 +93,14 @@ const ListSwipeHiddenItem = (props) => {
 		<HStack backgroundColor={"coolGray.100"} key={ index } justifyContent={"flex-end"} flex={"1"}
 			roundedTop={ corners == "top" ? "8" : false } roundedBottom={ corners == "bottom" ? "8" : false }>
 			<Pressable onPress={() => handleEdit({...props.data.item, index: props.data.index }) }>
-				<VStack w={"80px"} h={"80px"} backgroundColor={"warmGray.300"} alignItems={"center"} justifyContent={"center"}>
+				<VStack w={"80px"} h={"100%"} backgroundColor={"warmGray.300"} alignItems={"center"} justifyContent={"center"}>
 					<Icon type={"Ionicon"} name={"create-outline"} fontSize={"3xl"} />
 					<Text>{ language.beneficiaryList.ui.slideButtonEdit }</Text>
 				</VStack>
 			</Pressable>
 			<Pressable onPress={() => handleDeletePress(props.data.item)}>
-				<VStack w={"80px"} h={"80px"} backgroundColor={"danger.600"} alignItems={"center"} justifyContent={"center"}
-				roundedTopRight={ corners == "top" ? "8" : false } roundedBottomRight={ corners == "bottom" ? "8" : false }>
+				<VStack w={"80px"} h={"100%"} backgroundColor={"danger.600"} alignItems={"center"} justifyContent={"center"}
+				roundedTopRight={ corners == "top" ? "8" : false } roundedBottomRight={ corners == "bottom" ? "9" : false }>
 					<Icon type={"Ionicon"} name={"trash-outline"} fontSize={"3xl"} color={"white"} />
 					<Text color={"white"}>{language.beneficiaryList.ui.slideButtonDelete }</Text>
 				</VStack>

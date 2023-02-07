@@ -17,4 +17,4 @@ const DetailRowItem = (props) => {
 	)
 }
 
-export default memo(DetailRowItem)
+export default DetailRowItem

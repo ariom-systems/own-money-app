@@ -29,12 +29,12 @@ const ListRowItem = (props) => {
 	let index = props.data.index
 	let listLength = props.data.section.data.length - 1 //now THATS a mouthfull
 
-	data.transfer_amount = formatCurrency(data.transfer_amount, "en-AU", "AUD").full + " " + language.transactionsList.currencyCodeAUD
-	data.received_amount = formatCurrency(data.received_amount, "th-TH", "THB").full + " " + language.transactionsList.currencyCodeTHB
+	data.transfer_amount = formatCurrency(data.transfer_amount, "en-AU", "AUD").full + " " + language.misc.aud
+	data.received_amount = formatCurrency(data.received_amount, "th-TH", "THB").full + " " + language.misc.thb
 
 	const handlePress = (item) => {
-		setTransaction(item)
-		localiseObjectData(item, TransactionObjFormats, lang)
+		let localised = localiseObjectData(item, TransactionObjFormats, lang)
+		setTransaction(localised)
 		setLoading({ status: true, text: 'Loading' })
 		navigation.navigate('TransactionsDetail')
 	}

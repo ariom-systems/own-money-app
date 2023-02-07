@@ -297,6 +297,7 @@
 				"amount": "ยอดโอน",
 				"beneficiary": "ผู้รับปลายทาง",
 				"review": "รีวิว",
+				"payment": "การชำระเงิน",
 				"finish": "เสร็จสิ้น"
 			}
 		},
@@ -324,7 +325,8 @@
 		"transferSteptwo": {
 			"titleTop": "เลือกผู้รับปลายทาง",
 			"buttonPrevious": "ย้อนกลับ",
-			"buttonNext": "ต่อไป"
+			"buttonNext": "ต่อไป",
+			"pleasecomplete": "กรุณากรอก"
 		},
 		"transferStepthree": {
 			"ui": {
@@ -348,6 +350,7 @@
 				"fees": "ค่าธรรมเนียม",
 				"totaltopay": "ยอดที่ต้องชำระ",
 				"receivableamount": "ยอดเงินที่จะได้รับ",
+				"dailylimitremaining": "วงเงินบัญชีรายวันหลังจากการโอนนี้",
 				"purpose": "เหตุผลการโอน",
 				"terms": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ"
 			},
@@ -427,7 +430,7 @@
 				"contactDetails": "ข้อมูลการติดต่อ",
 				"addressDetails": "ที่อยู่",
 				"accountInfo": "ข้อมูลบัญชีปลายทาง",
-				"identityInfo": "Proof of Identity"
+				"identityInfo": "หลักฐานประจำตัว"
 			},
 			"labels": {
 				"firstname": "ชื่อ",
@@ -447,25 +450,30 @@
 				"date_regis": "วันที่สมัครสมาชิก",
 				"date_regis_completed": "วันที่ผ่านการอนุมัติ",
 				"status": "สถานะสมาชิก",
-				"identity_uploaded": "วันที่อัปโหลด",
-				"identity_type": "ชนิด",
-				"identity_number": "ตัวเลข",
-				"identity_expiry": "วันหมดอายุของไอดี",
-				"identity_issuer": "ผู้ออก",
-				"identity_file": "อัพโหลดไฟล์ชื่อ"
+				"img_name": "อัพโหลดไฟล์ชื่อ",
+				"created_date": "วันที่อัปโหลด",
+				"idtype": "ชนิด",
+				"idnumber": "ตัวเลข",
+				"idexpiry": "วันหมดอายุของไอดี",
+				"idissuer": "ผู้ออก"
 			}
 		},
 		"profileEdit": {
 			"ui": {
 				"buttonBack": "ย้อนกลับ",
 				"buttonSave": "บันทึก",
-				"dateofbirthtitle": "เลือก ว/ด/ป เกิด"
+				"buttonUploadFile": "สแกนเอกสาร",
+				"dateofbirthtitle": "เลือก ว/ด/ป เกิด",
+				"identityTitle": "กรุณายืนยันตัวตนของคุณ",
+				"identityDescription": "เลือกประเภทเอกสารด้านล่าง และใช้กล้องของอุปกรณ์เพื่อสแกนหลักฐานยืนยันตัวตนของคุณ"
+				
 			},
 			"headings": {
 				"personaldetails": "ข้อมูลส่วนตัว",
 				"contactdetails": "ข้อมูลการติดต่อ",
 				"addressdetails": "ที่อยู่",
-				"accountinfo": "ข้อมูลบัญชีปลายทาง"
+				"accountinfo": "ข้อมูลบัญชีปลายทาง",
+				"identityInfo": "หลักฐานประจำตัว"
 			},
 			"labels": {
 				"firstname": "ชื่อ",
@@ -480,7 +488,14 @@
 				"address": "ที่อยู่ออสเตรเลีย (Address, Street)",
 				"suburb": "เมือง/ชานเมือง",
 				"state": "รัฐ / ดินแดน",
-				"postcode": "รหัสไปรษณีย์"
+				"postcode": "รหัสไปรษณีย์",
+				"img_name": "อัพโหลดไฟล์ชื่อ",
+				"created_date": "วันที่อัปโหลด",
+				"idtype": "ชนิด",
+				"idnumber": "ตัวเลข",
+				"idexpiry": "วันหมดอายุของไอดี",
+				"idissuer": "ผู้ออก",
+				"identityHelper": "หมายเหตุ: หากคุณต้องการเปลี่ยนหรืออัปเดตหลักฐานยืนยันตัวตน โปรดติดต่อฝ่ายสนับสนุนลูกค้า"
 			},
 			"placeholders": {
 				"firstname": "ชื่อ",
@@ -492,7 +507,10 @@
 				"address": "ที่อยู่ออสเตรเลีย (Address, Street)",
 				"suburb": "เมือง/ชานเมือง",
 				"state": "รัฐ / ดินแดน",
-				"postcode": "รหัสไปรษณีย์"
+				"postcode": "รหัสไปรษณีย์",
+				"idtype": "ชนิด",
+				"idnumber": "ตัวเลข",
+				"idissuer": "ผู้ออก"
 			},
 			"errors": {
 				"firstNameRequired": "กรุณากรอกชื่อ",
@@ -505,9 +523,13 @@
 				"phoneMax": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
 				"phoneMin": "เบอร์โทรศัพท์ ต้องเป็นตัวเลข 10 หลักเท่านั้น",
 				"addressRequired": "กรุณากรอกที่อยู่ออสเตรเลีย (Address, Street)",
-				"suburbRequired": "Please provide your City/Suburb",
-				"stateRequired": "Please select your State",
-				"postCodeRequired": "Please provide your Postcode"
+				"suburbRequired": "โปรดระบุเมือง/ชานเมืองของคุณ",
+				"stateRequired": "โปรดเลือกรัฐ/เขตแดนของคุณ",
+				"postCodeRequired": "กรุณาระบุรหัสไปรษณีย์ของคุณ",
+				"idtypeRequired": "กรุณาเลือกประเภทเอกสาร",
+				"idnumberRequired": "กรุณาใส่หมายเลขประจำตัวบนเอกสาร",
+				"idexpiryRequired": "กรุณากรอกวันหมดอายุของเอกสาร",
+				"idissuerRequired": "กรุณาเลือกชื่อหน่วยงานที่ออก"
 			}
 		},
 		"settings": {
@@ -543,6 +565,8 @@
 			"settings": "ตั้งค่า"
 		},
 		"notices": {
+			"accountInactiveMessage": "บัญชีของคุณไม่ได้ใช้งาน หากคุณเห็นสิ่งนี้ โปรดติดต่อ Own Money Services",
+			"accountInactiveTitle": "บัญชีไม่ได้ใช้งาน",
 			"accountRegisteredMessage": "กรุณาเช็ค email เพื่อทำการกดลิ้งยืนอีเมล หากไม่เจออีเมลในกล่องข้อความ ให้ลองหาใน junk mail",
 			"accountRegisteredTitle": "สมัครสมาชิก",
 			"badUserMessage": "มีปัญหาบางอย่างเกี่ยวกับอีเมล",

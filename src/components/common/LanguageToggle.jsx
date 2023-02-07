@@ -11,7 +11,7 @@ import { atom, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
 import { getNotice } from '../../data/handlers/Status'
-import { api } from '../../config'
+import { api, Sizes } from '../../config'
 import { userState } from '../../data/recoil/user'
 import { noticeState, langState } from '../../data/recoil/system'
 
@@ -85,14 +85,14 @@ export const LanguageToggle = (props) => {
 	return (
 		<HStack {...styles}>
 			{change && <Spinner mr={"2"} /> }
-			<Button size={"xs"} roundedLeft={"3xl"} flexGrow={"1"} roundedRight={"none"} variant={selected == 'en-AU' ? "solid" : "outline"} onPress={() => handleLanguageChange('en-AU')}>
-				<HStack space={"3"}>
+			<Button size={"xs"} roundedLeft={"3xl"} roundedRight={"none"} variant={selected == 'en-AU' ? "solid" : "outline"} onPress={() => handleLanguageChange('en-AU')}>
+				<HStack space={Sizes.spacing}>
 					<AuSVG />
 					<Text color={ selected == 'en-AU' ? "white" : "black" }>English</Text>
 				</HStack>
 			</Button>
-			<Button size={"xs"} roundedLeft={"none"} flexGrow={"1"} roundedRight={"3xl"} variant={selected == 'th-TH' ? "solid" : "outline"} onPress={() => handleLanguageChange('th-TH')}>
-				<HStack space={"2"}>
+			<Button size={"xs"} roundedLeft={"none"} roundedRight={"3xl"} variant={selected == 'th-TH' ? "solid" : "outline"} onPress={() => handleLanguageChange('th-TH')}>
+				<HStack space={Sizes.spacing}>
 					<Text color={ selected == 'th-TH' ? "white" : "black" }>ภาษาไทย</Text>
 					<ThSVG/>
 				</HStack>

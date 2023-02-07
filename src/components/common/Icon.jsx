@@ -16,7 +16,7 @@ const Icon = (props) => {
 export default memo(Icon)
 
 const IonIcon = (props) => {
-	Ionicon.loadFont()
+	Ionicon.loadFont().catch((error) => { /*console.info(error)*/ });
 	const IconOutput = Factory(Ionicon)
 	return (
 		<IconOutput {...props} />
@@ -24,7 +24,7 @@ const IonIcon = (props) => {
 }
 
 const MaterialIcon = (props) => {
-	Material.loadFont()
+	Material.loadFont().catch((error) => { /*console.info(error)*/ });
 	const IconOutput = Factory(Material)
 	return (
 		<IconOutput {...props} />
@@ -32,7 +32,7 @@ const MaterialIcon = (props) => {
 }
 
 const MaterialCommunityIcon = (props) => {
-	MaterialCommunity.loadFont()
+	MaterialCommunity.loadFont().catch((error) => { /*console.info(error)*/ });
 	const IconOutput = Factory(MaterialCommunity)
 	return (
 		<IconOutput {...props} />

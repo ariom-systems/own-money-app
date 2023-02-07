@@ -9,7 +9,7 @@ export function initialCheckConnection(authDispatch) {
 				console.log('isInternetReachable: ' + state.isInternetReachable)
 				retryConnection(authDispatch)
 			} else {
-				console.log('Connected to ' + Config.BASEURL)
+				console.log('🛰  Connected to ' + Config.BASEURL)
 			}
 		})
 	}, 2500)

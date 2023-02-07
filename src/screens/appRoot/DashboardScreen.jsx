@@ -10,13 +10,13 @@ import ListItem from '../../components/dashboard/ListItem'
 import ListHeader from '../../components/common/ListHeader'
 
 //data
-import { selector, useRecoilValue } from 'recoil'
+import { selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { dashboardToolbarConfig } from '../../config'
 import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
 import { transactionList } from '../../data/recoil/transactions'
 import { userState } from '../../data/recoil/user'
-import { noticeState, langState } from '../../data/recoil/system'
+import { loadingState, noticeState, langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -37,6 +37,7 @@ const DashboardScreen = ({ navigation }) => {
 	const forceUpdate = useForceUpdate()
 	const transactions = useRecoilValue(dashboardTransactions)
 	const user = useRecoilValue(userState)
+	const setLoading = useSetRecoilState(loadingState)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
 
@@ -48,6 +49,10 @@ const DashboardScreen = ({ navigation }) => {
 		}
 	}, [language, lang])
 
+	useEffect(() => {
+		setLoading({ status: false, message: 'none' })
+	},[])
+	
 
 	const actions = [() => navigation.navigate('Transactions', { screen: 'TransactionsList' })]
 	const toolbarConfig = mapActionsToConfig(dashboardToolbarConfig, actions)

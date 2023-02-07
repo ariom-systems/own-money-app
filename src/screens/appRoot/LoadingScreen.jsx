@@ -13,7 +13,7 @@ import Config from 'react-native-config'
 import * as Hooks from '../../data/Hooks'
 import { keychainReset, buildDataPath, sortByParam, addExtraRecordData, stringifyArray, dateFormat } from '../../data/Actions'
 import { getNotice } from '../../data/handlers/Status'
-import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState, useResetRecoilState } from 'recoil'
 import { userState } from '../../data/recoil/user'
 import { beneficiaryList } from '../../data/recoil/beneficiaries'
 import { transactionList } from '../../data/recoil/transactions'
@@ -33,11 +33,13 @@ const LoadingScreen = () => {
 	const setNotices = useSetRecoilState(noticeState)
 	const setTransactions = useSetRecoilState(transactionList)
 	const setBeneficiaries = useSetRecoilState(beneficiaryList)
+	const resetNotices = useResetRecoilState(noticeState)
 	const lang = useRecoilValue(langState)
 
 	Hooks.useEffectOnce(() => {
-		console.log('--statring preflight check--')
-		console.log('authenticated:', auth.token !== 'undefined' ? 'yes' : 'no')
+		console.log('--starting preflight check--')
+		console.log('authenticated:', auth.token !== 'undefined' ? '🔑 yes' : '🔒 no')
+		resetNotices()
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
 		const verifyLoggedIn = new Promise((resolve, reject) => {
 			api.get(Config.BASEURL + '/checktoken')

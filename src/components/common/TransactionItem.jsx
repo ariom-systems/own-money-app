@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react'
 
 //components
-import { Avatar, Badge, HStack, Spacer, Text, VStack } from 'native-base'
+import { Avatar, Badge, HStack, Spacer, Text, VStack, useMediaQuery } from 'native-base'
 
 //data
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
+import { Sizes } from '../../config'
 import { langState } from '../../data/recoil/system'
 
 //lang
@@ -17,6 +18,9 @@ let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 const TransactionItem = (props) => {
 	const forceUpdate = useForceUpdate()
 	const lang = useRecoilValue(langState)
+	const [ smallScreen ] = useMediaQuery({
+		maxWidth: 380
+	})
 	let { index, initials, fullname, status, transfer_amount, received_amount } = props
 
 	let scheme, message
@@ -35,15 +39,15 @@ const TransactionItem = (props) => {
 
 	return (
 		<HStack key={index} alignItems={"center"} space={"3"} py={"4"}>
-			<Avatar size={"48px"} bgColor={"primary.600"}>{initials}</Avatar>
+			{ !smallScreen && <Avatar size={"48px"} bgColor={"primary.600"}>{initials}</Avatar> }
 			<VStack>
-				<Text mb={"2"} bold>{fullname}</Text>
+				<Text mb={{ base: "2", sm: "0"}} bold>{fullname}</Text>
 			</VStack>
 			<Spacer />
 			<VStack alignContent={"flex-end"} space={"2"}>
 				<Badge colorScheme={scheme} variant={"outline"}>{message}</Badge>
-				<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{transfer_amount}</Text>
-				<Text fontSize={"sm"} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{received_amount}</Text>
+				<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{transfer_amount}</Text>
+				<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{received_amount}</Text>
 			</VStack>
 		</HStack>
 	)

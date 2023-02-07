@@ -52,8 +52,16 @@ function SettingsScreen() {
 	const refResetPass = useRef()
 	const refResetPin = useRef()
 
-	const handleLogout = () => {	
-		navigation.navigate('LogoutScreen')
+	const handleLogout = () => {
+		new Promise((resolve) => {
+			setPinSpinner(true)
+			forceUpdate()
+			setTimeout(() => {
+				resolve()
+			}, 2000)
+		}).then((result) => {
+			navigation.navigate('LogoutScreen')
+		})
 	}
 
 	const handleResetPin = () => {
@@ -120,7 +128,7 @@ function SettingsScreen() {
 		<VStack flex="1" w={"100%"} justifyContent={"flex-start"}>
 			<ListHeader title={language.settings.headings.preferences} />
 			<LabelValue label={language.settings.labels.language} styles={{ alignItems: "center", space: "4"}} labelStyles={{ flexShrink: 1, bold: false }}>
-				<LanguageToggle styles={{ flex: 1 }} />
+				<LanguageToggle />
 			</LabelValue>
 
 			<ListHeader title={language.settings.headings.account} />

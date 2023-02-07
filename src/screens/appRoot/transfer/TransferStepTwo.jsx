@@ -10,7 +10,7 @@ import AlertBanner from '../../../components/common/AlertBanner'
 import AppSafeArea from '../../../components/common/AppSafeArea'
 
 //data
-import { useRecoilValue, useSetRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { transferStepTwoToolbarConfig } from '../../../config'
 import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
@@ -29,7 +29,7 @@ const TransferStepTwo = () => {
 	const forceUpdate = useForceUpdate()
 	const setStep = useSetRecoilState(stepAtom)
 	const beneficiaries = useRecoilValue(beneficiaryList)
-	const buttonState = useRecoilValue(stepTwoButtonAtom)
+	const [ buttonState, setButtonState ] = useRecoilState(stepTwoButtonAtom)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
 
@@ -37,9 +37,9 @@ const TransferStepTwo = () => {
 		() => handlePrevious(),,
 		() => handleNext()
 	]
-	let buttonProps = transferStepTwoToolbarConfig[2].buttonProps, toolbarConfig
-	const properties = [null, null, { buttonProps: { ...buttonProps, isDisabled: buttonState } }]
-	toolbarConfig = mapActionsToConfig(transferStepTwoToolbarConfig, actions)
+
+	const properties = [{}, {}, { isDisabled: buttonState }]
+	let toolbarConfig = mapActionsToConfig(transferStepTwoToolbarConfig, actions)
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
 	useEffect(() => {

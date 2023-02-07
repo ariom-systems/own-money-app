@@ -47,6 +47,13 @@ export const beneficiaryColumns = [
 ]
 
 export const NativeBaseTheme = extendTheme({
+	breakpoints: {
+		xs: 300,
+		sm: 400,
+		md: 768,
+		lg: 992,
+		xl: 1280
+	},
 	colors: {
 		primary: {
 			50: '#FCF5E1',
@@ -91,14 +98,14 @@ export const PressableStyles = {
 	base: {
 		space: "1",
 		alignItems: "center",
-		pl: "3",
-		pr: "3",
+		pl: ["1", "2", "3", "3", "3"],
+		pr: ["1", "2", "3", "3", "3"],
 		py: "2.5",
 		rounded: "4",
 		borderStyle: "solid",
 		borderWidth: "1"
 	},
-	itemsSingle: { justifyContent: "space-evenly" },
+	itemsSingle: { justifyContent: "center" },
 	itemsMultiple: { justifyContent: "center" },
 	iconLeft: { flexDirection: "row" },
 	iconRight: { flexDirection: "row-reverse" },
@@ -145,6 +152,58 @@ export const PressableStyles = {
 			borderColor: "primary.600:alpha.70",
 			color: "primary.600:alpha.70"
 		}
+	}
+}
+
+export const Sizes = {
+	text: {
+		base: "md",
+		sm: "sm"
+	},
+	tinyText: {
+		base: "sm",
+		sm: "xs"
+	},
+	labels: {
+		base: "md"
+	},
+	headings: {
+		base: "md"
+	},
+	icons: {
+		base: "md",
+		xs: "xl",
+		sm: "lg",
+		md: "md"
+	},
+	inputs: {
+		base: "md",
+		sm: "sm"
+	},
+	spacing: {
+		base: "4",
+		sm: "3",
+		xs: "2"
+	},
+	spacingSmall: {
+		base: "2",
+		sm: "1"
+	},
+	padding: {
+		base: "4",
+		sm: "2"
+	},
+	margin: {
+		base: "4",
+		sm: "2"
+	},
+	marginSmall: {
+		base: "2",
+		sm: "1"
+	},
+	buttons: {
+		base: "md",
+		sm: "xs"
 	}
 }
 
@@ -258,21 +317,28 @@ export const validationRulesTermsAndConditions = {
 }
 
 export const validationRulesProfileEdit = {
-	firstname: { required: 'profileEdit.listDataFirstNameErrorRequired' },
-	middlename: { required: 'profileEdit.listDataMiddleNamErrorRequired' },
-	lastname: { required: 'profileEdit.listDataLastNameErrorRequired' },
-	dateofbirth: { required: 'profileEdit.listDataDateOfBirthErrorRequired' },
-	occupation: { required: 'profileEdit.listDataOccupationErrorRequired' },
+	firstname: { required: 'profileEdit.errors.firstNameRequired' },
+	middlename: { required: 'profileEdit.errors.middleNamRequired' },
+	lastname: { required: 'profileEdit.errors.lastNameRequired' },
+	dateofbirth: { required: 'profileEdit.errors.dateOfBirthRequired' },
+	occupation: { required: 'profileEdit.errors.occupationRequired' },
 	phone: {
-		required: 'profileEdit.listDataPhoneErrorRequired',
-		pattern: { value: /[0-9-]+/, message: 'profileEdit.listDataPhoneErrorDigits' },
-		minLength: { value: 10, message: 'profileEdit.listDataPhoneErrorMin' },
-		maxLength: { value: 10, message: 'profileEdit.listDataPhoneErrorMax' }
+		required: 'profileEdit.errors.phoneRequired',
+		pattern: { value: /[0-9-]+/, message: 'profileEdit.errors.phoneDigits' },
+		minLength: { value: 10, message: 'profileEdit.errors.phoneMin' },
+		maxLength: { value: 10, message: 'profileEdit.errors.phoneMax' }
 	},
-	address: { required: 'profileEdit.listDataAddressErrorRequired' },
-	city: { required: 'profileEdit.listDataSuburbErrorRequired' },
-	state: { required: 'profileEdit.listDataStateErrorRequired' },
-	postcode: { required: 'profileEdit.listDataPostCodeErrorRequired' }
+	address: { required: 'profileEdit.errors.addressRequired' },
+	city: { required: 'profileEdit.errors.suburbRequired' },
+	state: { required: 'profileEdit.errors.stateRequired' },
+	postcode: { required: 'profileEdit.errors.postCodeRequired' }
+}
+
+export const validationRulesProfileEditIdentity = {
+	idtype: { required: 'profileEdit.errors.idtypeRequired' },
+	idnumber: { required: 'profileEdit.errors.idnumberRequired' },
+	idexpiry: { required: 'profileEdit.errors.idexpiryRequired' },
+	idissuer: { required: 'profileEdit.errors.idissuerRequired' },
 }
 
 /* DATA TEMPLATES */
@@ -309,8 +375,40 @@ export const BeneficiaryTemplate = [
 	}
 ]
 
-const renderStatusSection = ({section: {data}}) => <StatusSection section={data} />
+export const TransferStepThreeTemplate = [
+	{
+		title: { key: "from", value: "" },
+		data: [
+			{ key: "sender", label: "", value: "" },
+		]
+	},
+	{
+		title: { key: "to", value: "" },
+		data: [
+			{ key: "receiver", label: "", value: "" },
+			{ key: "accountnumber", label: "", value: "" },
+			{ key: "bankname", label: "", value: "" }
+		]
+	},
+	{
+		title: { key: "amounts", value: "" },
+		data: [
+			{ key: "amounttosend", label: "", value: "" },
+			{ key: "yourrate", label: "", value: "" },
+			{ key: "fees", label: "", value: "" }
+		]
+	},
+	{
+		title: { key: "totals", value: "" },
+		data: [
+			{ key: "totaltopay", label: "", value: "" },
+			{ key: "receivableamount", label: "", value: "" },
+			{ key: "dailylimitremaining", label: "", value: "" }
+		]
+	},
+]
 
+const renderStatusSection = ({section: {data}}) => <StatusSection section={data} />
 export const TransactionTemplate = [
 	{
 		title: { key: "status", value: "" },
@@ -349,7 +447,6 @@ export const TransactionTemplate = [
 ]
 
 const renderIdentitySection = ({section: {data}}) => <IdentitySection section={data} />
-
 export const UserTemplate = [
 	{
 		id: 'personal',
@@ -398,20 +495,16 @@ export const UserTemplate = [
 		renderItem: renderIdentitySection,
 		data: [
 			{ key: "identity", data: [
-				{ key: "identity_type", label: "", value: "" },
-				{ key: "identity_expiry", label: "", value: "" },
-				{ key: "identity_number", label: "", value: "" },
-				{ key: "identity_issuer", label: "", value: "" },
-				{ key: "identity_uploaded", label: "", value: "" },
-				{ key: "identity_file", label: "", value: "" }
+				{ key: "img_name", label: "", value: "" },
+				{ key: "created_date", label: "", value: "" },
+				{ key: "idtype", label: "", value: "" },
+				{ key: "idnumber", label: "", value: "" },
+				{ key: "idexpiry", label: "", value: "" },
+				{ key: "idissuer", label: "", value: "" }
 			]} 
 		]
 	}
 ]
-
-/* i18n LABELS FOR DATA FORMATS */
-
-
 
 /* i18n FORMATTING */
 
@@ -425,6 +518,15 @@ export const TransactionObjFormats = {
 	received_amount: { type: 'currency', options: ['th-TH', 'THB'] },
 	today_rate: { type: 'currency', options: ['th-TH', 'THB'] },
 	transfer_amount: { type: 'currency', options: ['en-AU', 'AUD'] }
+}
+
+export const TransferObjFormats = {
+	amounttosend: { type: 'currency', options: ['en-AU', 'AUD'] },
+	yourrate: { type: 'currency', options: ['th-TH', 'THB'] },
+	fees: { type: 'currency', options: ['en-AU', 'AUD'] },
+	totaltopay: { type: 'currency', options: ['en-AU', 'AUD'] },
+	receivableamount: { type: 'currency', options: ['th-TH', 'THB'] },
+	dailylimitremaining: { type: 'currency', options: ['en-AU', 'AUD'] }
 }
 
 export const ProfileObjFormats = {
@@ -450,7 +552,7 @@ export const forgotPasswordToolbarConfig = [
 ]
 
 export const dashboardToolbarConfig = [
-	{ type: 'item', labelObj: 'dashboard.ui.buttonViewTransactions', flex: 2, id: 'dashboard' }
+	{ type: 'item', labelObj: 'dashboard.ui.buttonViewTransactions', flex: "3", id: 'dashboard' }
 ]
 
 export const beneficiaryListToolbarConfig = [
@@ -461,7 +563,7 @@ export const beneficiaryDetailToolbarConfig = [
 	{ type: 'item', labelObj: 'beneficiaryDetail.ui.buttonBack', icon: "chevron-back-outline", flex: "1" },
 	{ type: 'spacer' },
 	{ type: 'item', labelObj: 'beneficiaryDetail.ui.buttonEdit', icon: "create-outline", flex: "1" },
-	{ type: 'item', icon: "trash-outline", iconProps: { pl: "1" }, flex: "1" }
+	{ type: 'item', icon: "trash-outline", flex: "1" }
 ]
 
 export const beneficiaryEditToolbarConfig = [
@@ -494,8 +596,12 @@ export const transferStepThreeToolbarConfig = [
 	{ type: 'item', labelObj: 'transferStepthree.ui.buttonNext', icon: "chevron-forward-outline", iconPosition: 'right' }
 ]
 
+export const transferStepFourToolbarConfig = [
+	{ type: 'item', labelObj: 'transferStepthree.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+]
+
 export const transactionsListToolbarConfig = [
-	{ type: 'item', labelObj: 'transactionsList.labelLoadMore', icon: "refresh-circle", flex: "2" },
+	{ type: 'item', labelObj: 'transactionsList.labelLoadMore', icon: "refresh-circle", flex: "2", iconProps: { fontSize: "2xl" } },
 ]
 
 export const transactionsDetailToolbarConfig = [
@@ -503,7 +609,7 @@ export const transactionsDetailToolbarConfig = [
 ]
 
 export const profileDetailToolbarConfig = [
-	{ type: 'item', labelObj: 'profileDetails.ui.buttonUpdateProfile', icon: "construct", flex: "2" }
+	{ type: 'item', labelObj: 'profileDetails.ui.buttonUpdateProfile', icon: "construct", flex: "3" }
 ]
 
 export const profileEditToolbarConfig = [
@@ -512,6 +618,14 @@ export const profileEditToolbarConfig = [
 	{ type: 'item', labelObj: 'profileEdit.ui.buttonSave', icon: "save-outline", flex: "1" }
 ]
 
+export const profileEditIdentityToolbarConfig = [
+	{ type: 'item', labelObj: 'profileEdit.ui.buttonUploadFile', icon: "camera-outline", flex: "3" }
+]
+
 export const profileEditViaAlertBannerToolbarConfig = [
 	{ type: 'item', labelObj: 'profileEdit.ui.buttonSave', icon: "save-outline", flex: "1" }
+]
+
+export const termsAndConditionsToolbarConfig = [
+	{ type: 'item', labelObj: 'termsAndConditions.buttonSubmit', icon: "chevron-forward-outline", iconPosition: 'right', flex: "2" }
 ]

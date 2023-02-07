@@ -1,7 +1,7 @@
 import React, { useEffect, memo } from 'react'
 
 //components
-import { Box } from 'native-base'
+import { Box, useMediaQuery } from 'native-base'
 import StepIndicator from 'react-native-step-indicator'
 
 //data
@@ -12,6 +12,7 @@ import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
+import { Sizes } from '../../config'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
@@ -20,13 +21,26 @@ const TransferStepIndicator = (props) => {
 	const forceUpdate = useForceUpdate()
 	const step = useRecoilValue(stepAtom)
 	const lang = useRecoilValue(langState)
+	const [xs, base] = useMediaQuery([{
+		maxWidth: 380
+	}, {
+		minWidth: 381
+	}])
 
 	let labels = [
 		language.transferProgress.labels.amount,
 		language.transferProgress.labels.beneficiary,
 		language.transferProgress.labels.review,
+		language.transferProgress.labels.payment,
 		language.transferProgress.labels.finish
 	]
+
+	let customStyles = {}
+	switch (true) {
+		case xs: customStyles = { labelSize: 10, stepIndicatorLabelFontSize: 10 }; break
+		case base: customStyles = { labelSize: 13, stepIndicatorLabelFontSize: 13 }; break
+		default: customStyles = { labelSize: 13, stepIndicatorLabelFontSize: 13 }; break
+	}
 
 	useEffect(() => {
 		if(language.getLanguage() !== lang) {
@@ -36,8 +50,8 @@ const TransferStepIndicator = (props) => {
 	}, [language, lang, labels])
 
 	return (
-		<Box mt={"5%"} mx={"2.5%"} py={"4"} backgroundColor={"white"}>
-			<StepIndicator stepCount={4} currentPosition={step} labels={labels} />
+		<Box mt={Sizes.spacingSmall} mx={"2.5%"} py={Sizes.spacing} backgroundColor={"white"}>
+			<StepIndicator stepCount={5} currentPosition={step} customStyles={customStyles} labels={labels} />
 		</Box>
 	)
 }

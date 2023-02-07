@@ -17,9 +17,9 @@ import { useForceUpdate } from '../../../data/Hooks'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
 import { transferStepOneToolbarConfig } from '../../../config'
 import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
-import { stepAtom, audAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
+import { stepAtom, transferAtom, audAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
-import { noticeState, langState } from '../../../data/recoil/system'
+import { globalState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -62,7 +62,12 @@ const TransferStepOneInner = () => {
 	const [ aud, setAud ] = useRecoilState(audAtom)
 	const [ thb, setThb ] = useRecoilState(thbSelector)
 	const setStep = useSetRecoilState(stepAtom)
+	const setTransfer = useSetRecoilState(transferAtom)
+	const user = useRecoilValue(userState)
+	const fee = useRecoilValue(feeSelector)
+	const rate = useRecoilValue(rateSelector)
 	const notices = useRecoilValue(noticeState)
+	const globals = useRecoilValue(globalState)
 	const lang = useRecoilValue(langState)
 
 	const actions = [
@@ -82,18 +87,13 @@ const TransferStepOneInner = () => {
 			forceUpdate()
 		}
 	}, [language, lang])
-	
-	let hasErrors
 
 	useEffect(() => {
 		if(formState.errors.aud || formState.errors.thb || formState.errors.remaining) {
-			hasErrors = true
 			setButtonState(true)
 		} else if(aud == "" || thb == "" || aud == 0 || thb == 0) {
-			hasErrors = true
 			setButtonState(true)
 		} else {
-			hasErrors = false
 			if(aud != "") { setButtonState(false) }
 		}
 	},[formState, aud, thb])
@@ -101,6 +101,18 @@ const TransferStepOneInner = () => {
 	const onSubmit = (e) => {
 		navigation.navigate('TransferStepTwo')
 		setStep(1)
+		setTransfer((prev) => ({
+			...prev,
+			sender: user.firstname + " " + user.lastname,
+			amounttosend: Number(aud),
+			yourrate: rate,
+			todayrate: Number(globals.rate),
+			fees: fee,
+			totaltopay: Number(aud) + Number(fee),
+			receivableamount: thb,
+			dailylimitremaining: Number(user.daily_limit_remaining) - Number(aud),
+			id_users: Number(user.id)
+		}))
 	}
 
 	const onError = (error) => {

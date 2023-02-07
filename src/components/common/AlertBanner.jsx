@@ -12,6 +12,7 @@ import { getNotice } from '../../data/handlers/Status'
 import { atomRemoveItemAtIndex } from '../../data/Actions'
 import { userState } from '../../data/recoil/user'
 import { noticeState, langState } from '../../data/recoil/system'
+import { Sizes } from '../../config'
 
 export const AlertItem = (props) => {
 	const [ show, setShow ] = useState(true)
@@ -37,10 +38,10 @@ export const AlertItem = (props) => {
 
 	return (
 		<Collapse isOpen={show} width={"100%"}>
-			<Alert space={"4"} status={style} variant={"top-accent"}>
-				<VStack space={"1"} flexShrink={"1"} w={"100%"}>
-					<HStack alignItems={"center"} flexShrink={"1"} space={"2"} justifyContent={"space-between"}>
-						<HStack alignItems={"center"} flexShrink={"1"} space={"2"}>
+			<Alert space={Sizes.spacing} status={style} variant={"top-accent"}>
+				<VStack space={Sizes.spacingSmall} flexShrink={"1"} w={"100%"}>
+					<HStack alignItems={"center"} flexShrink={"1"} space={Sizes.spacingSmall} justifyContent={"space-between"}>
+						<HStack alignItems={"center"} flexShrink={"1"} space={Sizes.spacingSmall}>
 							<Icon type={iconType} name={icon} fontSize={"lg"} />
 							<Text fontSize={"md"} fontWeight={"medium"}>{title}</Text>
 						</HStack>
@@ -78,7 +79,6 @@ const AlertBanner = (props) => {
 	const lang = useRecoilValue(langState)
 	let notices = useRecoilValue(noticeState)
 	let noticeList = []
-	
 
 	const removeDuplicates = (notices) => {
 		let unique = []
@@ -93,19 +93,7 @@ const AlertBanner = (props) => {
 		return output
 	}
 
-	if(auth.token != null) {
-		notices = removeDuplicates(notices)
-		noticeList = notices.map((element, index) => {
-			return <AlertItem key={index} index={index} data={element} />
-		})
-	} else {
-		if (auth.status != null) {
-			let contextNotice = getNotice(auth.status, lang)
-			noticeList.push(<AlertItem key={'from_context'} index={0} data={contextNotice} />)
-		}
-	}
-
-	useEffect(() => {
+	function processNotices() {
 		if (auth.token != null) {
 			notices = removeDuplicates(notices)
 			noticeList = notices.map((element, index) => {
@@ -115,12 +103,23 @@ const AlertBanner = (props) => {
 			if (auth.status != null) {
 				let contextNotice = getNotice(auth.status, lang)
 				noticeList.push(<AlertItem key={'from_context'} index={0} data={contextNotice} />)
+			} else {
+				notices = removeDuplicates(notices)
+				noticeList = notices.map((element, index) => {
+					return <AlertItem key={index} index={index} data={element} />
+				})
 			}
 		}
+	}
+
+	processNotices()
+
+	useEffect(() => {
+		processNotices()
 	},[auth, notices])
 
 	return (
-		<VStack {...props} space={"4"}>
+		<VStack {...props} space={Sizes.spacing}>
 			{ noticeList }
 		</VStack>
 	)

@@ -9,6 +9,7 @@ import TransactionsScreen from '../../screens/appRoot/TransactionsScreen'
 import TransferScreen from '../../screens/appRoot/TransferScreen'
 
 //components
+import { useMediaQuery } from 'native-base'
 import { useNavigation } from '@react-navigation/native'
 import IconSettingsCog from '../../components/common/IconSettingsCog'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
@@ -34,11 +35,16 @@ const AppTabs = () => {
 	const [ active, inactive ] = useToken('colors', ['primary.600', 'black'])
 	const lang = useRecoilValue(langState)
 
-	let tabBarStyle
-	if( height > width ) {
-		tabBarStyle = { height: 90, paddingTop: "2.5%" }
-	} else {
-		tabBarStyle = { height: 60, paddingTop: "1.25%" }
+	const [xs, base] = useMediaQuery([{
+		maxWidth: 380
+	}, {
+		minWidth: 381
+	}])
+	let iconSize, tabBarStyle
+	switch (true) {
+		case xs: iconSize = 40; tabBarStyle = { height: 70 }; break
+		case base: iconSize = 28; tabBarStyle = { height: 90, paddingTop: "2.5%" };  break
+		default: iconSize = 28; tabBarStyle = { height: 90, paddingTop: "2.5%" }; break
 	}
 
 	useEffect(() => {
@@ -51,8 +57,8 @@ const AppTabs = () => {
 	const tabOptions = (navigation, icon) => ({
 		headerShown: true,
 		headerRight: () => (<IconSettingsCog />),
-		tabBarIcon: ({ focused, color, size = 32 }) => {
-			return focused ? (<Icon type={"Ionicon"} name={icon} fontSize={size} color={color} />) : (<Icon type={"Ionicon"} name={icon + '-outline'} fontSize={size} color={"coolGray.400"} />)
+		tabBarIcon: ({ focused, color, size }) => {
+			return focused ? (<Icon type={"Ionicon"} name={icon} fontSize={iconSize} color={color} />) : (<Icon type={"Ionicon"} name={icon + '-outline'} fontSize={iconSize} color={"coolGray.400"} />)
 		},
 		tabBarStyle: tabBarStyle,
 		tabBarActiveTintColor: active,

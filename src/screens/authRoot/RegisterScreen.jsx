@@ -3,7 +3,7 @@ import React, { useContext, useState, useEffect, memo } from 'react'
 //components
 import { useNavigation } from '@react-navigation/native'
 import AppSafeArea from '../../components/common/AppSafeArea'
-import { Button, HStack, Image, Input, Text, VStack } from 'native-base'
+import { Button, HStack, Image, Input, ScrollView, Text, VStack } from 'native-base'
 import * as Forms from '../../components/common/Forms'
 import { LanguageToggle } from '../../components/common/LanguageToggle'
 import image from '../../assets/img/logo.png'
@@ -15,7 +15,7 @@ import { useForm} from 'react-hook-form'
 import { useRecoilValue, useRecoilState} from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
-import { api, validationRulesRegister, registerToolbarConfig } from '../../config'
+import { api, validationRulesRegister, registerToolbarConfig, Sizes } from '../../config'
 import { buildDataPath, mapActionsToConfig } from '../../data/Actions'
 import { loadingState, langState } from '../../data/recoil/system'
 
@@ -125,63 +125,64 @@ const RegisterScreen = () => {
 
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
-			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
-				<Image source={image} resizeMode={"contain"} alt={language.register.ui.logoAlt} size={"md"} />
-				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.register.ui.underLogo}</Text>
-				<Forms.TextInput
-					name={"email"}
-					control={control}
-					rules={{...validationRulesRegister.email, ...emailRemote}}
-					errors={formState.errors.email}
-					label={language.register.labels.email}
-					required={true}
-					inputAttributes={{ keyboardType: "email-address", size: "lg", w: "100%" }}
-					blockStyles={{ px: "4%" }}
-				/>
-				<Forms.TextInput
-					name={"password"}
-					control={control}
-					rules={validationRulesRegister.password}
-					errors={formState.errors.password}
-					label={language.register.labels.password}
-					required={true}
-					inputAttributes={{ type: "password", size: "lg", w: "100%" }}
-					blockStyles={{ px: "4%" }}
-				/>
-				<Forms.TextInput
-					name={"passwordConfirm"}
-					control={control}
-					rules={{...validationRulesRegister.passwordConfirm, ...passwordMatch}}
-					errors={formState.errors.passwordConfirm}
-					label={language.register.labels.passwordConfirm}
-					required={true}
-					inputAttributes={{ type: "password", size: "lg", w: "100%" }}
-					blockStyles={{ px: "4%" }}
-				/>
-				<Forms.TextInput
-					name={"phone"}
-					control={control}
-					rules={validationRulesRegister.phone}
-					errors={formState.errors.phone}
-					label={language.register.labels.phone}
-					required={true}
-					inputAttributes={{ keyboardType: "phone-pad", size: "lg", w: "100%" }}
-					blockStyles={{ px: "4%" }}
-				/>
-				<Forms.TextInput
-					name={"referrer"}
-					control={control}
-					rules={referrerRemote}
-					errors={formState.errors.referrer}
-					label={language.register.labels.referrer}
-					inputAttributes={{ size: "lg", w: "100%" }}
-					blockStyles={{ px: "4%" }}
-				/>
-				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
-				<HStack>
-					<LanguageToggle />
-				</HStack>
-			</VStack>
+			<ScrollView w={"100%"}>
+				<VStack space={Sizes.spacing} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
+					<Image source={image} resizeMode={"contain"} alt={language.register.ui.logoAlt} size={"md"} />
+					<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.register.ui.underLogo}</Text>
+					<Forms.TextInput
+						name={"email"}
+						control={control}
+						rules={{...validationRulesRegister.email, ...emailRemote}}
+						errors={formState.errors.email}
+						label={language.register.labels.email}
+						required={true}
+						inputAttributes={{ keyboardType: "email-address"}}
+						blockStyles={{ px: "4%" }}
+					/>
+					<Forms.TextInput
+						name={"password"}
+						control={control}
+						rules={validationRulesRegister.password}
+						errors={formState.errors.password}
+						label={language.register.labels.password}
+						required={true}
+						inputAttributes={{ type: "password" }}
+						blockStyles={{ px: "4%" }}
+					/>
+					<Forms.TextInput
+						name={"passwordConfirm"}
+						control={control}
+						rules={{...validationRulesRegister.passwordConfirm, ...passwordMatch}}
+						errors={formState.errors.passwordConfirm}
+						label={language.register.labels.passwordConfirm}
+						required={true}
+						inputAttributes={{ type: "password" }}
+						blockStyles={{ px: "4%" }}
+					/>
+					<Forms.TextInput
+						name={"phone"}
+						control={control}
+						rules={validationRulesRegister.phone}
+						errors={formState.errors.phone}
+						label={language.register.labels.phone}
+						required={true}
+						inputAttributes={{ keyboardType: "phone-pad" }}
+						blockStyles={{ px: "4%" }}
+					/>
+					<Forms.TextInput
+						name={"referrer"}
+						control={control}
+						rules={referrerRemote}
+						errors={formState.errors.referrer}
+						label={language.register.labels.referrer}
+						blockStyles={{ px: "4%" }}
+					/>
+					<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
+					<HStack>
+						<LanguageToggle />
+					</HStack>
+				</VStack>
+			</ScrollView>
 		</AppSafeArea>
 	)
 }

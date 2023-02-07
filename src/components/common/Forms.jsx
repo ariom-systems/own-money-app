@@ -10,8 +10,10 @@ import Icon from './Icon'
 import { useController } from 'react-hook-form'
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
+import { Sizes } from '../../config'
 import { traverseObjectByPath } from '../../data/Actions'
 import { langState } from '../../data/recoil/system'
+
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -65,7 +67,7 @@ export const HeaderItem = ({nb, children}) => {
 }
 
 export const TextInput = (props) => {
-	const { name, control, rules = {}, errors, label = "", helperText = null, placeholder = "", required, type = "default",
+	const { name, control, rules = {}, errors, label = "", helperText = null, placeholder = "", isRequired, type = "default",
 		isReadOnly = false, inputAttributes = null, labelStyles = null, blockStyles = null, errorStyles = null, 
 		addonLeft = null, addonRight = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({ name, control, rules: rules })
@@ -77,7 +79,8 @@ export const TextInput = (props) => {
 			onBlur={ field.onBlur }
 			value={ field.value }
 			name={ field.name }
-			fontSize={"lg"}
+			fontSize={Sizes.inputs}
+			width={"100%"}
 			autoCorrect={false}
 			autoCapitalize={'none'}
 			keyboardType={type}
@@ -99,7 +102,7 @@ export const TextInput = (props) => {
 	}
 
 	return (
-		<FormControl isRequired={ required ? true : false } isInvalid={ errors ? true : false}  {...blockStyles}>
+		<FormControl isRequired={ isRequired ? true : false } isInvalid={ errors ? true : false}  {...blockStyles}>
 			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
 			{ inputRow }
 			{ helperText && <HelperText text={helperText} /> }
@@ -109,24 +112,33 @@ export const TextInput = (props) => {
 }
 
 export const TextInputLeft = (props) => {
-	const { value, hasErrors, icon = null} = props
+	const { value, hasErrors, icon = null, styles = null } = props
 	return (
-		<InputLeftAddon _light={hasErrors && { borderColor: "danger.600" }} w={"15%"}
-			children={<HStack>{icon}<Text color={hasErrors ? "danger.600" : "black"}>{ value }</Text></HStack>} />
+		<InputLeftAddon _light={hasErrors && { borderColor: "danger.600" }} w={"15%"} {...styles} children={
+			<HStack>
+				{icon}
+				<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"}>{ value }</Text>
+			</HStack>
+		} />
 	)
 }
 
 export const TextInputRight = (props) => {
-	const { value, hasErrors, icon = ""} = props
+	const { value, hasErrors, icon = "", styles = null} = props
 	let iconComp = icon
 	return (
-		<InputRightAddon _light={hasErrors && { borderColor: "danger.600" }} w={"25%"}
-			children={<HStack pl={"2"}>{ iconComp }<Text color={hasErrors ? "danger.600" : "black"} mx={"2"}>{ value }</Text></HStack>} />
+		<InputRightAddon _light={hasErrors && { borderColor: "danger.600" }} w={"25%"} {...styles} children={
+			<HStack pl={"2"}>
+				{ iconComp }
+				<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"} mx={Sizes.marginSmall}>{ value }</Text>
+			</HStack>
+		} />
 	)
 }
 
 export const SelectInput = (props) => {
-	const { name, control, component, rules = {}, errors, label, helperText = null, placeholder, required, labelStyles = null, blockStyles = null, errorStyles = null } = props
+	const { name, control, component, rules = {}, errors, label, helperText = null, placeholder, isRequired = false, isDisabled = false,
+		labelStyles = null, blockStyles = null, errorStyles = null, disabledStyles = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields } } = useController({ name, control, rules: rules })
 	const contextProps = {
 		component: component,
@@ -134,11 +146,12 @@ export const SelectInput = (props) => {
 		onValueChange:  field.onChange,
 		onBlur:  field.onBlur,
 		value:  field.value,
-		name:  field.name
+		name:  field.name,
+		isDisabled: isDisabled
 	}
 
 	return (
-		<FormControl isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
+		<FormControl isRequired={ isRequired ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
 			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
 			<Controlled {...contextProps} />
 			{ helperText && <HelperText text={helperText} /> }
@@ -148,11 +161,12 @@ export const SelectInput = (props) => {
 }
 
 export const CheckInput = (props) => {
-	const { name, control, rules, required = false, errors, label, helperText = null, labelStyles = null, blockStyles = null, 
-		errorStyles = null, innerStyles = null, labelStylesOuter = null, isDisabled = false, disabledStyles = null } = props
-	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({ name, control, rules: rules })
+	const { name, control, rules, errors, label, helperText = null, defaultChecked = false, isRequired = false, isDisabled = false, 
+			labelStyles = null, blockStyles = null, errorStyles = null, innerStyles = null, labelStylesOuter = null, disabledStyles = null } = props
+	const { field, fieldState, formState} = useController({ name, control, rules: rules })
+
 	return (
-		<FormControl isRequired={ required ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
+		<FormControl isRequired={ isRequired ? true : false} isInvalid={ errors ? true : false} {...blockStyles}>
 			<HStack {...innerStyles}>
 				<Checkbox
 					name={ field.name }
@@ -172,8 +186,8 @@ export const CheckInput = (props) => {
 }
 
 export const DatePickerInput = (props) => {
-	const { name, control, rules, required = false, errors, label, title, helperText = null, labelStyles = null, blockStyles = null,
-		errorStyles = null } = props
+	const { name, control, rules, range = null, errors, label, title, helperText = null, isRequired = false, isDisabled = false,
+		labelStyles = null, blockStyles = null, errorStyles = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({name, control, rules: rules })
 	
 	const [open, setOpen] = useState(false)
@@ -183,6 +197,17 @@ export const DatePickerInput = (props) => {
 		month: '',
 		year: ''
 	})
+	
+	let rangeOptions = {}
+
+	if (range != null) {
+		if(typeof range == 'string') {
+			switch(range) {
+				case 'future': rangeOptions = { minimumDate: new Date(Date.now()) }; break;
+				case 'past': rangeOptions = { maximumDate: new Date(Date.now()) }; break;
+			}
+		} //TODO: make something to handle objects
+	}
 
 	useEffect(() => {
 		const dateFromRHF = new Date(field.value)
@@ -226,13 +251,13 @@ export const DatePickerInput = (props) => {
 	}
 
 	return (
-		<FormControl isRequired={required ? true : false} isInvalid={errors ? true : false} {...blockStyles}>
+		<FormControl isRequired={isRequired ? true : false} isInvalid={errors ? true : false} {...blockStyles}>
 			{ label && <Label text={label} errors={errors} styles={labelStyles} /> }
 			<InputGroup w={"100%"}>
 				<Input value={visualDate.day} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"2"} />
 				<Input value={visualDate.month} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"3"} />
 				<Input value={visualDate.year} textAlign={"center"} borderRightWidth={"0"} isReadOnly fontSize={"sm"} flexGrow={"2"} />
-				<Button flexGrow={"1"} onPress={() => { setOpen(true) }}>
+				<Button flexGrow={"1"} onPress={() => { setOpen(true) }} isDisabled={isDisabled}>
 					<Icon type={"Ionicon"} name={"calendar-sharp"} color={"white"} fontSize={"2xl"} />
 				</Button>
 			</InputGroup>
@@ -240,7 +265,7 @@ export const DatePickerInput = (props) => {
 				modal
 				title={title}
 				mode={"date"}
-				maximumDate={new Date(Date.now())}
+				{...rangeOptions}
 				open={open}
 				date={date}
 				locale={'en-AU'}

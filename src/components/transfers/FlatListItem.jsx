@@ -7,16 +7,24 @@ import Icon from '../../components/common/Icon'
 //data
 import { useRecoilState, useSetRecoilState } from 'recoil'
 import { beneficiaryObj } from '../../data/recoil/beneficiaries'
-import { stepTwoButtonAtom } from '../../data/recoil/transfer'
+import { transferAtom, stepTwoButtonAtom } from '../../data/recoil/transfer'
 
 const FlatListItem = (props) => {
 	const { fullname, id, initials, status } = props.data
 	const [ beneficiary, setBeneficiary ] = useRecoilState(beneficiaryObj)
 	const setButtonState = useSetRecoilState(stepTwoButtonAtom)
+	const setTransfer = useSetRecoilState(transferAtom)
 
 	const handlePress = (data) => {
 		setButtonState(false)
 		setBeneficiary(data)
+		setTransfer((prev) => ({
+			...prev,
+			receiver: data.fullname,
+			id_receivers: data.id,
+			accountnumber: data.accountnumber,
+			bankname: data.bankname 
+		}))
 	}
 
 	return (

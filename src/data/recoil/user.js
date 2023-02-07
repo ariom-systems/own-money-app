@@ -37,6 +37,17 @@ export const userState = atom({
 		comments: '',
 		comments_date: '',
 		commentor: '',
-		logins: []
+		logins: [],
+		img_name: '',
+		created_date: '',
+		idtype: '',
+		idnumber: '',
+		idexpiry: '',
+		idissuer: ''
 	}
+})
+
+export const imageState = atom({
+	key: 'image',
+	default: ""
 })
