@@ -1,13 +1,13 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, memo } from 'react'
 
-import { Center, Box, Heading, VStack, Text, Input, Button, HStack, FormControl, WarningOutlineIcon, Alert, Image, CheckCircleIcon } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
+//components
+import { Center, Box, Heading, VStack, Text, Input, Button, HStack, FormControl, WarningOutlineIcon, Image, CheckCircleIcon } from 'native-base'
+import Icon from '../components/common/Icon'
+import image from '../../assets/img/logo.png'
 
+//data
 import { AuthContext } from '../data/Context'
 import { pushPasswordChange } from '../data/Actions'
-
-import image from '../../assets/img/logo.png'
 
 const ResetPasswordScreen = ({route, navigation}) => {
 
@@ -25,8 +25,8 @@ const ResetPasswordScreen = ({route, navigation}) => {
 		password2: {}
 	})
 	
-	const [showPass, setShowPass] = React.useState(false)
-	const [showPass2, setShowPass2] = React.useState(false)
+	const [showPass, setShowPass] = useState(false)
+	const [showPass2, setShowPass2] = useState(false)
 
 	const { auth, authDispatch } = useContext(AuthContext)
 	
@@ -42,7 +42,7 @@ const ResetPasswordScreen = ({route, navigation}) => {
 		authDispatch({ type: 'LOADING' })
 		const response = await pushPasswordChange(emailText, hashValue, password, password2)	
 
-		//console.log(response)
+		
 
 		if(Array.isArray(response.notices)) {
 
@@ -114,4 +114,4 @@ const ResetPasswordScreen = ({route, navigation}) => {
 	)
 }
 
-export default ResetPasswordScreen
+export default memo(ResetPasswordScreen)

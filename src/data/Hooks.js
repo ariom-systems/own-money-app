@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
-export function useInterval(callback, delay) {
-	const savedCallback = React.useRef()
+export function useInterval(callback, delay, cancel = null) {
+	const savedCallback = useRef()
 
-	React.useEffect(() => {
+	useEffect(() => {
 		savedCallback.current = callback
 	})
 
-	React.useEffect(() => {
+	useEffect(() => {
 		function tick() {
 			savedCallback.current()
 		}
@@ -16,12 +16,17 @@ export function useInterval(callback, delay) {
 			let id = setInterval(tick, delay)
 			return () => clearInterval(id)
 		}
+
+		if(cancel === undefined) {
+			let id = setInterval(tick, delay)
+			return () => clearInterval(id)
+		}
+
 	}, [delay])
 }
 
-
 export function useAspect(initial) {
-	const [ aspect, setAspect ] = React.useState(initial)
+	const [ aspect, setAspect ] = useState(initial)
 	let current = aspect;
 	const get = () => current
 	const set = newValue => {
@@ -32,17 +37,22 @@ export function useAspect(initial) {
 	return { get, set }
 }
 
+export function useForceUpdate() {
+	const [ value, setValue ] = useState(0)
+	return () => setValue(value => value + 1)
+}
+
 export const useEffectOnce = (effect) => {
-	const destroyFunc = React.useRef()
-	const effectCalled = React.useRef(false)
-	const renderAfterCalled = React.useRef(false)
-	const [ val, setVal ] = React.useState(0)
+	const destroyFunc = useRef()
+	const effectCalled = useRef(false)
+	const renderAfterCalled = useRef(false)
+	const [ val, setVal ] = useState(0)
 
 	if(effectCalled.current) {
 		renderAfterCalled.current = true
 	}
 
-	React.useEffect(() => {
+	useEffect(() => {
 		if(!effectCalled.current) {
 			destroyFunc.current = effect()
 			effectCalled.current = true

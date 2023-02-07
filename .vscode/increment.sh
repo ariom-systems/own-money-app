@@ -1,11 +1,13 @@
 #!/bin/zsh
 path=$1
-file="${path}/.env"
+env="${path}/.env"
 dev="${path}/.env.development"
 prod="${path}/.env.production"
-count=(`/usr/bin/awk -F"=" 'BEGIN{OFS=FS} $1=="BUILD_NUMBER"{ print $2 }' < $dev`)
-newCount=(`echo $count | /usr/bin/awk -F'"' '{ print $2+1 }'`)
-newCount=\"${newCount}\"
-/usr/bin/awk -v a="$newCount" -F"=" 'BEGIN{OFS=FS} $1=="BUILD_NUMBER" {$2=a}1' $file > "${file}.tmp" && /bin/mv "${file}.tmp" $file
-/usr/bin/awk -v a="$newCount" -F"=" 'BEGIN{OFS=FS} $1=="BUILD_NUMBER" {$2=a}1' $dev > "${dev}.tmp" && /bin/mv "${dev}.tmp" $dev
-/usr/bin/awk -v a="$newCount" -F"=" 'BEGIN{OFS=FS} $1=="BUILD_NUMBER" {$2=a}1' $prod > "${prod}.tmp" && /bin/mv "${prod}.tmp" $prod
+
+count=(`/usr/bin/awk -F"=" 'BEGIN{OFS=FS} $1=="BUILD_NUMBER"{ print $2 }' < ${env}`)
+count=$((count+1))
+newCount=$(/bin/cat $env | /usr/bin/sed -E "s/(.*NUMBER=)([0-9]+)/\1$count/")
+
+echo $newCount > "${env}.tmp" && /bin/mv "${env}.tmp" $env
+echo $newCount > "${dev}.tmp" && /bin/mv "${dev}.tmp" $dev
+echo $newCount > "${prod}.tmp" && /bin/mv "${prod}.tmp" $prod

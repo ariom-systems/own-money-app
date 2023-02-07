@@ -1,31 +1,42 @@
-import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { ImageBackground, Platform } from 'react-native'
-import { useFocusEffect } from '@react-navigation/native'
-import { Button, Center, Factory, FormControl, HStack, Image, Input, KeyboardAvoidingView, 
-	Pressable, ScrollView, StatusBar, Text, VStack } from 'native-base'
-import { getNotice } from '../../data/handlers/Status'
-import { AuthContext } from '../../data/Context'
-import { keychainSave, keychainReset, parseToken } from '../../data/Actions'
-import { deleteUserPinCode } from '@haskkor/react-native-pincode'
-import { ErrorMessage } from '../../components/common/Forms'
-import { Notice } from '../../components/common/Notice'
-import { LanguageToggle } from '../../components/common/LanguageToggle'
-import LocalizedStrings from 'react-native-localization'
-import image from '../../assets/img/logo.png'
-import Config from 'react-native-config'
-import { api } from '../../config'
+import React, { useContext, useEffect, useCallback, memo } from 'react'
 
+//components
+import { useNavigation } from '@react-navigation/native'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Button, HStack, Image, Pressable, Text, VStack } from 'native-base'
+import * as Forms from '../../components/common/Forms'
+import { LanguageToggle } from '../../components/common/LanguageToggle'
+import image from '../../assets/img/logo.png'
+import AlertBanner from '../../components/common/AlertBanner'
+import Toolbar from '../../components/common/Toolbar'
+
+//data
+import Config from 'react-native-config'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useFocusEffect } from '@react-navigation/native'
+import { useForm } from 'react-hook-form'
+import { useForceUpdate } from '../../data/Hooks'
+import { useRecoilState } from 'recoil'
+import { AuthContext } from '../../data/Context'
+import { getNotice } from '../../data/handlers/Status'
+import { api, validationRulesLogin, loginToolbarConfig, Sizes } from '../../config'
+import { keychainSave, parseToken, mapActionsToConfig } from '../../data/Actions'
+import { loadingState, langState, noticeState } from '../../data/recoil/system'
+
+//lang
+import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
-
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const LoginScreen = ({ navigation }) => {
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+//debug only
+import { deleteUserPinCode } from '@haskkor/react-native-pincode'
+import { keychainReset } from '../../data/Actions'
 
-	const { control, handleSubmit, setError, formState } = useForm({
+const LoginScreen = () => {
+	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
+	const { control, handleSubmit, setError, formState, reset } = useForm({
 		mode: 'onBlur',
 		criteriaMode: 'all',
 		defaultValues: {
@@ -33,17 +44,29 @@ const LoginScreen = ({ navigation }) => {
 			password: ""
 		}
 	})
+	const { auth, authDispatch } = useContext(AuthContext)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const [ lang, setLang ] = useRecoilState(langState)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
+
+	let actions = [
+		() => {
+			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			reset({}, { keepValues: true})
+		},
+		() => navigation.navigate('Register')
+	]
+	const toolbarConfig = mapActionsToConfig(loginToolbarConfig, actions)
 
 	const onSubmit = async (data) => {
 		let login = new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
 			api.post(Config.BASEURL + '/authenticate', {
-				email: data.email, 
+				email: data.email,
 				pass: data.password
 			})
 			.then(response => {
 				if(response.ok == true) {	
-					//console.log('response.data', response.data)
 					if(response.data.hasOwnProperty("auth")) {
 						const jwt_data = parseToken(response.data.auth.token)
 						const authObj = {
@@ -55,172 +78,123 @@ const LoginScreen = ({ navigation }) => {
 						}
 						resolve(authObj)
 					} else {
+						setLoading({ status: false, type: 'none' })
 						reject(response)
 					}
 				} else {
+					setLoading({ status: false, type: 'none' })
 					reject(response)
 				}
 			})
 		})
 		.then(result => {
 			async function setPin(result) {
-				const pinPromise = new Promise((resolve, reject) => {
-					//save the keychain record with the app bundle identifier to 
-					//avoid conflict with other potential apps that might just use the work "token".
-					resolve(keychainSave("com.ariom.ownmoney.token", data.email, result.token))
+				const pinPromise = new Promise((resolve) => {
+					resolve(keychainSave('token', data.email, result.token))
 				})
 				let pinResult = await pinPromise
 			}
 			setPin(result).then(keychainResult => { authDispatch({ type: 'LOGIN', payload: result}) })
 		})
 		.catch(error => {
-			authDispatch({ type: 'LOGOUT'})
-			switch(error) {
-				case 'SERVER_ERROR':
-					authDispatch({ type: 'SET_STATUS', payload: { data: 'serverError' }})
-				break
-				default:
-					let authErrors = error.data.notices
-					if(authErrors.length == 1) {
-						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors[0] }})
-						const notice = getNotice(authErrors[0].reason)
-						setError(authErrors[0].origin, { type: 'custom', message: notice.message })
-					} else {
-						authDispatch({ type: 'SET_STATUS', payload: { data: authErrors }})
-						authErrors.forEach(e => {
-							const notice = getNotice(e.reason)
-							setError(e.origin, { type: 'custom', message: notice.message })
-						})
-					}
-				break
+			let authErrors = error.data.notices
+			if(authErrors.length == 1) {
+				const notice = getNotice(authErrors[0].reason, lang)
+				setNotices((prev) => ([notice]))
+				setError(authErrors[0].origin, { type: 'custom', message: notice.message })
+			} else {
+				authErrors.forEach(e => {
+					const notice = getNotice(e.reason, lang)
+					setNotices((prev) => ([...prev, notice]))
+					setError(e.origin, { type: 'custom', message: notice.message })
+				})
 			}
+			authDispatch({ type: 'LOGOUT' })
 		})
 	}
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	const onError = (data) => {
+		setLoading({ status: false, message: 'none' })
+	}
+	
+	useEffect(() => {
+		async function readLang() {
+			try {
+				const storedLang = await AsyncStorage.getItem('com.ariom.ownmoney.lang')
+				if(storedLang != null) { 
+					setLang(storedLang)
+				}
+			} catch (e) { console.log("loading error: ", e) }
+		}
+		readLang()
+	},[])
+
+	useEffect(() => {
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
 	useFocusEffect(
-		React.useCallback(() => {
+		useCallback(() => {
 			forceUpdate()
-		}, [language, auth])
+		}, [language, lang])
 	)
 
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
-			<Center flex={"1"} h={"100%"} alignContent={"center"}>
-				<ScrollView w={"100%"} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', flexDirection: 'column' }}>
-					<KeyboardAvoidingView
-						behavior={Platform.OS === "ios" ? "padding" : "height"}
-						w={"100%"}>
-						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
-							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
-								<Image source={image} resizeMode={"contain"} alt={language.login.logoAlt} size={"160"} />
-								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.login.underLogo}</Text>
-								<FormControl isInvalid={ formState.errors.email ? true : false }>
-									<FormControl.Label>{language.login.formEmailLabel}</FormControl.Label>
-									<Controller
-										control={control}
-										rules={{
-											required: language.login.formEmailMessageRequired,
-											pattern: {
-												value: /\S+@\S+\.\S+/i,
-												message: language.login.formEmailMessagePattern
-											}
-											
-										}}
-										render={({ field: { onChange, onBlur, value } }) => (
-											<Input
-												size={"lg"}
-												value={value}
-												onChangeText={onChange}
-												onBlur={onBlur}
-												autoCapitalize={"none"}
-												autoCorrect={false}
-												keyboardType={"email-address"} />
-										)}
-										name={"email"} />
-									{ formState.errors.email && (
-										<ErrorMessage message={formState.errors.email.message} icon={"alert-circle-outline"} />
-									)}
-								</FormControl>
-
-								<FormControl isInvalid={formState.errors.password ? true : false }>
-									<FormControl.Label>{language.login.formPasswordLabel}</FormControl.Label>
-									<Controller
-										control={control}
-										rules={{
-											required: language.login.formPasswordMessageRequired
-										}}
-										render={({ field: { onChange, onBlur, value } }) => (
-											<Input
-												size={"lg"}
-												type={"password"}
-												value={value}
-												onChangeText={onChange}
-												onBlur={onBlur}
-												autoCapitalize={"none"}
-												autoCorrect={false} />
-										)}
-										name={"password"}
-									/>
-									{ formState.errors.password && (
-										<ErrorMessage message={formState.errors.password.message} icon={"alert-circle-outline"} />
-									)}
-								</FormControl>
-								<Pressable alignSelf={"flex-end"} mt={"1"} onPress={() => navigation.navigate('ForgotPassword')}>
-									<Text fontSize={"xs"} fontWeight={"500"} color={"indigo.500"} >{language.login.forgotPassword}</Text>
-								</Pressable>
-								<HStack space={"3"} flexDir={"row"}>
-									<Button
-										mt={"2"}
-										flex={"1"}
-										onPress={handleSubmit(onSubmit)}
-										isLoading={auth.loading ? true : false }
-										isLoadingText={language.login.buttonLoginLoading}>
-											{ language.login.buttonLoginNormal }
-									</Button>
-									<Button
-										mt={"2"}
-										flex={"1"}
-										variant={"subtle"}
-										onPress={() => !auth.loading && navigation.navigate('Register')}>
-											{language.login.buttonRegister}
-									</Button>
-								</HStack>
-								<HStack>
-									<LanguageToggle />
-								</HStack>
-								<HStack w={"100%"} space={"3"}>
-									{/* <Button
-										flexGrow={"1"}
-										variant={"outline"}
-										onPress={() => {
-											console.log('clearing token')
-											keychainReset("com.ariom.ownmoney.token")
-										}}>Clear Keychain</Button> */}
-									{/* <Button
-										flexGrow={"1"}
-										variant={"outline"}
-										onPress={() => {
-											console.log('clearing pin')
-											deleteUserPinCode("com.ariom.ownmoney")
-											keychainReset("pin")
-										}}>Clear PIN Code</Button> */}
-								</HStack>
-							</VStack>
-						</VStack>
-					</KeyboardAvoidingView>
-				</ScrollView>
-			</Center>
-		</ImageBackground>	
+		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
+			<VStack space={Sizes.spacing} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
+				{ notices && <AlertBanner w={"100%"} />}
+				<Image source={image} resizeMode={"contain"} alt={language.login.ui.logoAlt} size={"160"} />
+				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={Sizes.headings}>{language.login.ui.underLogo}</Text>
+				<Forms.TextInput
+					name={ "email" }
+					control={ control }
+					rules={ validationRulesLogin.email }
+					errors={ formState.errors.email }
+					label={ language.login.labels.email }
+					required={true}
+					inputAttributes={{ keyboardType: "email-address" }}
+					blockStyles={{ px: "4%" }}
+				/>
+				<Forms.TextInput
+					name={ "password" }
+					control={ control }
+					rules={ validationRulesLogin.password }
+					errors={ formState.errors.password }
+					label={language.login.labels.password }
+					required={true}
+					inputAttributes={{ type: "password" }}
+					blockStyles={{ px: "4%" }}
+				/>
+				<Pressable alignSelf={"flex-end"} mt={"1"} mr={"4"} onPress={() => navigation.navigate('ForgotPassword')}>
+					<Text fontSize={"xs"} fontWeight={"500"} color={"indigo.500"} >{language.login.ui.forgotPassword}</Text>
+				</Pressable>
+				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: ["2", "1","0"]  }} />
+				<HStack>
+					<LanguageToggle />
+				</HStack>
+				{/* <HStack w={"100%"} space={"3"}>
+					<Button
+						flexGrow={"1"}
+						variant={"outline"}
+						onPress={() => {
+							console.log('clearing token')
+							keychainReset("token")
+						}}>Clear Keychain</Button>
+					<Button
+						flexGrow={"1"}
+						variant={"outline"}
+						onPress={() => {
+							console.log('clearing pin')
+							deleteUserPinCode("com.ariom.ownmoney")
+							keychainReset("pin")
+						}}>Clear PIN Code</Button>
+				</HStack> */}
+			</VStack>
+		</AppSafeArea>
 	)
 }
 
-export default LoginScreen
+export default memo(LoginScreen)

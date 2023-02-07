@@ -1,85 +1,79 @@
-import 'react-native-gesture-handler'
-//Core
-import React from 'react'
-import { ActivityIndicator, useColorScheme, LogBox, Image, ImageBackground } from 'react-native'
+import React, { useContext, useEffect} from 'react'
+import { GestureHandlerRootView } from 'react-native-gesture-handler'
+import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { ActivityIndicator, LogBox } from 'react-native'
 
-//Navigation
+//navigation
+import { navigationRef } from './src/data/handlers/Navigation'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { useFlipper } from '@react-navigation/devtools'
 
-//Screens - splash
+//screens/navigators
+import AuthStack from './src/components/navigators/AuthStack'
+import AppStack from './src/components/navigators/AppStack'
 import SplashScreen from './src/screens/SplashScreen';
 
-//Screens - external
-import ForgotPasswordScreen from './src/screens/authRoot/ForgotPasswordScreen'
-import LoginScreen from './src/screens/authRoot/LoginScreen'
-import RegisterScreen from './src/screens/authRoot/RegisterScreen'
+//components
+import { NativeBaseProvider, extendTheme, Text } from 'native-base'
 
-//Screens - authenticated
-import BeneficiariesScreen from './src/screens/appRoot/BeneficiariesScreen'
-import DashboardScreen from './src/screens/appRoot/DashboardScreen'
-import LoadingScreen from './src/screens/appRoot/LoadingScreen'
-import PinCodeScreen from './src/screens/appRoot/PinCodeScreen'
-import ProfileScreen from './src/screens/appRoot/ProfileScreen'
-import SettingsScreen from './src/screens/appRoot/SettingsScreen'
-import TransactionsScreen from './src/screens/appRoot/TransactionsScreen'
-import TransferScreen from './src/screens/appRoot/TransferScreen'
-
-//Context
-import { AuthContext, AuthProvider, DataProvider, TransferProvider } from './src/data/Context'
-import { NativeBaseProvider, extendTheme } from 'native-base'
-
-//Other
+//data
+import RecoilFlipperClient from 'react-recoil-flipper-client'
+import { RecoilRoot, useRecoilValue } from 'recoil'
+import { useInterval, useForceUpdate } from './src/data/Hooks'
+import { AuthContext, AuthProvider } from './src/data/Context'
 import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
-import { getRemainingLoginTime, initialCheckConnection, keychainLoad, keychainReset, parseToken } from './src/data/Actions'
-import { useInterval } from './src/data/Hooks';
-import { optionsDashboard, optionsBeneficiaries, optionsTransfer, optionsTransactions, optionsProfile } from './src/components/dashboard/TabOptions'
-import LogoutScreen from './src/screens/appRoot/LogoutScreen';
+import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
+import { initialCheckConnection, checkConnection } from './src/data/handlers/Connection'
+import { langState } from './src/data/recoil/system'
 
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('./src/i18n/en-AU.json')
 const thStrings = require('./src/i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
 LogBox.ignoreLogs(["Could not find Fiber with id"])
-
-const RootStack = createNativeStackNavigator()
-const AuthStack = createNativeStackNavigator()
-const AppStack = createNativeStackNavigator()
+LogBox.ignoreLogs(["Duplicate atom key"])
+LogBox.ignoreLogs(["Font failed to load"])
+LogBox.ignoreLogs([`TypeError: Cannot read property 'createElement' of undefined, js engine: hermes`])
 
 export default function App() {
 	return (
-        <NativeBaseProvider theme={NativeBaseTheme}>
-            <AuthProvider>
-                <DataProvider>
-                    <TransferProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+            <RecoilRoot>
+                <RecoilFlipperClient />
+                <NativeBaseProvider theme={NativeBaseTheme}>
+                    <AuthProvider>
                         <RootNavigator />
-                    </TransferProvider>
-                </DataProvider>
-            </AuthProvider>
-        </NativeBaseProvider>
+                    </AuthProvider>
+                </NativeBaseProvider>
+            </RecoilRoot>
+        </GestureHandlerRootView>
 	)
 }
 
-//Root navigation container. To separate Splash screen from the rest of the app.
+const RootStack = createNativeStackNavigator()
 const RootNavigator = ({navigation}) => {
+    useFlipper(navigationRef)
     return (
-        <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />}>
-            <RootStack.Navigator>
-                <RootStack.Screen options={{ headerShown: false }} name="Splash" component={ SplashScreen } />
-                <RootStack.Screen options={{ headerShown: false }} name="AppNavigator" component={ AppNavigator } />
-            </RootStack.Navigator>
-        </NavigationContainer>
+        <SafeAreaProvider>
+            <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
+                <RootStack.Navigator screenOptions={{ headerShown: false }}>
+                    <RootStack.Screen name="Splash" component={ SplashScreen } />
+                    <RootStack.Screen name="AppNavigator" component={ AppNavigator } />
+                </RootStack.Navigator>
+            </NavigationContainer>
+        </SafeAreaProvider>
     )
 }
 
-//App navigation container. To separate external facing screens from internal authenticated screens.
 const AppNavigator = ({navigation}) => {    
-    const { auth, authDispatch } = React.useContext(AuthContext)
-    const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+    const forceUpdate = useForceUpdate()
+    const { auth, authDispatch } = useContext(AuthContext)
+    const lang = useRecoilValue(langState)
 
-    React.useEffect(() => {
+    useEffect(() => {
         //check if we can connect to the API first
         initialCheckConnection(authDispatch)
         // begin authentication run: is token present in Context?
@@ -107,70 +101,31 @@ const AppNavigator = ({navigation}) => {
         }
     }, [])
 
-    React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+    useEffect(() => {
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
     useInterval(() => {
-        const timeLeft = getRemainingLoginTime(auth.expire) 
-        checkTokenExpiry(timeLeft)
-    }, auth.expire > 0 ? 60000 : null)
-
-    async function checkTokenExpiry(timestamp) {
-        if(timestamp <= 0) {
-            const reset = await keychainReset("com.ariom.ownmoney.token") //shutup vscode, await DOES do something here
-            if(reset === true) {
-                authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }})
-                authDispatch({ type: 'LOGOUT'})
+        async function checkTokenExpiry(timestamp) {
+            if(timestamp <= 0) {
+                const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+                if(reset === true) {
+                    authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }}) //leave this here
+                    authDispatch({ type: 'LOGOUT'})
+                }
             }
         }
+        const timeNow = Math.floor(Date.now()/1000)
+	    const timeLeft = auth.expire - timeNow
+        checkTokenExpiry(timeLeft)
+    }, auth.expire > 0 ? 60000 : null)
+   
+    if (auth.token === null) {
+        return <AuthStack />
+    } else {
+        return <AppStack />
     }
-
-    // const scheme = useColorScheme()
-    // theme={scheme === 'dark' ? ReactNavigationThemeDark : ReactNavigationThemeDefault}
-    return (
-        <>
-            { auth.token === null ? (
-                <AuthStack.Navigator id="AuthRoot">
-                    <AuthStack.Screen options={{ headerShown: false }} name={'Login'} component={ LoginScreen } />
-                    <AuthStack.Screen options={{ headerShown: false }} name={'ForgotPassword'} component={ ForgotPasswordScreen } />
-                    <AuthStack.Screen options={{ headerShown: false }} name={'Register'} component={ RegisterScreen } />
-                </AuthStack.Navigator>
-            ) : (
-                <AppStack.Navigator id="AppRoot">
-                    <AppStack.Screen options={{ headerShown: false }} name={'PinCode'} component={ PinCodeScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'Loading'} component={ LoadingScreen } />
-                    <AppStack.Screen options={{ title: language.screens.settings, headerBackTitle: language.settings.headerBack }} name='Settings' component={ SettingsScreen } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'AppTabs'} component={ AppTabs } />
-                    <AppStack.Screen options={{ headerShown: false }} name={'LogoutScreen'} component={ LogoutScreen } />
-                </AppStack.Navigator>
-            )}
-        </>
-    )
-}
-
-const Tabs = createBottomTabNavigator()
-const AppTabs = ({navigation}) => {
-    const { auth } = React.useContext(AuthContext)
-    const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-    
-    React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
-			forceUpdate()
-		}
-	}, [language, auth])
-
-    return (
-        <Tabs.Navigator>
-            <Tabs.Screen options={{...optionsDashboard(navigation), title: language.screens.dashboard }} name='Dashboard' component={ DashboardScreen } />
-            <Tabs.Screen options={{...optionsBeneficiaries(navigation), title: language.screens.beneficiaries }} name='Beneficiaries' component={ BeneficiariesScreen } />
-            <Tabs.Screen options={{...optionsTransfer(navigation), title: language.screens.transfer }} name='Transfer' component={ TransferScreen } />
-            <Tabs.Screen options={{...optionsTransactions(navigation), title: language.screens.transactions }} name='Transactions' component={ TransactionsScreen } />
-            <Tabs.Screen options={{...optionsProfile(navigation), title: language.screens.profile }} name='Your Profile' component={ ProfileScreen } />
-        </Tabs.Navigator>
-    )
 }

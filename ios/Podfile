@@ -4,7 +4,7 @@ pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
-platform :ios, '12.4'
+platform :ios, '13'
 install! 'cocoapods', :deterministic_uuids => false
 
 target 'OwnMoney' do
@@ -19,6 +19,12 @@ target 'OwnMoney' do
     'Debug' => '$(PODS_ROOT)/../../.env.development',
     'Release' => '$(PODS_ROOT)/../../.env.production',
   }
+  
+  project 'OwnMoney',
+    'OwnMoney.dev' => :debug,
+    'Debug' => :debug,
+    'OwnMoney' => :release,
+    'Release' => :release
 
   use_react_native!(
     :path => config[:reactNativePath],
@@ -31,7 +37,7 @@ target 'OwnMoney' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => FlipperConfiguration.enabled,
+    :flipper_configuration => FlipperConfiguration.enabled(["Debug"], { 'Flipper' => '0.174.0' }),
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )
@@ -40,6 +46,7 @@ end
   post_install do |installer|
     react_native_post_install(installer)
     __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    apply_flipper_fix(installer)
     installer.pods_project.build_configurations.each do |config|
         config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
     end
@@ -58,4 +65,19 @@ end
     end
 
     flipper_post_install(installer)
+  end
+
+  def apply_flipper_fix(installer)
+    installer.pods_project.targets.each do |target|
+      if target.name.start_with?('React-Core')
+        target.build_configurations.each do |config|
+          if config.debug?
+            puts "Enabling Flipper for build configuration '#{config.name}'"
+            # For 0.68.2. Note that main branch now uses GCC_PREPROCESSOR_DEFINITIONS: 
+            # https://github.com/cipolleschi/react-native/blob/f3db6cc52792e3006a16408df4ae40f3aee19a86/scripts/cocoapods/flipper.rb#L87
+            config.build_settings['OTHER_CFLAGS'] = "$(inherited) -DFB_SONARKIT_ENABLED=1"
+          end
+        end
+      end
+    end
   end

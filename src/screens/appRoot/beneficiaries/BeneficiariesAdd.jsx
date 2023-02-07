@@ -1,46 +1,39 @@
-import React from 'react'
-import { useNavigation, useRoute } from '@react-navigation/native'
-import { useForm, Controller, FormProvider, useFormContext } from 'react-hook-form'
-import { Box, Button, Center, Divider, Factory, FormControl, Heading, 
-	HStack, Input, ScrollView, Spacer, StatusBar, VStack } from 'native-base'
-import Ionicon from 'react-native-vector-icons/Ionicons'
-Ionicon.loadFont()
-import { AuthContext, DataContext } from '../../../data/Context'
-import { buildDataPath } from '../../../data/Actions'
-import { api } from '../../../config'
-import * as SelectControl from '../../../components/beneficiaries/SelectControls'
-import LoadingOverlay from '../../../components/common/LoadingOverlay'
-import { ErrorMessage } from '../../../components/common/Forms'
+import React, { useContext, useEffect } from 'react'
 
+//components
+import { useNavigation } from '@react-navigation/native'
+import { useForm, FormProvider, useFormContext } from 'react-hook-form'
+import { ScrollView, VStack } from 'native-base'
+import * as Forms from '../../../components/common/Forms'
+import Toolbar from '../../../components/common/Toolbar'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import AlertBanner from '../../../components/common/AlertBanner'
+
+//data
+import { useRecoilState, useRecoilValue } from 'recoil'
+import { useForceUpdate } from '../../../data/Hooks'
+import { getNotice } from '../../../data/handlers/Status'
+import { validationRulesBeneficiaryAdd } from '../../../config'
+import { AuthContext } from '../../../data/Context'
+import { buildDataPath, sortByParam, addObjectExtraData, stringifyArray, mapActionsToConfig } from '../../../data/Actions'
+import { api, beneficiaryColumns, beneficiaryAddToolbarConfig } from '../../../config'
+import { beneficiaryList } from '../../../data/recoil/beneficiaries'
+import { loadingState, noticeState, langState } from '../../../data/recoil/system'
+
+//lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
-
-const NBIonicon = Factory(Ionicon)
 
 export default function BeneficiariesAdd() {
 	const methods = useForm({
 		mode: 'onBlur',
 		criteriaMode: 'all',
 		defaultValues: {
-			firstname: '',
-			lastname: '',
-			thainame: '',
-			phone: '',
-			accountnumber: '',
-			accounttype: '',
-			bankname: '',
-			branchname: '',
-			branchcity: '',
-			address: '',
-			state: '',
-			city: '',
-			postcode: '',
 			country: 'Thailand'
 		}
 	})
-
 	return (
 		<FormProvider {...methods}>
 			<BeneficiariesAddInner />
@@ -50,426 +43,228 @@ export default function BeneficiariesAdd() {
 
 function BeneficiariesAddInner() {
 	const navigation = useNavigation()
-	const [isLoading, setIsLoading] = React.useState(false)
-	const { dataDispatch } = React.useContext(DataContext)
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const { register, control, handleSubmit, setValue, getValues, formState } = useFormContext()
-	const mountRef = React.useRef(false)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
+	const forceUpdate = useForceUpdate()
+	const { control, handleSubmit, formState } = useFormContext()
+	const { auth } = useContext(AuthContext)
+	const [ beneficiaries, setBeneficiaries ] = useRecoilState(beneficiaryList)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const [ notices, setNotices ] = useRecoilState(noticeState)
+	const lang = useRecoilValue(langState)
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	let actions = [
+		() => handleBack(), , //note the double comma. second element is a spacer and has no action
+		() => {
+			new Promise((resolve) => {
+				setLoading({ status: true, type: 'saving' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			})
+		}
+	]
+
+	const toolbarConfig = mapActionsToConfig(beneficiaryAddToolbarConfig, actions)
+
+	useEffect(() => {
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			navigation.setOptions()
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
-	
-	const onSubmit = data => {
-		setIsLoading(true)
-		api.post(buildDataPath('beneficiaries', auth.uid, 'add'), JSON.stringify(data))
-			.then(response => {
-				if (response.ok == true) {
-					api.post(buildDataPath('beneficiaries', auth.uid, 'list'), JSON.stringify(Object.assign({}, ["id", "id_users", "firstname", "lastname", "status"])))
-					.then(response => {
-						let newResponse = []
-						newResponse = response.data.filter(function(obj) {
-							return obj.status !== 'In-Active'
-						})
-						newResponse = iterateInitials(newResponse)
-						newResponse = iterateFullName(newResponse) 
-						newResponse = sortByParam(newResponse, "firstname")
-						dataDispatch({ type: 'LOAD_BENEFICIARIES', payload: { data: newResponse } })
-						resolve('✅ Loaded Beneficiaries')
-					})
-					.catch(error => { reject('🚫 ' + error) })
-				}
-			})
-			.then(response => {
-				authDispatch({ type: 'SET_STATUS', payload: { data: 'beneficiarySaved' }})
-				navigation.popToTop()
-			})
-			.catch(error => console.log(error))
+	const handleBack = () => {
+		navigation.goBack()
 	}
 
-	//TODO: improve the list of errors shown to the user
-	const onError = (errors, e) => console.log(errors, e)
+	const onSubmit = data => {
+		setLoading({ status: true, text: 'Saving' })
+		//push changes to remote
+		api.post(buildDataPath('beneficiaries', auth.uid, 'add'), JSON.stringify(data))
+		.then(response => {
+			if (response.ok == true) {
+				api.post(buildDataPath('beneficiaries', auth.uid, 'view', { id: response.data}), stringifyArray(beneficiaryColumns))
+				.then(response2 => {
+					let result = addObjectExtraData(response2.data)
+					let newList = [...beneficiaries, result]
+					newList.sort(sortByParam("initials", "firstname"))
+					setBeneficiaries((init) => ([ ...newList ]))
+					setNotices((prev) => ([...prev, getNotice('beneficiarySaved', lang)]))
+					navigation.popToTop()
+				})
+			} else {
+				throw response.data
+			}
+		})
+		.catch(error => console.log(error))
+	}
+
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
 
 	return (
-		<>
-			<StatusBar barStyle={"light-content"} backgroundColor={"#8B6A27"} />
-			<Center flex={1} justifyContent={"center"}>
-				{isLoading == true && (
-					<LoadingOverlay />
-				)}
-				
-					<VStack flex={"1"} space={"4"} w={"100%"}>
-						<HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
-							<Button
-								flex={"1"}
-								variant={"subtle"}
-								onPress={() => navigation.popToTop()}>{ language.beneficiariesAdd.buttonBack }</Button>
-							<Spacer />
-							<Button
-								flex={"1"}
-								isLoadingText={"Saving..."}
-								onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesAdd.buttonSave }</Button>
-						</HStack>
-						<ScrollView w={"100%"}>
-						<VStack py={"4"} space={"4"}>
-							<Box px={"2"} py={"4"} backgroundColor={"coolGray.200"}>
-								<Heading size={"sm"}>{ language.beneficiariesAdd.listDataHeaderPersonalDetails }</Heading>
-							</Box>
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.firstname ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataFirstNameLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataFirstNameErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={ language.beneficiariesAdd.listDataFirstNamePlaceholder }
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"firstname"} />
-								{formState.errors.firstname && (
-									<ErrorMessage message={formState.errors.firstname.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.lastname ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataLastNameLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataLastNameErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataLastNamePlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"lastname"} />
-								{formState.errors.lastname && (
-									<ErrorMessage message={formState.errors.lastname.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"}>
-								<FormControl.Label fontSize={"xs"} color={"coolGray.500"}>{ language.beneficiariesAdd.listDataThaiNameLabel }</FormControl.Label>
-								<Controller
-									control={control}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											type={"text"}
-											placeholder={language.beneficiariesAdd.listDataThaiNamePlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"thainame"} />
-							</FormControl>
-							
-							<FormControl px={"4"} isInvalid={formState.errors.phone ? true : false}>
-								<FormControl.Label fontSize={"xs"} color={"coolGray.500"}>{ language.beneficiariesAdd.listDataPhoneLabel }</FormControl.Label>
-								<Controller
-									control={control}
-									rules={{
-										pattern: {
-											value: /[0-9-]+/,
-											message: language.beneficiariesAdd.listDataPhoneErrorDigits
-										},
-										minLength: {
-											value: 10,
-											message: language.beneficiariesAdd.listDataPhoneErrorMin
-										},
-										maxLength: {
-											value: 10,
-											message: language.beneficiariesAdd.listDataPhoneErrorMax
-										}
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											type={"text"}
-											placeholder={language.beneficiariesAdd.listDataPhonePlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"phone"} />
-								{formState.errors.phone && (
-									<ErrorMessage message={formState.errors.phone.message} />
-								)}
-							</FormControl>
+		<AppSafeArea>
+			<ScrollView w={"100%"}>
+				<VStack space={"4"} m={"2.5%"}>
+					{ notices && <AlertBanner /> }
+					<Toolbar config={toolbarConfig} />
+					<VStack pb={"2.5%"} space={"2"} bgColor={"white"} rounded={"8"}>
+						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.personalDetails }</Forms.HeaderItem>		
+						<VStack space={"4"} px={"2.5%"}>	
+							<Forms.TextInput
+								name={ "firstname" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.firstname }
+								errors={ formState.errors.firstname }
+								label={ language.beneficiaryAdd.labels.firstName }
+								placeholder={ language.beneficiaryAdd.placeholders.firstName }
+								required={true}
+							/>
+							<Forms.TextInput
+								name={ "lastname" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.lastname }
+								errors={ formState.errors.lastname }
+								label={ language.beneficiaryAdd.labels.lastName }
+								placeholder={ language.beneficiaryAdd.placeholders.lastName }
+								required={true}
+							/>
+							<Forms.TextInput
+								name={ "thainame" }
+								control={ control }
+								errors={ formState.errors.thainame }
+								label={ language.beneficiaryAdd.labels.thaiName }
+								placeholder={ language.beneficiaryAdd.placeholders.thaiName }
+								required={false}
+							/>
+							<Forms.TextInput
+								name={ "phone" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.phone }
+								errors={ formState.errors.phone }
+								label={ language.beneficiaryAdd.labels.phone }
+								placeholder={ language.beneficiaryAdd.placeholders.phone }
+								required={false}
+							/>
+						</VStack>				
+					</VStack>
+					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.bankDetails }</Forms.HeaderItem>
+						<VStack space={"4"} px={"2.5%"}>
+							<Forms.TextInput
+								name={ "accountnumber" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.accountnumber }
+								errors={ formState.errors.accountnumber }
+								label={ language.beneficiaryAdd.labels.accountNumber }
+								placeholder={ language.beneficiaryAdd.placeholders.accountNumber }
+								required={true}
+							/>
+							<Forms.SelectInput
+								name={ "accounttype" }
+								control={ control }
+								component={"AccountType"}
+								rules={ validationRulesBeneficiaryAdd.accounttype }
+								errors={ formState.errors.accounttype }
+								label={ language.beneficiaryAdd.labels.accountType }
+								placeholder={ language.beneficiaryAdd.placeholders.accountType }
+								required={true}
+								context={"Beneficiaries"}
+							/>
+							<Forms.SelectInput
+								name={ "bankname" }
+								control={ control }
+								component={"BankName"}
+								rules={ validationRulesBeneficiaryAdd.bankname }
+								errors={ formState.errors.bankname }
+								label={ language.beneficiaryAdd.labels.bankName }
+								placeholder={ language.beneficiaryAdd.placeholders.bankName }
+								required={true}
+								context={"Beneficiaries"}
+							/>
+							<Forms.TextInput
+								name={ "branchname" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.branchname }
+								errors={ formState.errors.branchname }
+								label={ language.beneficiaryAdd.labels.branchName }
+								placeholder={ language.beneficiaryAdd.placeholders.branchName }
+								required={true}
+								context={"Beneficiaries"}
+							/>
+							<Forms.SelectInput
+								name={ "branchcity" }
+								control={ control }
+								component={"BranchCity"}
+								rules={ validationRulesBeneficiaryAdd.branchcity }
+								errors={ formState.errors.branchname }
+								label={ language.beneficiaryAdd.labels.branchCity }
+								placeholder={ language.beneficiaryAdd.placeholders.branchCity }
+								required={true}
+								context={"Beneficiaries"}
+							/>			
 						</VStack>
-						<VStack py={"4"} space={"4"}>
-							<Box px={"2"} py={"4"} backgroundColor={"coolGray.200"}>
-								<Heading size={"sm"}>{ language.beneficiariesAdd.listDataHeaderBankDetails }</Heading>
-							</Box>
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.accountnumber ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataAccountNumberLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataAccountNumberErrorRequired,
-										pattern: {
-											value: /\d+/,
-											message: language.beneficiariesAdd.listDataAccountNumberErrorDigits
-										},
-										minLength: {
-											value: 10,
-											message: language.beneficiariesAdd.listDataAccountNumberErrorMin
-										},
-										maxLength: {
-											value: 10,
-											message: language.beneficiariesAdd.listDataAccountNumberErrorMax
-										}
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataAccountNumberPlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"accountnumber"} />
-								{formState.errors.accountnumber && (
-									<ErrorMessage message={formState.errors.accountnumber.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.accounttype ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataAccountTypeLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataAccountTypeErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<SelectControl.AccountType
-											placeholder={language.beneficiariesAdd.listDataAccountTypePlaceholder}
-											onValueChange={onChange}
-											value={value} />
-									)}
-									name={"accounttype"} />
-								{formState.errors.accounttype && (
-									<ErrorMessage message={formState.errors.accounttype.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.bankname ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataBankNameLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataBankNameErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<SelectControl.BankName
-											placeholder={language.beneficiariesAdd.listDataBankNamePlaceholder}
-											onValueChange={onChange}
-											value={value}
-										/>
-									)}
-									name={"bankname"} />
-								{formState.errors.bankname && (
-									<ErrorMessage message={formState.errors.bankname.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.branchname ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataBranchNameLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataBranchNameErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataBranchNamePlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"branchname"} />
-								{formState.errors.branchname && (
-									<ErrorMessage message={formState.errors.branchname.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.branchcity ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataBranchCityLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataBranchCityErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<SelectControl.BranchCity
-											placeholder={language.beneficiariesAdd.listDataBranchCityPlaceholder}
-											onValueChange={onChange}
-											value={value} />
-									)}
-									name={"branchcity"} />
-								{formState.errors.branchcity && (
-									<ErrorMessage message={formState.errors.branchcity.message} />
-								)}
-							</FormControl>
+					</VStack>
+					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>					
+						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.addressDetails }</Forms.HeaderItem>
+						<VStack space={"4"} px={"2.5%"}>
+							<Forms.TextInput
+								name={ "address" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.address }
+								errors={ formState.errors.address }
+								label={ language.beneficiaryAdd.labels.thaiAddress }
+								placeholder={ language.beneficiaryAdd.placeholders.thaiAddress }
+								required={true}
+							/>
+							<Forms.SelectInput
+								name={ "state" }
+								control={ control }
+								component={"Province"}
+								rules={ validationRulesBeneficiaryAdd.state }
+								errors={ formState.errors.state }
+								label={ language.beneficiaryAdd.labels.province }
+								placeholder={ language.beneficiaryAdd.placeholders.province }
+								required={true}
+								context={"Beneficiaries"}
+							/>
+							<Forms.SelectInput
+								name={ "city" }
+								control={ control }
+								component={"District"}
+								rules={ validationRulesBeneficiaryAdd.city }
+								errors={ formState.errors.city }
+								label={ language.beneficiaryAdd.labels.district }
+								placeholder={ language.beneficiaryAdd.placeholders.district }
+								required={true}
+								context={"Beneficiaries"}
+							/>
+							<Forms.TextInput
+								name={ "postcode" }
+								control={ control }
+								rules={ validationRulesBeneficiaryAdd.postcode }
+								errors={ formState.errors.postcode }
+								label={ language.beneficiaryAdd.labels.postCode }
+								placeholder={ language.beneficiaryAdd.placeholders.postCode }
+								required={true}
+							/>
+							<Forms.TextInput
+								name={ "country" }
+								control={ control }
+								errors={ formState.errors.country }
+								label={ language.beneficiaryAdd.labels.country }
+								placeholder={ language.beneficiaryAdd.placeholders.country }
+								required={true}
+							/>
 						</VStack>
-						<VStack py={"4"} space={"4"}>
-							
-							<Box px={"2"} py={"4"} backgroundColor={"coolGray.200"}>
-								<Heading size={"sm"}>{ language.beneficiariesAdd.listDataHeaderAddressDetails }</Heading>
-							</Box>
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.address ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataThaiAddressLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataThaiAddressErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataThaiAddressPlaceholder}
-											onChangeText={onChange}
-											value={value}
-											fontSize={"lg"}
-											autoCorrect={false}
-											autoCapitalize={'none'} />
-									)}
-									name={"address"} />
-								{formState.errors.address && (
-									<ErrorMessage message={formState.errors.address.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.state ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataProvinceLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataProvinceErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<SelectControl.Province
-											placeholder={language.beneficiariesAdd.listDataProvincePlaceholder}
-											onValueChange={onChange}
-											value={value} />
-									)}
-									name={"state"} />
-								{formState.errors.province && (
-									<ErrorMessage message={formState.errors.state.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired isInvalid={formState.errors.city ? true : false}>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataDistrictLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataDistrictErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<SelectControl.District
-											placeholder={language.beneficiariesAdd.listDataDistrictPlaceholder}
-											onValueChange={onChange}
-											value={value}
-										/>
-									)}
-									name={"city"} />
-								{formState.errors.city && (
-									<ErrorMessage message={formState.errors.city.message} />
-								)}
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired>
-								<HStack>
-									<FormControl.Label fontSize={"xs"} color={"coolGray.500"} flexGrow={"1"}>{ language.beneficiariesAdd.listDataPostCodeLabel }</FormControl.Label>
-								</HStack>
-								<Controller
-									control={control}
-									rules={{
-										required: language.beneficiariesAdd.listDataPostCodeErrorRequired
-									}}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataPostCodePlaceholder}
-											value={value}
-											onChangeText={onChange}
-											fontSize={"lg"}
-										/>
-									)}
-									name={"postcode"} />
-							</FormControl>
-							
-							<FormControl px={"4"} isRequired>
-								<FormControl.Label fontSize={"xs"} color={"coolGray.500"}>{ language.beneficiariesAdd.listDataCountryLabel }</FormControl.Label>
-								<Controller
-									control={control}
-									render={({ field: { onChange, value } }) => (
-										<Input
-											placeholder={language.beneficiariesAdd.listDataCountryPlaceholder}
-											onChangeText={onChange}
-											value={value}
-											defaultValue={"Thailand"}
-											fontSize={"lg"}
-											isReadOnly={true} />
-									)}
-									name={"country"} />
-							</FormControl>
-						</VStack>
-						<HStack space={"3"} flexDir={"row"} pt={"4"} px={"4"}>
-							<Button
-								flex={"1"}
-								variant={"subtle"}
-								onPress={() => navigation.popToTop() }>{ language.beneficiariesAdd.buttonBack }</Button>
-							<Spacer />
-							<Button
-								flex={"1"}
-								isLoadingText={"Saving..."}
-								onPress={handleSubmit(onSubmit, onError)}>{ language.beneficiariesAdd.buttonSave }</Button>
-						</HStack>
-					</ScrollView>
+					</VStack>
+					<Toolbar config={toolbarConfig} />
 				</VStack>
-			</Center>
-		</>
+			</ScrollView>
+		</AppSafeArea>
 	)
 }

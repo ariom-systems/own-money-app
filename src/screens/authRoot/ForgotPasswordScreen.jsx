@@ -1,28 +1,57 @@
-import React from 'react'
-import { useForm, Controller } from 'react-hook-form'
-import { ImageBackground, Platform } from 'react-native'
-import { Button, Center, FormControl, HStack, Image, Input, KeyboardAvoidingView, ScrollView, StatusBar, Text, VStack } from 'native-base'
-import { AuthContext } from '../../data/Context'
-import { ErrorMessage } from '../../components/common/Forms'
-import { Notice } from '../../components/common/Notice'
-import { LanguageToggle } from '../../components/common/LanguageToggle'
-import LocalizedStrings from 'react-native-localization'
-import image from '../../assets/img/logo.png'
-import Config from 'react-native-config'
-import { api } from '../../config'
+import React, { useContext, useEffect, useState, memo } from 'react'
 
+//components
+import { useNavigation } from '@react-navigation/native'
+import AppSafeArea from '../../components/common/AppSafeArea'
+import { Button, HStack, Image, Input, Text, VStack } from 'native-base'
+import * as Forms from '../../components/common/Forms'
+import { LanguageToggle } from '../../components/common/LanguageToggle'
+import image from '../../assets/img/logo.png'
+import Toolbar from '../../components/common/Toolbar'
+
+//data
+import Config from 'react-native-config'
+import { useForm } from 'react-hook-form'
+import { useRecoilValue, useRecoilState } from 'recoil'
+import { useForceUpdate } from '../../data/Hooks'
+import { AuthContext } from '../../data/Context'
+import { api, validationRulesForgotPassword, forgotPasswordToolbarConfig } from '../../config'
+import { mapActionsToConfig } from '../../data/Actions'
+import { loadingState, langState } from '../../data/recoil/system'
+
+//lang
+import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
-
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const ForgotPasswordScreen = ({ navigation }) => {
+const ForgotPasswordScreen = () => {
+	const navigation = useNavigation()
+	const forceUpdate = useForceUpdate()
+	const { auth, authDispatch } = useContext(AuthContext)
+	const [ loading, setLoading ] = useRecoilState(loadingState)
+	const lang = useRecoilValue(langState)
 
-	const { auth, authDispatch } = React.useContext(AuthContext)
-	const [ ignored, forceUpdate] = React.useReducer((x) => x +1, 0)
-	const [ requested, setRequested ] = React.useState("")
+	let actions = [
+		() => {
+			new Promise((resolve) => {
+				setLoading({ status: true, type: 'processing' })
+				forceUpdate()
+				setTimeout(() => {
+					if (loading.status == false) { resolve() }
+				}, 1000)
+			}).then(result => {
+				handleSubmit((data) => onSubmit(data), (error) => onError(error))()
+			})
+		},
+		() => {
+			authDispatch({ type: 'CLEAR_STATUS' })
+			navigation.goBack()
+		}
+	]
+	const toolbarConfig = mapActionsToConfig(forgotPasswordToolbarConfig, actions)
 
-	const { control, handleSubmit, setError, formState } = useForm({
+	const { control, handleSubmit, formState } = useForm({
 		mode: 'onBlur',
 		criteriaMode: 'all',
 		defaultValues: {
@@ -31,108 +60,62 @@ const ForgotPasswordScreen = ({ navigation }) => {
 	})
 
 	const onSubmit = async (data) => {
-		let reset = new Promise((resolve, reject) => {
+		new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
 			api.post(Config.BASEURL + '/forgotpassword', {
 				email: data.email,
-				lang: auth.lang
+				lang: lang
 			})
 			.then(response => {
 				if(response.ok == true) {
 					//get the 'notices' array. this endpoint will always return one notice.
 					let notices = response.data.notices
 					if(notices.length == 1) {
-						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] }})
+						authDispatch({ type: 'SET_STATUS', payload: { data: notices[0] } }) //leave this here
 						authDispatch({ type: 'LOADING', payload: { data: false }})
-						setRequested(language.forgotPassword.buttonResetSent)
 					}
 					resolve(true)
 				}
 			})
+			.catch(errors => {
+				console.log(response)
+			})
 		})
 	}
 
-	React.useEffect(() => {
-		if(language.getLanguage() !== auth.lang) {
-			language.setLanguage(auth.lang)
+	const onError = (error) => {
+		setLoading({ status: false, message: 'none' })
+	}
+
+	useEffect(() => {
+		if(language.getLanguage() !== lang) {
+			language.setLanguage(lang)
 			forceUpdate()
 		}
-	}, [language, auth])
+	}, [language, lang])
 
 	return (
-		<ImageBackground source={require("../../assets/img/app_background.jpg")} style={{width: '100%', height: '100%'}} resizeMode={"cover"}>
-			<StatusBar barStyle={"dark-content"} />
-			<Center flex={"1"} h={"100%"} alignContent={"center"}>
-				<ScrollView w={"100%"} contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', flexDirection: 'column' }}>
-					<KeyboardAvoidingView
-						behavior={Platform.OS === "ios" ? "padding" : "height"}
-						w={"100%"}>
-						<VStack mx={"5%"} p={"2%"} justifyContent={"center"} backgroundColor={"white"} rounded={"2xl"}>
-							<VStack p={"4"} space={"4"} alignItems={"center"}>
-								{ (auth.status !== null && auth.status !== "") && <Notice wrap={{w:"100%", mb: "4"}} />}
-								<Image source={image} resizeMode={"contain"} alt={language.forgotPassword.logoAlt} size={"160"} />
-								<Text _dark={{ color: "warmGray.200" }} color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"}>{language.forgotPassword.underLogo}</Text>
-								<FormControl isInvalid={ formState.errors.email ? true : false }>
-									<FormControl.Label>{language.forgotPassword.formEmailLabel}</FormControl.Label>
-									<Controller
-										control={control}
-										rules={{
-											required: language.forgotPassword.formEmailMessageRequired,
-											pattern: {
-												value: /\S+@\S+\.\S+/i,
-												message: language.forgotPassword.formEmailMessagePattern
-											}
-											
-										}}
-										render={({ field: { onChange, onBlur, value } }) => (
-											<Input
-												size={"lg"}
-												value={value}
-												onChangeText={onChange}
-												onBlur={onBlur}
-												autoCapitalize={"none"}
-												autoCorrect={false}
-												keyboardType={"email-address"} />
-										)}
-										name={"email"} />
-									{ formState.errors.email && (
-										<ErrorMessage message={formState.errors.email.message} icon={"alert-circle-outline"} />
-									)}
-								</FormControl>
-								<HStack space={"3"} flexDir={"row"}>
-									<Button
-										mt={"2"}
-										flex={"1"}
-										onPress={handleSubmit(onSubmit)}
-										isLoading={ auth.loading ? true : false }
-										isLoadingText={language.forgotPassword.buttonResetLoading}
-										isDisabled={requested !== "" ? true : false }
-										>
-											{ requested !== "" ? requested : language.forgotPassword.buttonResetPassword }
-									</Button>
-									<Button
-										mt={"2"}
-										flex={"1"}
-										variant={"subtle"}
-										onPress={() => {
-											if(!auth.loading) {
-												authDispatch({ type: 'CLEAR_STATUS' })
-												navigation.goBack()
-											}
-										}}>
-											{language.forgotPassword.buttonBackToLogin}
-									</Button>
-								</HStack>
-								<HStack>
-									<LanguageToggle />
-								</HStack>
-							</VStack>
-						</VStack>
-					</KeyboardAvoidingView>
-				</ScrollView>
-			</Center>
-		</ImageBackground>
+		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
+			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
+				<Image source={image} resizeMode={"contain"} alt={language.forgotPassword.ui.logoAlt} size={"160"} />
+				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"} px={"4%"}>{language.forgotPassword.ui.underLogo}</Text>
+				<Forms.TextInput
+					name={"email"}
+					control={control}
+					rules={validationRulesForgotPassword.email}
+					errors={formState.errors.email}
+					label={language.forgotPassword.labels.email}
+					required={true}
+					inputAttributes={{ keyboardType: "email-address", size: "lg", w: "100%" }}
+					blockStyles={{ px: "4%" }}
+				/>
+				<Toolbar config={toolbarConfig} nb={{ bgColor: "white", py: "0" }} />
+				<HStack>
+					<LanguageToggle />
+				</HStack>
+			</VStack>
+		</AppSafeArea>
 	)
 }
 
-export default ForgotPasswordScreen
+export default memo(ForgotPasswordScreen)

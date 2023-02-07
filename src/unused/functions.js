@@ -27,6 +27,6 @@ function sortByName(input) {
 // 		},
 // 		body: encodeURI(`email=${email}&hash=${hash}&password=${password}&password2=${password2}&context=mobile`)
 // 	})
-// 	console.log(response.text())
+// 
 // 	return response.json()
 // }
