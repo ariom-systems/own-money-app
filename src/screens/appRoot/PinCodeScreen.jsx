@@ -81,13 +81,15 @@ const PinCodeScreen = ({ navigation }) => {
 
 	const handlePinSet = async (pin) => {
 		//use our own keychain entry. don't have time to figure out how to use the one in react-native-pincode
-		const saveResponse = await keychainSave('pin', auth.email, pin)
-		authDispatch({ type: 'SET_PIN', payload: { pin: pin } })
+		//modify the keychain identifier slightly to include the user id. This means that multiple users can use the same
+		//phone and app and each have their own pin number instead of just one global pin.
+		const saveResponse = await keychainSave("com.ariom.ownmoney." + auth.uid + "." + "pin", auth.email, pin)
+		// authDispatch({ type: 'SET_PIN', payload: { pin: pin } })
 		navigation.navigate('Loading')
 	}
 
 	const handleEnterPin = async (pin) => {
-		authDispatch({ type: 'SET_PIN', payload: { data: pin } })
+		// authDispatch({ type: 'SET_PIN', payload: { data: pin } })
 		navigation.navigate('Loading')
 	}
 

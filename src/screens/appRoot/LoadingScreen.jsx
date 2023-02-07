@@ -41,9 +41,19 @@ const LoadingScreen = () => {
 		console.log('authenticated:', auth.token !== 'undefined' ? '🔑 yes' : '🔒 no')
 		resetNotices()
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
+
 		const verifyLoggedIn = new Promise((resolve, reject) => {
 			api.get(Config.BASEURL + '/checktoken')
-				.then(response => { response.data.result == 'success' ? resolve() : reject(response.data.result) })
+				.then(response => {
+					if(response.data.result == 'success') {
+						resolve()
+					} else {
+						reject(response)
+					}
+				})
+				.catch(error => {
+					console.log(error)
+				})
 		})
 		
 		const loadUser = new Promise((resolve, reject) => {
@@ -137,6 +147,7 @@ const LoadingScreen = () => {
 				})
 			})
 			.catch(error => {
+				console.error('verifyLoggedIn catch:',error)
 				handleLogout('session-expired')
 			})
 		
@@ -146,7 +157,7 @@ const LoadingScreen = () => {
 	})
 
 	const handleLogout = async (reason) => {
-		const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+		const reset = await keychainReset("com.ariom.ownmoney.token") //shutup vscode, await DOES do something here
 		if(reset === true) {
 			//TODO: update this to use the new Alert system
 			authDispatch({ type: 'SET_STATUS', payload: { data: reason }}) //leave this here

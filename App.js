@@ -80,7 +80,7 @@ const AppNavigator = ({navigation}) => {
         if(auth.token === null) {
             //no? lets check the Keychain/Keystore
             const getKeychainCredentials = async () => {
-                const keychainResponse = await keychainLoad('token')
+                const keychainResponse = await keychainLoad("com.ariom.ownmoney.token")
                 //does the Keychain/Keystore have something (not undefined) for us?
                 if(keychainResponse !== undefined) {
                     //is there a "password"? (it actually should be a serialised string with token, uid, and expiry). needs pin as well
