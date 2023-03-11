@@ -1,7 +1,11 @@
 import React, { useEffect } from 'react'
 
 //components
-import { Avatar, Badge, HStack, Spacer, Text, VStack, useMediaQuery } from 'native-base'
+import { Avatar, Badge, Button, HStack, Spacer, Text, VStack, useMediaQuery } from 'native-base'
+import { AuSVG } from '../../assets/img/AuSVG'
+import { ThSVG } from '../../assets/img/ThSVG'
+import Icon from './Icon'
+import { CheckCircleIcon, WarningIcon, WarningOutlineIcon } from 'native-base'
 
 //data
 import { useRecoilValue } from 'recoil'
@@ -21,13 +25,32 @@ const TransactionItem = (props) => {
 	const [ smallScreen ] = useMediaQuery({
 		maxWidth: 380
 	})
-	let { index, initials, fullname, status, transfer_amount, received_amount } = props
+	let { index, fullname, status, transfer_amount, received_amount, button = null } = props
+	let { label, fn } = button ?? { label: "Test", fn: () => alert('test') }
+	let headerBgColour, colour, bgColour, element, statusText
 
-	let scheme, message
 	switch (status) {
-		case 'Wait for payment': [scheme, message] = ['default', language.components.statusBadgeWaitForPayment]; break
-		case 'Cancelled': [scheme, message] = ['danger', language.components.statusBadgeCancelled]; break
-		case 'Completed': [scheme, message] = ["default", language.components.statusBadgeCompleted]; break
+		case 'Completed':
+			headerBgColour = "success.600"
+			bgColour = "success.200"
+			colour = "success.600"
+			element = <CheckCircleIcon size={"3xl"} color={"success.600"} />
+			statusText = language.components.statusBadgeCompleted
+			break
+		case 'Cancelled':
+			headerBgColour = "error.600"
+			bgColour = "error.200"
+			colour = "error.700"
+			element = <WarningIcon size={"3xl"} color={"error.700"} />
+			statusText = language.components.statusBadgeCancelled
+			break
+		case 'Wait for payment':
+			headerBgColour = "primary.600"
+			bgColour = "primary.200"
+			colour = "primary.700"
+			element = <Button onPress={fn}>{label}</Button>
+			statusText = language.components.statusBadgeWaitForPayment
+			break
 	}
 
 	useEffect(() => {
@@ -38,18 +61,21 @@ const TransactionItem = (props) => {
 	}, [language, lang])
 
 	return (
-		<HStack key={index} alignItems={"center"} space={"3"} py={"4"}>
-			{ !smallScreen && <Avatar size={"48px"} bgColor={"primary.600"}>{initials}</Avatar> }
-			<VStack>
-				<Text mb={{ base: "2", sm: "0"}} bold>{fullname}</Text>
-			</VStack>
-			<Spacer />
-			<VStack alignContent={"flex-end"} space={"2"}>
-				<Badge colorScheme={scheme} variant={"outline"}>{message}</Badge>
-				<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{transfer_amount}</Text>
-				<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{received_amount}</Text>
-			</VStack>
-		</HStack>
+		<VStack key={index}>
+			<HStack alignItems={"center"} space={"3"} p={Sizes.padding}>
+				{element}
+				<VStack>
+					<Text mb={{ base: "2", sm: "0"}} bold>{fullname}</Text>
+					<HStack alignItems={"center"} justifyContent={"flex-end"} space={Sizes.spacing}>
+						<AuSVG />
+						<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{transfer_amount}</Text>
+						<Icon type={"Ionicon"} name={"arrow-forward-outline"} />
+						<ThSVG />
+						<Text fontSize={Sizes.tinyText} color={"coolGray.800"} _dark={{ color: "warmGray.50" }} textAlign={"right"}>{received_amount}</Text>
+					</HStack>
+				</VStack>
+			</HStack>
+		</VStack>
 	)
 }
 

@@ -24,8 +24,12 @@ let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 export const ErrorMessage = (props) => {
 	const forceUpdate = useForceUpdate()
 	const lang = useRecoilValue(langState)
-	const { message, icon = "alert-circle-outline", errorStyles = null } = props
+	const { message, icon = "alert-circle-outline", errorStyles = null} = props
 	let label = traverseObjectByPath(language, message)
+	
+	if(label == null) {
+		label = message
+	}
 
 	useEffect(() => {
 		if (language.getLanguage() !== lang) {
@@ -35,7 +39,12 @@ export const ErrorMessage = (props) => {
 	}, [language, lang])
 
 	return (
-		<FormControl.ErrorMessage leftIcon={<Icon type={"Ionicon"} alignSelf={"flex-start"} mt={"0.5"} name={icon} />} _text={errorStyles}>{ label }</FormControl.ErrorMessage>
+		<FormControl.ErrorMessage
+			leftIcon={<Icon type={"Ionicon"} alignSelf={"flex-start"} mt={"0.5"} name={icon} />}
+			_text={errorStyles}
+		>
+			{ label }
+		</FormControl.ErrorMessage>
 	)
 }
 
@@ -72,24 +81,24 @@ export const TextInput = (props) => {
 		addonLeft = null, addonRight = null } = props
 	const { field, fieldState: { isTouched, isDirty }, formState: { touchedFields, dirtyFields }} = useController({ name, control, rules: rules })
 	
+	let inputRow
+
 	const inputField = (
 		<Input
-			placeholder={ placeholder }
+			placeholder={placeholder}
 			onChangeText={field.onChange}
-			onBlur={ field.onBlur }
-			value={ field.value }
-			name={ field.name }
+			onBlur={field.onBlur}
+			value={field.value}
+			name={field.name}
 			fontSize={Sizes.inputs}
-			width={"100%"}
 			autoCorrect={false}
 			autoCapitalize={'none'}
 			keyboardType={type}
 			isReadOnly={isReadOnly}
+			flexGrow={1}
 			{...inputAttributes}
 		/>
 	)
-
-	let inputRow = inputField
 
 	if (addonLeft != null || addonRight != null) {
 		inputRow = (
@@ -98,6 +107,12 @@ export const TextInput = (props) => {
 				{ inputField }
 				{ addonRight || null }
 			</InputGroup>
+		)
+	} else {
+		inputRow = (
+			<>
+				{ inputField }
+			</>
 		)
 	}
 
@@ -112,27 +127,39 @@ export const TextInput = (props) => {
 }
 
 export const TextInputLeft = (props) => {
-	const { value, hasErrors, icon = null, styles = null } = props
+	const { value, hasErrors, icon = null, styles = null, isDisabled = false } = props
 	return (
-		<InputLeftAddon _light={hasErrors && { borderColor: "danger.600" }} w={"15%"} {...styles} children={
-			<HStack>
-				{icon}
-				<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"}>{ value }</Text>
-			</HStack>
-		} />
+		<InputLeftAddon
+			isDisabled={isDisabled}
+			_light={hasErrors && { borderColor: "danger.600" }}
+			opacity={isDisabled ? "0.3" : "1"}
+			{...styles}
+			children={
+				<HStack>
+					{icon}
+					<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"}>{ value }</Text>
+				</HStack>
+			}
+		/>
 	)
 }
 
 export const TextInputRight = (props) => {
-	const { value, hasErrors, icon = "", styles = null} = props
+	const { value, hasErrors, icon = "", styles = null, isDisabled = false } = props
 	let iconComp = icon
 	return (
-		<InputRightAddon _light={hasErrors && { borderColor: "danger.600" }} w={"25%"} {...styles} children={
-			<HStack pl={"2"}>
-				{ iconComp }
-				<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"} mx={Sizes.marginSmall}>{ value }</Text>
-			</HStack>
-		} />
+		<InputRightAddon
+			isDisabled={isDisabled}
+			_light={hasErrors && { borderColor: "danger.600" }}
+			opacity={isDisabled ? "0.3" : "1"}
+			{...styles}
+			children={
+				<HStack pl={"2"}>
+					{ iconComp }
+					<Text fontSize={Sizes.text} color={hasErrors ? "danger.600" : "black"} mx={Sizes.marginSmall}>{ value }</Text>
+				</HStack>
+			}
+		/>
 	)
 }
 

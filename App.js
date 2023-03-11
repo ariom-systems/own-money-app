@@ -7,7 +7,7 @@ import { ActivityIndicator, LogBox } from 'react-native'
 import { navigationRef } from './src/data/handlers/Navigation'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { useFlipper } from '@react-navigation/devtools'
+//import { useFlipper } from '@react-navigation/devtools'
 
 //screens/navigators
 import AuthStack from './src/components/navigators/AuthStack'
@@ -18,12 +18,12 @@ import SplashScreen from './src/screens/SplashScreen';
 import { NativeBaseProvider, extendTheme, Text } from 'native-base'
 
 //data
-import RecoilFlipperClient from 'react-recoil-flipper-client'
+//import RecoilFlipperClient from 'react-recoil-flipper-client'
 import { RecoilRoot, useRecoilValue } from 'recoil'
 import { useInterval, useForceUpdate } from './src/data/Hooks'
 import { AuthContext, AuthProvider } from './src/data/Context'
-import { NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
-import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
+import { keychain, NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
+import { keychainLoad, keychainReset, keychainCheck, parseToken } from './src/data/Actions'
 import { initialCheckConnection, checkConnection } from './src/data/handlers/Connection'
 import { langState } from './src/data/recoil/system'
 
@@ -42,7 +42,7 @@ export default function App() {
 	return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <RecoilRoot>
-                <RecoilFlipperClient />
+                {/* <RecoilFlipperClient /> */}
                 <NativeBaseProvider theme={NativeBaseTheme}>
                     <AuthProvider>
                         <RootNavigator />
@@ -55,7 +55,7 @@ export default function App() {
 
 const RootStack = createNativeStackNavigator()
 const RootNavigator = ({navigation}) => {
-    useFlipper(navigationRef)
+    //useFlipper(navigationRef)
     return (
         <SafeAreaProvider>
             <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >
@@ -80,7 +80,7 @@ const AppNavigator = ({navigation}) => {
         if(auth.token === null) {
             //no? lets check the Keychain/Keystore
             const getKeychainCredentials = async () => {
-                const keychainResponse = await keychainLoad("com.ariom.ownmoney.token")
+                const keychainResponse = await keychainLoad(keychain.token)
                 //does the Keychain/Keystore have something (not undefined) for us?
                 if(keychainResponse !== undefined) {
                     //is there a "password"? (it actually should be a serialised string with token, uid, and expiry). needs pin as well
@@ -94,7 +94,10 @@ const AppNavigator = ({navigation}) => {
                             expire: jwt_data.exp,
                             status: null
                         }})
+                        console.log("👤 Token data found in keychain.")
                     }
+                } else {
+                    console.log("🤷 Token data not found in keychain. Begin a new session.")
                 }
             }
             getKeychainCredentials()
@@ -111,7 +114,7 @@ const AppNavigator = ({navigation}) => {
     useInterval(() => {
         async function checkTokenExpiry(timestamp) {
             if(timestamp <= 0) {
-                const reset = await keychainReset('token') //shutup vscode, await DOES do something here
+                const reset = await keychainReset(keychain.token) //shutup vscode, await DOES do something here
                 if(reset === true) {
                     authDispatch({ type: 'SET_STATUS', payload: { data: 'sessionExpired' }}) //leave this here
                     authDispatch({ type: 'LOGOUT'})

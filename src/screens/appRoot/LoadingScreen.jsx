@@ -8,7 +8,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner'
 
 //data
 import { AuthContext } from '../../data/Context'
-import { api, beneficiaryColumns } from '../../config'
+import { api, beneficiaryColumns, keychain } from '../../config'
 import Config from 'react-native-config'
 import * as Hooks from '../../data/Hooks'
 import { keychainReset, buildDataPath, sortByParam, addExtraRecordData, stringifyArray, dateFormat } from '../../data/Actions'
@@ -17,6 +17,7 @@ import { useRecoilValue, useRecoilState, useSetRecoilState, useResetRecoilState 
 import { userState } from '../../data/recoil/user'
 import { beneficiaryList } from '../../data/recoil/beneficiaries'
 import { transactionList } from '../../data/recoil/transactions'
+import { promoAtom } from '../../data/recoil/transfer'
 import { globalState, noticeState, langState } from '../../data/recoil/system'
 
 //lang
@@ -33,22 +34,30 @@ const LoadingScreen = () => {
 	const setNotices = useSetRecoilState(noticeState)
 	const setTransactions = useSetRecoilState(transactionList)
 	const setBeneficiaries = useSetRecoilState(beneficiaryList)
+	const setPromo = useSetRecoilState(promoAtom)
 	const resetNotices = useResetRecoilState(noticeState)
 	const lang = useRecoilValue(langState)
 
 	Hooks.useEffectOnce(() => {
+		console.group('Preflight Check')
 		console.log('--starting preflight check--')
+
 		console.log('authenticated:', auth.token !== 'undefined' ? '🔑 yes' : '🔒 no')
 		resetNotices()
 		api.setHeader('Authorization', 'Bearer ' + auth.token)
 
 		const verifyLoggedIn = new Promise((resolve, reject) => {
-			api.get(Config.BASEURL + '/checktoken')
+			api.get(Config.BASEURL + '/' + Config.APIVERSION + '/check/token')
 				.then(response => {
-					if(response.data.result == 'success') {
+					if(response.status == 200) {
 						resolve()
 					} else {
-						reject(response)
+						console.log("status", response.status)
+						switch(response.status) {
+							case 403:
+								reject(response.data)
+							break
+						}
 					}
 				})
 				.catch(error => {
@@ -66,20 +75,42 @@ const LoadingScreen = () => {
 					let app_flags = JSON.parse(response.data.app_flags)
 					if (app_flags !== null) { newObj.app_flags = app_flags }
 					
+					if(newObj.hasOwnProperty('idexpiry')) {
+						if (newObj.idexpiry != "") {
+							let today = new Date().getTime()
+							let expiry = new Date(newObj.idexpiry).getTime()
+							if(today > expiry) {
+								newObj.preventTransfer = true
+								setNotices((prev) => ([...prev, getNotice('idExpired', lang)]))
+							}	
+						}
+					}
+
+					if(newObj.hasOwnProperty('blocked')) {
+						if(newObj.blocked == true) {
+							console.log("Blocked user found!")
+							setNotices((prev) => ([...prev, getNotice('blockedUser', lang)]))
+							resolve('💣 Blocked User incoming. Handle with care.')
+						}
+					}
+
 					delete newObj.daily_limit
-					setUser((initial) => ({...initial, ...newObj}))
-					authDispatch({ type: 'SET_LANG', payload: { lang: lang }})
+					authDispatch({ type: 'SET_LANG', payload: { lang: lang } })
 					
 					if(app_flags === null) {
 						console.log("New user found!")
 						setNotices((prev) => ([...prev, getNotice('verifyIdentity', lang)]))
+						newObj.preventTransfer = true
 						setNotices((prev) => ([...prev, getNotice('redirectToTermsConditions', lang)]))
+						setUser((initial) => ({ ...initial, ...newObj }))
 						resolve('🔒 Redirect To Terms')
 					} else {
 						if(!app_flags.hasOwnProperty('idUploaded')) {
+							newObj.preventTransfer = true
 							setNotices((prev) => ([...prev, getNotice('verifyIdentity', lang)]))
 						}
 					}
+					setUser((initial) => ({ ...initial, ...newObj }))
 					resolve('✅ Loaded User Data 👤')
 			 	})
 				.catch(error => { reject('🚫👤 ' + error) })
@@ -110,17 +141,45 @@ const LoadingScreen = () => {
 		})
 
 		const loadGlobals = new Promise((resolve, reject) => {
-			api.get(buildDataPath('globals', null, 'branch'))
-				.then(response => {
-					let [ lastReset, newObj ] = [ response.data[0].lastDailyLimitReset, {} ]
-					let date = new Date(Date.parse(lastReset.replace(' ', 'T')))
-					let limitReset = Math.floor(date.getTime() / 1000)
-					console.log("Limit was last reset at: ", date, limitReset)
-					newObj = {...response.data[0], lastDailyLimitReset: limitReset }
-					setGlobals((initial) => ({ ...initial, ...newObj }))
-					resolve('✅ Loaded Globals 🌏')
-				})
-				.catch(error => { reject('🚫🌏 ' + error) })
+			const branch = new Promise((branchResolve, branchReject) => {
+				api.get(buildDataPath('globals', null, 'branch'))
+					.then(response => {
+						let [ lastReset, newObj ] = [ response.data[0].lastDailyLimitReset, {} ]
+						let date = new Date(Date.parse(lastReset.replace(' ', 'T')))
+						let limitReset = Math.floor(date.getTime() / 1000)
+						console.log("Limit was last reset at: ", date, limitReset)
+						newObj = {...response.data[0], lastDailyLimitReset: limitReset }
+						setGlobals((initial) => ({ ...initial, ...newObj }))
+						branchResolve(true)
+					})
+					.catch(error => { branchReject(error) })
+			})
+
+			const blocked = new Promise((blockResolve, blockReject) => {
+				api.get(buildDataPath('globals', null, 'customer_blocklist'))
+					.then(response => {
+						blockResolve(true)
+					})
+					.catch(error => { blockReject(error) })
+			})
+
+			const promos = new Promise((promoResolve, promoReject) => {
+				api.get(Config.BASEURL + '/' + Config.APIVERSION + '/check/promocodes')
+					.then(response => {
+						if(typeof response.data == "object") {
+							setPromo(response.data)
+						}
+					})
+					.catch(error => { promoReject(error) })
+			})
+
+			Promise.all([branch, blocked])
+			.then(() => {
+				resolve('✅ Loaded Globals 🌏')
+			})
+			.catch(error => {
+				reject('🚫🌏 ' + error)
+			})
 		})
 
 		verifyLoggedIn
@@ -132,6 +191,7 @@ const LoadingScreen = () => {
 					})
 					console.log('finished loading data')
 					console.log('--preflight check complete--')
+					console.groupEnd()
 					return values
 				})
 				.then(results => {
@@ -142,28 +202,26 @@ const LoadingScreen = () => {
 					}
 				})
 				.catch(error => {
-					console.log("promise.all error", error)
-					handleLogout('server-error')
+					handleLogout('serverError')
 				})
 			})
 			.catch(error => {
-				console.error('verifyLoggedIn catch:',error)
-				handleLogout('session-expired')
+				handleLogout('sessionExpired')
 			})
 		
-		return () => {
-			
-		}
+		return () => { }
 	})
 
 	const handleLogout = async (reason) => {
-		const reset = await keychainReset("com.ariom.ownmoney.token") //shutup vscode, await DOES do something here
+		const reset = await keychainReset(keychain.token) //shutup vscode, await DOES do something here
 		if(reset === true) {
 			//TODO: update this to use the new Alert system
 			authDispatch({ type: 'SET_STATUS', payload: { data: reason }}) //leave this here
 			authDispatch({ type: 'LOGOUT'})
 		}
 	}
+
+
 
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems:"center", justifyContent:"center" }}>	

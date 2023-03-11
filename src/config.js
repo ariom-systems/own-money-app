@@ -3,6 +3,8 @@ import React from 'react'
 //components
 import IdentitySection from './components/profile/IdentitySection'
 import StatusSection from './components/transactions/StatusSection'
+import RateDetailRowItem from './components/transfers/RateDetailRowItem'
+import LimitDetailRowItem from './components/transfers/LimitDetailRowItem'
 
 //data
 import { extendTheme } from 'native-base'
@@ -24,6 +26,12 @@ export const api = create({
 	},
 	timeout: 5000
 })
+
+export const keychain = {
+	token: 'com.ariom.ownservices.token',
+	pin: 'com.ariom.ownmoney.pin',
+	lang: 'com.ariom.ownmoney.lang'
+}
 
 //no idea where else to put this
 export const beneficiaryColumns = [
@@ -204,6 +212,11 @@ export const Sizes = {
 	buttons: {
 		base: "md",
 		sm: "xs"
+	},
+	rounded: {
+		base: "10",
+		sm: "8",
+		xs: "6"
 	}
 }
 
@@ -375,6 +388,8 @@ export const BeneficiaryTemplate = [
 	}
 ]
 
+const renderRateSection = ({ item, index, section: { data } }) => <RateDetailRowItem key={index} item={item} section={data} />
+const renderLimitSection = ({ item, index, section: { data } }) => <LimitDetailRowItem key={index} item={item} section={data} />
 export const TransferStepThreeTemplate = [
 	{
 		title: { key: "from", value: "" },
@@ -392,23 +407,34 @@ export const TransferStepThreeTemplate = [
 	},
 	{
 		title: { key: "amounts", value: "" },
+		renderItem: renderRateSection,
 		data: [
 			{ key: "amounttosend", label: "", value: "" },
-			{ key: "yourrate", label: "", value: "" },
-			{ key: "fees", label: "", value: "" }
+			{ key: "fees", label: "", value: "" },
+			{ key: "rate", data: [
+				{ key: "todayrate", label: "", value: "" },
+				{ key: "yourrate", label: "", value: "" },
+				{ key: "bonusrate", label: "", value: "" }
+			]},
 		]
 	},
 	{
 		title: { key: "totals", value: "" },
+		renderItem: renderLimitSection,
 		data: [
 			{ key: "totaltopay", label: "", value: "" },
 			{ key: "receivableamount", label: "", value: "" },
-			{ key: "dailylimitremaining", label: "", value: "" }
+			{ key: "dailylimit", data: [
+				{ key: "maxlimit", label: "", value: "" },
+				{ key: "limitbefore", label: "", value: "" },
+				{ key: "limitbonus", label: "", value: "" },
+				{ key: "limitafter", label: "", value: "" },
+			] }
 		]
 	},
 ]
 
-const renderStatusSection = ({section: {data}}) => <StatusSection section={data} />
+const renderStatusSection = ({section: {data, raw}}) => <StatusSection section={data} raw={raw} />
 export const TransactionTemplate = [
 	{
 		title: { key: "status", value: "" },

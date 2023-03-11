@@ -1,12 +1,7 @@
 import { useRecoilValue, atom, selector } from 'recoil'
 import { globalState } from './system'
 import { userState } from './user'
-import { modifyTransferVariables } from '../Actions'
-
-export const stepAtom = atom({
-	key: 'step',
-	default: 0
-})
+import { findMatchingCriteriaAndModify } from '../Actions'
 
 export const transferAtom = atom({
 	key: 'transfer',
@@ -18,33 +13,42 @@ export const audAtom = atom({
 	default: 0
 })
 
-export const thbSelector = selector({
-	key: 'thb',
-	get: ({get}) => {
-		const [aud, globals] = [get(audAtom), get(globalState)]
-		return aud * globals.rate
-	},
-	set: ({get, set}, newThbValue) => {
-		const globals = get(globalState)
-		const newAudValue = newThbValue / globals.rate
-		set(audAtom, newAudValue)
+export const promoAtom = atom({
+	key: 'promo',
+	default: {
+		id: 0,
+		name: '',
+		rate: 0,
+		limit: 0
 	}
 })
 
-export const feeSelector = selector({
-	key: 'fee',
+export const thbSelector = selector({
+	key: 'thb',
 	get: ({get}) => {
-		const [aud, globals] = [get(audAtom), get(globalState)]
-		let modifier = modifyTransferVariables(aud, globals.steps.feeModifier)
-		return modifier
+		let [aud, rate] = [get(audAtom), get(rateSelector)]
+		return Number(aud * rate).toFixed(2)
+	},
+	set: ({get, set}, newThbValue) => {
+		let rate = get(rateSelector)
+		set(audAtom, Number(newThbValue / rate).toFixed(2))
 	}
 })
 
 export const rateSelector = selector({
 	key: 'rate',
 	get: ({get}) => {
+		let [aud, globals, promo] = [Number(get(audAtom)).toFixed(2), get(globalState), get(promoAtom)]
+		let globalRate = findMatchingCriteriaAndModify(aud, globals.steps.rateModifier, globals.rate)
+		return (Number(globalRate) + Number(promo.rate)).toFixed(2)
+	}
+})
+
+export const feeSelector = selector({
+	key: 'fee',
+	get: ({ get }) => {
 		const [aud, globals] = [get(audAtom), get(globalState)]
-		let modifier = modifyTransferVariables(aud, globals.steps.rateModifier, globals.rate)
+		let modifier = findMatchingCriteriaAndModify(aud, globals.steps.feeModifier)
 		return modifier
 	}
 })
@@ -52,9 +56,14 @@ export const rateSelector = selector({
 export const limitSelector = selector({
 	key: 'limit',
 	get: ({get}) => {
-		const [ aud, user ] = [get(audAtom), get(userState)]
-		return Number(user.daily_limit_remaining) - Number(aud)
-	} 
+		const [ aud, user, promo ] = [get(audAtom), get(userState), get(promoAtom)]
+		return (Number(user.daily_limit_remaining) + Number(promo.limit)) - Number(aud)
+	}
+})
+
+export const stepAtom = atom({
+	key: 'step',
+	default: 0
 })
 
 export const selectedBeneficiaryAtom = atom({

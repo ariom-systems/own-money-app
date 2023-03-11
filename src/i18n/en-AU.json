@@ -303,18 +303,24 @@
 		},
 		"transferStepOne": {
 			"ui": {
+				"alertRemoveHeading": "Remove Promo Code?",
+				"alertRemoveMessage": "Do you wish to remove the currently applied Promo Code? Doing so will remove the effects it provides until the Promo code is re-entered.",
+				"alertRemoveButtonCancel": "Cancel",
+				"alertRemoveButtonConfirm": "Remove",
 				"buttonNext": "Next",
 				"buttonReset": "Reset",
 				"instructionTop": "Enter the amount to transfer"
 			},
 			"headings": {
-				"transferDetails": "Transfer Details"
+				"transferDetails": "Transfer Details",
+				"acountLimits": "Your Account Details"
 			},
 			"labels": {
-				"dailyLimit": "Your daily limit",
-				"remainingLimit": "Remaining limit",
-				"limitAfterTransfer": "Limit after transfer",
+				"dailyLimit": "Maximum daily limit",
+				"remainingLimit": "Remaining limit for today",
+				"limitAfterTransfer": "Limit after this transfer",
 				"fee": "Fee",
+				"todayRate": "Todays Current Rate",
 				"yourRate": "Your Rate"
 			},
 			"errors": {
@@ -347,10 +353,15 @@
 				"bankname": "Bank Name",
 				"amounttosend": "Amount To Send",
 				"yourrate": "Your Rate",
-				"fees": "Fees",
+				"todayrate": "Todays Current Rate",
+				"bonusrate":"Additional Rate Bonus",
+				"fees": "Fee",
 				"totaltopay": "Total To Pay",
 				"receivableamount": "Receivable Amount",
-				"dailylimitremaining": "Daily Account Limit After This Transfer",
+				"maxlimit": "Your Account Limit",
+				"limitbefore": "Limit Before This Transfer",
+				"limitbonus": "Temporary Limit Increase",
+				"limitafter": "Limit After This Transfer",
 				"purpose": "Purpose of Transfer",
 				"terms": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility."
 			},
@@ -561,57 +572,70 @@
 			"settings": "Settings"
 		},
 		"notices": {
-			"accountInactiveMessage": "Your account is inactive. If you are seeing this, please contact Own Money Services.",
-			"accountInactiveTitle": "Account Inactive",
-			"accountRegisteredMessage": "Please check your email to activate your account. Please also check your junk mail if it doesn't appear in you email.",
-			"accountRegisteredTitle": "Account Registered",
-			"badUserMessage": "There seems to be an problem with your email address.",
-			"badUserTitle": "Email Address",
-			"beneficiaryDeletedMessage": "The selected Beneficiary has been deleted.",
-			"beneficiaryDeletedTitle": "Deleted",
-			"beneficiarySavedMessage": "Your new beneficiary has been created.",
-			"beneficiarySavedTitle": "Saved",
-			"beneficiaryUpdatedMessage": "Details for your selected Beneficiary have been updated.",
-			"beneficiaryUpdatedTitle": "Updated",
-			"defaultMessage": "An unknown error has occurred. If you are seeing this, please report this to Own Money Services.",
-			"defaultTitle": "Unknown Error",
-			"invalidReferrerMessage": "",
-			"invalidReferrerTitle": "",
-			"logoutMessage": "You are now logged out of the app. See you again soon.",
-			"logoutTitle": "Logged Out",
-			"noEmailMessage": "Please enter your email address",
-			"noEmailTitle": "Email Address",
-			"noPasswordConfirmMessage": "Please enter a your password",
-			"noPasswordConfirmTitle": "Password",
-			"noPasswordMessage": "",
-			"noPasswordTitle": "",
-			"noPhoneMessage": "",
-			"noPhoneTitle": "",
-			"offlineMessage": "We can't connect to Own Money Services.",
-			"offlineTitle": "No Internet Connection",
-			"passwordMismatchMessage": "The password you entered does not match our records. Please re-enter your password.",
-			"passwordMismatchTitle": "Password",
-			"passwordResetMessage": "We will send an email to the address linked with your account, with a link to reset your password. If you change your mind, you can ignore this email and continue to use your current password. You will however need to set an new PIN Code.",
-			"passwordResetTitle": "Password Reset Requested",
-			"pinResetMessage": "Your PIN Code has been reset. Please login again to set a new one.",
-			"pinResetTitle": "PIN Code Reset",
-			"profileUpdatedMessage": "Your profile details have been updated.",
-			"profileUpdatedTitle": "Updated",
-			"redirectToTermsConditionsMessage": "Please read and confirm you accept the Terms and Conditions.",
-			"redirectToTermsConditionsTitle": "Terms and conditions",
-			"registerIncompleteMessage": "",
-			"registerIncompleteTitle": "",
-			"resetRequestedMessage": "Thanks, if there is an account associated with the email address you have entered, we will send a link to that email where you can reset your password.",
-			"resetRequestedTitle": "Password Reset Requested",
-			"serverErrorMessage": "We seem to be experiencing a technical issue. Contact OwnMoney staff for further assistance or please try again later.",
-			"serverErrorTitle": "Technical Issue",
-			"sessionExpiredMessage": "Your session expired. Please log in again.",
-			"sessionExpiredTitle": "Session Expired",
-			"statusVerifyIdentityMessage": "In order to send money, you need to complete your profile and provide us with proof of your identity.",
-			"statusVerifyIdentityTitle": "Please Verify Your Identity",
-			"statusVerifyIdentityButton": "Update Profile",
-			"transferCompleteMessage": "Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you!",
-			"transferCompleteTitle": "Success!"
+			"title": {
+				"accountInactive": "Account Inactive",
+				"accountRegistered": "Account Registered",
+				"badUser": "Email Address",
+				"beneficiaryDeleted": "Deleted",
+				"beneficiarySaved": "Saved",
+				"beneficiaryUpdated": "Updated",
+				"blockedUser": "Please contact our staff",
+				"default": "Unknown Error",
+				"idExpired": "ID Expired",
+				"invalidReferrer": "",
+				"logout": "Logged Out",
+				"noEmail": "Email Address",
+				"noPasswordConfirm": "Password",
+				"noPassword": "",
+				"noPhone": "",
+				"offline": "No Internet Connection",
+				"passwordMismatch": "Password",
+				"passwordReset": "Password Reset Requested",
+				"pinReset": "PIN Code Reset",
+				"profileUpdated": "Updated",
+				"redirectToTermsConditions": "Terms and conditions",
+				"registerIncomplete": "",
+				"resetRequested": "Password Reset Requested",
+				"serverError": "Technical Issue",
+				"sessionExpired": "Session Expired",
+				"statusVerifyIdentity": "Please Verify Your Identity",
+				"transferRequested": "Order Placed!",
+				"transferComplete": "Success!"
+
+			},
+			"message": {
+				"accountInactive": "Your account is inactive. If you are seeing this, please contact Own Money Services.",
+				"accountRegistered": "Please check your email to activate your account. Please also check your junk mail if it doesn't appear in you email.",
+				"badUser": "There seems to be an problem with your email address.",
+				"beneficiaryDeleted": "The selected Beneficiary has been deleted.",
+				"beneficiarySaved": "Your new beneficiary has been created.",
+				"beneficiaryUpdated": "Details for your selected Beneficiary have been updated.",
+				"blockedUser": "Please contact our staff in order to make a transfer. Tel. 0405539999",
+				"default": "An unknown error has occurred. If you are seeing this, please report this to Own Money Services.",
+				"idExpired": "Your ID is expired. You cannot transfer at the moment. Please contact our staff to update your ID. Tel. 0421998633",
+				"invalidReferrer": "",
+				"logout": "You are now logged out of the app. See you again soon.",
+				"noEmail": "Please enter your email address",
+				"noPasswordConfirm": "Please enter a your password",
+				"noPassword": "",
+				"noPhone": "",
+				"offline": "We can't connect to Own Money Services.",
+				"passwordMismatch": "The password you entered does not match our records. Please re-enter your password.",
+				"passwordReset": "We will send an email to the address linked with your account, with a link to reset your password. If you change your mind, you can ignore this email and continue to use your current password. You will however need to set an new PIN Code.",
+				"pinReset": "Your PIN Code has been reset. Please login again to set a new one.",
+				"profileUpdated": "Your profile details have been updated.",
+				"redirectToTermsConditions": "Please read and confirm you accept the Terms and Conditions.",
+				"registerIncomplete": "",
+				"resetRequested": "Thanks, if there is an account associated with the email address you have entered, we will send a link to that email where you can reset your password.",
+				"serverError": "We seem to be experiencing a technical issue. Contact OwnMoney staff for further assistance or please try again later.",
+				"sessionExpired": "Your session expired. Please log in again.",
+				"statusVerifyIdentity": "In order to send money, you need to complete your profile and provide us with proof of your identity.",
+				"transferRequested": "Your transfer order has been placed. Thank you!",
+				"transferComplete": ""
+			},
+			"ui": {
+				"statusVerifyIdentityButton": "Update Profile"
+			}
 		},
 		"components": {
 			"exchangeRateCardTitle": "Current Rate",
@@ -637,6 +661,24 @@
 			"none": "none",
 			"aud": "AUD",
 			"thb": "THB"
+		},
+		"promo": {
+			"labels": {
+				"code": "Promo Code",
+				"limitIncrease": "Temporary Limit Increase",
+				"bonusRate": "Additional Rate Bonus"
+			},
+			"ui": {
+				"button": "Apply"
+			},
+			"messages": {
+				"valid": "Success! Promo code is valid"
+			},
+			"errors": {
+				"invalid": "Sorry, that code is invalid",
+				"expired": "Sorry, that code has expired",
+				"remoteError": "We cannot process your promo code at this time. You can still proceed with this transaction (without the promo code) if you wish, otherwise please try again later"
+			}
 		}
 	}
 }

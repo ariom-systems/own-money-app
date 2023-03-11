@@ -12,6 +12,7 @@ import Icon from '../../components/common/Icon'
 import { useResetRecoilState, useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
+import { keychain } from '../../config'
 import { keychainSave, keychainReset} from '../../data/Actions'
 import { beneficiaryList, beneficiaryObj } from '../../data/recoil/beneficiaries'
 import { transactionList, transactionObj } from '../../data/recoil/transactions'
@@ -60,7 +61,7 @@ const PinCodeScreen = ({ navigation }) => {
 
 	useEffect(() => {
 		const checkKeychainForPin = async () => {
-			const result = await hasUserSetPinCode('com.ariom.ownmoney')
+			const result = await hasUserSetPinCode(keychain.pin)
 			if(typeof result !== 'undefined') {
 				if (result === true) {
 					setHasPin(true)
@@ -81,9 +82,7 @@ const PinCodeScreen = ({ navigation }) => {
 
 	const handlePinSet = async (pin) => {
 		//use our own keychain entry. don't have time to figure out how to use the one in react-native-pincode
-		//modify the keychain identifier slightly to include the user id. This means that multiple users can use the same
-		//phone and app and each have their own pin number instead of just one global pin.
-		const saveResponse = await keychainSave("com.ariom.ownmoney." + auth.uid + "." + "pin", auth.email, pin)
+		const saveResponse = await keychainSave(keychain.pin, auth.email, pin)
 		// authDispatch({ type: 'SET_PIN', payload: { pin: pin } })
 		navigation.navigate('Loading')
 	}
@@ -98,9 +97,9 @@ const PinCodeScreen = ({ navigation }) => {
 	}
 
 	const handleResetPinAction = async () => {
-		keychainReset('pin')
-		keychainReset('token')
-		await deleteUserPinCode('com.ariom.ownmoney')
+		keychainReset(keychain.pin)
+		keychainReset(keychain.token)
+		await deleteUserPinCode(keychain.pin)
 		authDispatch({ type: 'RESET_PIN' })
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'pinReset' }}) //leave this here
 		authDispatch({ type: 'LOGOUT' })
@@ -125,7 +124,7 @@ const PinCodeScreen = ({ navigation }) => {
 	}
 
 	const handleLogout = async () => {
-		const reset = await keychainReset('token')
+		const reset = await keychainReset(keychain.token)
 		resetUser()
 		resetGlobals()
 		resetNotices()
@@ -173,7 +172,7 @@ const PinCodeScreen = ({ navigation }) => {
 				delayBetweenAttempts={500}
 				callbackErrorTouchId={handleTouchError}
 				passcodeFallback={false}
-				pinCodeKeychainName={"com.ariom.ownmoney"}
+				pinCodeKeychainName={keychain.pin}
 				finishProcess={(pin) => hasPin ? handleEnterPin(pin) : handlePinSet(pin)}
 				disableLockScreen={true}
 				//Styles

@@ -37,9 +37,9 @@ const TransferStepIndicator = (props) => {
 
 	let customStyles = {}
 	switch (true) {
-		case xs: customStyles = { labelSize: 10, stepIndicatorLabelFontSize: 10 }; break
-		case base: customStyles = { labelSize: 13, stepIndicatorLabelFontSize: 13 }; break
-		default: customStyles = { labelSize: 13, stepIndicatorLabelFontSize: 13 }; break
+		case xs: customStyles = { labelSize: 9, stepIndicatorLabelFontSize: 9 }; break
+		case base: customStyles = { labelSize: 12, stepIndicatorLabelFontSize: 12 }; break
+		default: customStyles = { labelSize: 12, stepIndicatorLabelFontSize: 12 }; break
 	}
 
 	useEffect(() => {
@@ -50,7 +50,7 @@ const TransferStepIndicator = (props) => {
 	}, [language, lang, labels])
 
 	return (
-		<Box mt={Sizes.spacingSmall} mx={"2.5%"} py={Sizes.spacing} backgroundColor={"white"}>
+		<Box mt={Sizes.spacingSmall} py={Sizes.spacing} backgroundColor={"white"}>
 			<StepIndicator stepCount={5} currentPosition={step} customStyles={customStyles} labels={labels} />
 		</Box>
 	)

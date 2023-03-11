@@ -47,7 +47,7 @@ const ListRowItem = (props) => {
 	}, [language, lang])
 
 	return (
-		<Pressable key={index} bgColor={"white"} px={"4"} onPress={() => handlePress(props.data.item) } borderBottomRadius={ index == listLength ? "8" : "0"}>
+		<Pressable key={index} bgColor={"white"} onPress={() => handlePress(props.data.item) } borderBottomRadius={ index == listLength ? "8" : "0"}>
 			<TransactionItem {...data} />
 		</Pressable>
 	)

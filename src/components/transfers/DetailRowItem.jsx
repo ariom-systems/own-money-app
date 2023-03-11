@@ -5,6 +5,7 @@ import { Divider, Text } from 'native-base'
 import LabelValue from '../common/LabelValue'
 
 const DetailRowItem = (props) => {
+	//console.log('DetailRowItem', props)
 	const { index, item, section, sectionCount } = props
 	const sectionLength = section.data.length
 	const { label, value } = item

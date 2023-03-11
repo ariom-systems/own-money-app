@@ -39,7 +39,7 @@ const ListItem = (props) => {
 	}, [language, lang])
 
 	return (
-		<Pressable px={"4"} onPress={handlePress} bgColor={"white"} roundedBottom={sectionIndex == count - 1 && data.index == sectionItemLength - 1 ? "8" : "0"}>
+		<Pressable onPress={handlePress} bgColor={"white"} roundedBottom={sectionIndex == count - 1 && data.index == sectionItemLength - 1 ? "8" : "0"}>
 			<TransactionItem {...data} />
 			<Modal isOpen={modalVisible} onClose={setModalVisible} data={props.data} />
 		</Pressable>

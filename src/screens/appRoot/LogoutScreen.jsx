@@ -7,6 +7,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner'
 //data
 import { AuthContext } from '../../data/Context'
 import { useResetRecoilState } from 'recoil'
+import { keychain } from '../../config'
 import { keychainReset } from '../../data/Actions'
 import { userState } from '../../data/recoil/user'
 import { globalState} from '../../data/recoil/system'
@@ -38,7 +39,7 @@ const LogoutScreen = () => {
 
 		authDispatch({ type: 'SET_STATUS', payload: { data: 'logout' }}) //leave this here
 		authDispatch({ type: 'LOGOUT'})
-		const reset = keychainReset('token')
+		const reset = keychainReset(keychain.token)
 	},[])
 
 

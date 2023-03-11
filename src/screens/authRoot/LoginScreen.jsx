@@ -19,8 +19,8 @@ import { useForceUpdate } from '../../data/Hooks'
 import { useRecoilState } from 'recoil'
 import { AuthContext } from '../../data/Context'
 import { getNotice } from '../../data/handlers/Status'
-import { api, validationRulesLogin, loginToolbarConfig, Sizes } from '../../config'
-import { keychainSave, parseToken, mapActionsToConfig } from '../../data/Actions'
+import { api, keychain, validationRulesLogin, loginToolbarConfig, Sizes } from '../../config'
+import { keychainSave, keychainLoad, parseToken, mapActionsToConfig } from '../../data/Actions'
 import { loadingState, langState, noticeState } from '../../data/recoil/system'
 
 //lang
@@ -61,7 +61,7 @@ const LoginScreen = () => {
 	const onSubmit = async (data) => {
 		let login = new Promise((resolve, reject) => {
 			authDispatch({ type: 'LOADING', payload: { data: true }})
-			api.post(Config.BASEURL + '/authenticate', {
+			api.post(Config.BASEURL + '/' + Config.APIVERSION + '/authenticate', {
 				email: data.email,
 				pass: data.password
 			})
@@ -90,9 +90,9 @@ const LoginScreen = () => {
 		.then(result => {
 			async function setPin(result) {
 				const pinPromise = new Promise((resolve) => {
-					resolve(keychainSave('token', data.email, result.token))
+					resolve(keychainSave(keychain.token, data.email, result.token))
 				})
-				let pinResult = await pinPromise
+				await pinPromise
 			}
 			setPin(result).then(keychainResult => { authDispatch({ type: 'LOGIN', payload: result}) })
 		})
@@ -120,7 +120,7 @@ const LoginScreen = () => {
 	useEffect(() => {
 		async function readLang() {
 			try {
-				const storedLang = await AsyncStorage.getItem('com.ariom.ownmoney.lang')
+				const storedLang = await AsyncStorage.getItem(keychain.lang)
 				if(storedLang != null) { 
 					setLang(storedLang)
 				}
@@ -145,7 +145,7 @@ const LoginScreen = () => {
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
 			<VStack space={Sizes.spacing} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
-				{ notices && <AlertBanner w={"100%"} />}
+				{ notices && <AlertBanner w={"100%"} px={Sizes.spacing} />}
 				<Image source={image} resizeMode={"contain"} alt={language.login.ui.logoAlt} size={"160"} />
 				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={Sizes.headings}>{language.login.ui.underLogo}</Text>
 				<Forms.TextInput
@@ -155,7 +155,7 @@ const LoginScreen = () => {
 					errors={ formState.errors.email }
 					label={ language.login.labels.email }
 					required={true}
-					inputAttributes={{ keyboardType: "email-address" }}
+					inputAttributes={{ keyboardType: "email-address", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
 				<Forms.TextInput
@@ -165,7 +165,7 @@ const LoginScreen = () => {
 					errors={ formState.errors.password }
 					label={language.login.labels.password }
 					required={true}
-					inputAttributes={{ type: "password" }}
+					inputAttributes={{ type: "password", w: "100%" }}
 					blockStyles={{ px: "4%" }}
 				/>
 				<Pressable alignSelf={"flex-end"} mt={"1"} mr={"4"} onPress={() => navigation.navigate('ForgotPassword')}>
@@ -181,14 +181,14 @@ const LoginScreen = () => {
 						variant={"outline"}
 						onPress={() => {
 							console.log('clearing token')
-							keychainReset("token")
+							keychainReset(keychain.token)
 						}}>Clear Keychain</Button>
 					<Button
 						flexGrow={"1"}
 						variant={"outline"}
 						onPress={() => {
 							console.log('clearing pin')
-							deleteUserPinCode("com.ariom.ownmoney")
+							deleteUserPinCode(keychain.pin)
 							keychainReset("pin")
 						}}>Clear PIN Code</Button>
 				</HStack> */}

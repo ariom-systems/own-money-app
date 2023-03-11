@@ -19,7 +19,8 @@ import { useForceUpdate } from '../../../data/Hooks'
 import { AuthContext } from '../../../data/Context'
 import { api, validationRulesTransferStepThree, transferStepThreeToolbarConfig, TransferStepThreeTemplate, TransferObjFormats, Sizes } from '../../../config'
 import { buildDataPath, mapActionsToConfig, mapPropertiesToConfig, localiseObjectData, mapSectionDataFromTemplate } from '../../../data/Actions'
-import { stepAtom, transferAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { getNotice } from '../../../data/handlers/Status'
+import { stepAtom, transferAtom, promoAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
 import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
@@ -52,7 +53,8 @@ const TransferStepThree = () => {
 			totalsend: transfer.totaltopay,
 			received_amount: transfer.receivableamount,
 			purpose: '',
-			termsandconditions: false
+			termsandconditions: false,
+			promoUsed: false
 		}
 	})
 
@@ -69,16 +71,16 @@ export default memo(TransferStepThree)
 const TransferStepThreeInner = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
-	const { control, handleSubmit, watch, formState: { errors }} = useFormContext()
+	const { control, register, handleSubmit, watch, setValue, formState: { errors }} = useFormContext()
 	const { auth } = useContext(AuthContext)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
 	const [ buttonState, setButtonState ] = useRecoilState(stepThreeButtonAtom)
 	const [ transfer, setTransfer ] = useRecoilState(transferAtom)
 	const [ fields, setFields ] = useRecoilState(fieldState)
+	const [ notices, setNotice ] = useRecoilState(noticeState)
 	const setStep = useSetRecoilState(stepAtom)
-	const notices = useRecoilValue(noticeState)
+	const promo = useRecoilValue(promoAtom)
 	const lang = useRecoilValue(langState)
-	const scrollRef = useRef()
 
 	const actions = [
 		() => handlePrevious(),null,
@@ -131,16 +133,33 @@ const TransferStepThreeInner = () => {
 	}, [watch, fields])
 
 	const onSubmit = (data) => {
+	
+		if(promo.value > 0) {
+			register('promoUsed', { required: false })
+			data.promoUsed = true
+			data.promoID = promo.id
+			data.promoName = promo.name
+			data.promoValue = promo.value
+			data.promoLimit = promo.limit
+			
+			setTransfer((prev) => ({
+				...prev,
+				promoUsed: true,
+				promoID: promo.id,
+				promoName: promo.name,
+				promoValue: promo.value,
+				promoLimit: promo.limit
+			}))
+			setValue('usedPromo', true)
+		}
+
 		try {
 			api.post(buildDataPath('transactions', auth.uid, 'add'), JSON.stringify(data))
 			.then(response => {
 				if (response.ok == true) {
 					if(response.data == true) {
 						navigation.navigate('TransferStepFour')
-						setTransfer((prev) => ({
-							...prev,
-							submit: response
-						}))
+						setNotice([getNotice('transferRequested', lang)])
 						setStep(3)
 						setLoading({ status: false, message: 'none' })
 					}

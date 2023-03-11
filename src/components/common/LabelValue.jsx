@@ -18,15 +18,13 @@ const LabelValue = (props) => {
 		default: spacing = 'center'; break
 	}
 	return (
-		<>
-			<HStack flexWrap={"wrap"} width={"100%"} justifyContent={'space-between'} alignItems={spacing} bgColor={"white"} pt={"4"} {...styles}>
-				<Box width={"50%"} px={"4"} pb={"4"}><Text bold {...labelStyles}>{label}</Text></Box>
-				<Box width={"50%"} px={"4"} pb={"4"}>
-					{children == null ? content : children}
-				</Box>
-				{additionalContent}
-			</HStack>
-		</>
+		<HStack flexWrap={"wrap"} width={"100%"} justifyContent={'space-between'} alignItems={spacing} bgColor={"white"} pt={"4"} {...styles}>
+			<Box width={"50%"} px={"4"} pb={"4"}><Text bold {...labelStyles}>{label}</Text></Box>
+			<Box width={"50%"} px={"4"} pb={"4"}>
+				{children == null ? content : children}
+			</Box>
+			{additionalContent}
+		</HStack>
 	)
 }
 

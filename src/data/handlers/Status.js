@@ -20,8 +20,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'flag',
-					message: language.notices.serverErrorMessage,
-					title: language.notices.serverErrorTitle,
+					message: language.notices.message.serverError,
+					title: language.notices.title.serverError,
 					style: 'warning',
 					//canClose: true
 					canClose: false
@@ -31,8 +31,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'cloud-offline-outline',
-					message: language.notices.offlineMessage,
-					title: language.notices.offlineTitle,
+					message: language.notices.message.offline,
+					title: language.notices.title.offline,
 					style: 'warning',
 					canClose: false
 				}
@@ -42,8 +42,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'timer',
-					message: language.notices.sessionExpiredMessage,
-					title: language.notices.sessionExpiredTitle,
+					message: language.notices.message.sessionExpired,
+					title: language.notices.title.sessionExpired,
 					style: 'info',
 					//canClose: true
 					canClose: false
@@ -54,8 +54,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
-					message: language.notices.noEmailMessage,
-					title: language.notices.noEmailTitle,
+					message: language.notices.message.noEmail,
+					title: language.notices.title.noEmail,
 					style: 'error',
 					canClose: false
 				}
@@ -64,8 +64,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
-					message: language.notices.noPasswordConfirmMessage,
-					title: language.notices.noPasswordConfirmTitle,
+					message: language.notices.message.noPasswordConfirm,
+					title: language.notices.title.noPasswordConfirm,
 					style: 'error',
 					canClose: false
 				}
@@ -74,8 +74,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
-					message: language.notices.badUserMessage,
-					title: language.notices.badUserTitle,
+					message: language.notices.message.badUser,
+					title: language.notices.title.badUser,
 					style: 'error',
 					canClose: false
 				}
@@ -85,8 +85,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
-					message: language.notices.passwordMismatchMessage,
-					title: language.notices.passwordMismatchTitle,
+					message: language.notices.message.passwordMismatch,
+					title: language.notices.title.passwordMismatch,
 					style: 'error',
 					canClose: false
 				}
@@ -95,12 +95,12 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'shield-outline',
-					message: language.notices.statusVerifyIdentityMessage,
-					title: language.notices.statusVerifyIdentityTitle,
+					message: language.notices.message.statusVerifyIdentity,
+					title: language.notices.title.statusVerifyIdentity,
 					style: 'info',
 					canClose: false,
 					bannerAction: {
-						label: language.notices.statusVerifyIdentityButton,
+						label: language.notices.ui.statusVerifyIdentityButton,
 						fn: () => Navigation.navigate('Your Profile', { screen: 'ProfileDetails' })
 					}
 				}
@@ -109,8 +109,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'alert-circle-outline',
-					message: language.notices.accountInactiveMessage,
-					title: language.notices.accountInactiveTitle,
+					message: language.notices.message.accountInactive,
+					title: language.notices.title.accountInactive,
 					style: 'info',
 					canClose: false
 				}
@@ -120,8 +120,8 @@ export function getNotice(reasonCode, currentLang) {
 					id: reasonCode,
 					icon: '',
 					iconType: '',
-					message: language.notices.registerIncompleteMessage,
-					title: language.notices.registerIncompleteTitle,
+					message: language.notices.message.registerIncomplete,
+					title: language.notices.title.registerIncomplete,
 					style: 'info',
 					//canClose: true
 					canClose: false
@@ -131,8 +131,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: 'termsAndConditions',
 					icon: 'receipt-outline',
-					message: language.notices.redirectToTermsConditionsMessage,
-					title: language.notices.redirectToTermsConditionsTitle,
+					message: language.notices.message.redirectToTermsConditions,
+					title: language.notices.title.redirectToTermsConditions,
 					style: 'info',
 					canClose: false
 				}
@@ -143,8 +143,8 @@ export function getNotice(reasonCode, currentLang) {
 					id: reasonCode,
 					icon: '',
 					iconType: '',
-					message: language.notices.noPasswordConfirmMessage,
-					title: language.notices.noPasswordConfirmTitle,
+					message: language.notices.message.noPasswordConfirm,
+					title: language.notices.title.noPasswordConfirm,
 					style: 'error',
 					//canClose: true
 					canClose: false
@@ -155,8 +155,8 @@ export function getNotice(reasonCode, currentLang) {
 					id: reasonCode,
 					icon: '',
 					iconType: '',
-					message: language.notices.noPhoneMessage,
-					title: language.notices.noPhoneTitle,
+					message: language.notices.message.noPhone,
+					title: language.notices.title.noPhone,
 					style: 'error',
 					//canClose: true
 					canClose: false
@@ -167,8 +167,8 @@ export function getNotice(reasonCode, currentLang) {
 					id: reasonCode,
 					icon: '',
 					iconType: '',
-					message: language.notices.invalidReferrerMessage,
-					title: language.notices.invalidReferrerTitle,
+					message: language.notices.message.invalidReferrer,
+					title: language.notices.title.invalidReferrer,
 					style: 'warning',
 					//canClose: true
 					canClose: false
@@ -178,8 +178,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'information-circle-outline',
-					message: language.notices.accountRegisteredMessage,
-					title: language.notices.accountRegisteredTitle,
+					message: language.notices.message.accountRegistered,
+					title: language.notices.title.accountRegistered,
 					style: 'success',
 					//canClose: true
 					canClose: false
@@ -190,8 +190,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'information-circle-outline',
-					message: language.notices.resetRequestedMessage,
-					title: language.notices.resetRequestedTitle,
+					message: language.notices.message.resetRequested,
+					title: language.notices.title.resetRequested,
 					style: 'info',
 					//canClose: true
 					canClose: false
@@ -202,8 +202,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'walk-outline',
-					message: language.notices.logoutMessage,
-					title: language.notices.logoutTitle,
+					message: language.notices.message.logout,
+					title: language.notices.title.logout,
 					style: 'info',
 					//canClose: true
 					canClose: false
@@ -213,8 +213,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'keypad-outline',
-					message: language.notices.pinResetMessage,
-					title: language.notices.pinResetTitle,
+					message: language.notices.message.pinReset,
+					title: language.notices.title.pinReset,
 					style: 'info',
 					canClose: true
 				}
@@ -223,19 +223,37 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'key-outline',
-					message: language.notices.passwordResetMessage,
-					title: language.notices.passwordResetTitle,
+					message: language.notices.message.passwordReset,
+					title: language.notices.title.passwordReset,
 					style: 'info',
 					canClose: true
 				}
-				break
+			break
+			case 'blockedUser':
+				return {
+					id: reasonCode,
+					icon: 'hand-left-outline',
+					message: language.notices.message.blockedUser,
+					title: language.notices.title.blockedUser,
+					style: 'warning'
+				}
+			break
+			case 'idExpired':
+				return {
+					id: reasonCode,
+					icon: 'hand-left-outline',
+					message: language.notices.message.idExpired,
+					title: language.notices.title.idExpired,
+					style: 'warning'
+				}
+			break
 			//BeneficiariesAdd.jsx
 			case 'beneficiarySaved':
 				return {
 					id: reasonCode,
 					icon: 'checkmark-circle-outline',
-					message: language.notices.beneficiarySavedMessage,
-					title: language.notices.beneficiarySavedTitle,
+					message: language.notices.message.beneficiarySaved,
+					title: language.notices.title.beneficiarySaved,
 					style: 'success',
 					//canClose: true
 					canClose: false
@@ -246,8 +264,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'checkmark-circle-outline',
-					message: language.notices.beneficiaryDeletedMessage,
-					title: language.notices.beneficiaryDeletedTitle,
+					message: language.notices.message.beneficiaryDeleted,
+					title: language.notices.title.beneficiaryDeleted,
 					style: 'success',
 					//canClose: true
 					canClose: false
@@ -258,8 +276,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'checkmark-circle-outline',
-					message: language.notices.beneficiaryUpdatedMessage,
-					title: language.notices.beneficiaryUpdatedTitle,
+					message: language.notices.message.beneficiaryUpdated,
+					title: language.notices.title.beneficiaryUpdated,
 					style: 'success',
 					//canClose: true
 					canClose: false
@@ -270,19 +288,19 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'checkmark-circle-outline',
-					message: language.notices.profileUpdatedMessage,
-					title: language.notices.profileUpdatedTitle,
+					message: language.notices.message.profileUpdated,
+					title: language.notices.title.profileUpdated,
 					style: 'success',
 					canClose: true
 				}
 			break
-			//TransferStepThree.jsx
-			case 'transferComplete':
+			//TransferStepFour.jsx
+			case 'transferRequested':
 				return {
 					id: reasonCode,
 					icon: 'trophy-outline',
-					message: language.notices.transferCompleteMessage,
-					title: language.notices.transferCompleteTitle,
+					message: language.notices.message.transferRequested,
+					title: language.notices.title.transferRequested,
 					style: 'success',
 					//canClose: true
 					canClose: false
@@ -292,8 +310,8 @@ export function getNotice(reasonCode, currentLang) {
 				return {
 					id: reasonCode,
 					icon: 'help-circle-outline',
-					message: language.notices.defaultMessage,
-					title: language.notices.defaultTitle,
+					message: language.notices.message.default,
+					title: language.notices.title.default,
 					style: 'warning',
 					//canClose: true
 					canClose: false

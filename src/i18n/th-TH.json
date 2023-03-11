@@ -303,18 +303,24 @@
 		},
 		"transferStepOne": {
 			"ui": {
+				"alertRemoveHeading": "ลบรหัสโปรโมชั่น?",
+				"alertRemoveMessage": "คุณต้องการนำ Promo Code ที่ใช้อยู่ในปัจจุบันออกหรือไม่? การทำเช่นนั้นจะลบเอฟเฟกต์ที่มีให้จนกว่าจะป้อนรหัสโปรโมชั่นอีกครั้ง",
+				"alertRemoveButtonCancel": "ยกเลิก",
+				"alertRemoveButtonConfirm": "ลบ",
 				"buttonNext": "ต่อไป",
 				"buttonReset": "รีเซ็ต",
 				"instructionTop": "กรอกยอดที่ต้องการโอน"
 			},
 			"headings": {
-				"transferDetails": "รายละเอียดการโอน"
+				"transferDetails": "รายละเอียดการโอน",
+				"acountLimits": "รายละเอียดบัญชีของคุณ"
 			},
 			"labels": {
-				"dailyLimit": "ขีดจำกัดรายวันของคุณ",
-				"remainingLimit": "วงเงินคงเหลือ",
-				"limitAfterTransfer": "วงเงินหลังโอน",
+				"dailyLimit": "ขีดจำกัดรายวันสูงสุด",
+				"remainingLimit": "วงเงินคงเหลือสำหรับวันนี้",
+				"limitAfterTransfer": "วงเงินหลังจากการโอนนี้",
 				"fee": "ค่าธรรมเนียม",
+				"todayRate": "อัตราปัจจุบันของวันนี้",
 				"yourRate": "อัตราของคุณ"
 			},
 			"errors": {
@@ -347,10 +353,15 @@
 				"bankname": "ธนาคาร",
 				"amounttosend": "ยอดเงินโอน",
 				"yourrate": "อัตราของคุณ",
+				"todayrate": "อัตราวันนี้",
+				"bonusrate": "โบนัสอัตราเพิ่มเติม",
 				"fees": "ค่าธรรมเนียม",
 				"totaltopay": "ยอดที่ต้องชำระ",
 				"receivableamount": "ยอดเงินที่จะได้รับ",
-				"dailylimitremaining": "วงเงินบัญชีรายวันหลังจากการโอนนี้",
+				"maxlimit": "วงเงินบัญชีของคุณ",
+				"limitbefore": "วงเงินบัญชีก่อนการโอนนี้",
+				"limitbonus": "เพิ่มวงเงินบัญชีชั่วคราว",
+				"limitafter": "วงเงินบัญชีหลังจากการโอนนี้",
 				"purpose": "เหตุผลการโอน",
 				"terms": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ"
 			},
@@ -565,57 +576,69 @@
 			"settings": "ตั้งค่า"
 		},
 		"notices": {
-			"accountInactiveMessage": "บัญชีของคุณไม่ได้ใช้งาน หากคุณเห็นสิ่งนี้ โปรดติดต่อ Own Money Services",
-			"accountInactiveTitle": "บัญชีไม่ได้ใช้งาน",
-			"accountRegisteredMessage": "กรุณาเช็ค email เพื่อทำการกดลิ้งยืนอีเมล หากไม่เจออีเมลในกล่องข้อความ ให้ลองหาใน junk mail",
-			"accountRegisteredTitle": "สมัครสมาชิก",
-			"badUserMessage": "มีปัญหาบางอย่างเกี่ยวกับอีเมล",
-			"badUserTitle": "Email",
-			"beneficiaryDeletedMessage": "ลบบัญชีปลายทางสำเร็จ",
-			"beneficiaryDeletedTitle": "ลบเรียบร้อย",
-			"beneficiarySavedMessage": "เพิ่มบัญชีปลายทางสำเร็จ",
-			"beneficiarySavedTitle": "บันทึกเรียบร้อย",
-			"beneficiaryUpdatedMessage": "แก้ไขบัญชีปลายทางสำเร็จ",
-			"beneficiaryUpdatedTitle": "แก้ไขเรียบร้อย",
-			"defaultMessage": "Unknown Error กรุณาแคปหน้าจอและแจ้งเจ้าหน้าที่",
-			"defaultTitle": "Unknown Error",
-			"invalidReferrerMessage": "รหัสผู้แนะนำไม่ถูกต้อง",
-			"invalidReferrerTitle": "รหัสผู้แนะนำไม่ถูกต้อง",
-			"logoutMessage": "ออกจากระบบสำเร็จ",
-			"logoutTitle": "ออกจากระบบ",
-			"noEmailMessage": "กรุณากรอก Email Address",
-			"noEmailTitle": "Email Address",
-			"noPasswordConfirmMessage": "กรุณากรอกรหัสผ่าน",
-			"noPasswordConfirmTitle": "รหัสผ่าน",
-			"noPasswordMessage": "กรุณากรอกรหัสผ่าน",
-			"noPasswordTitle": "กรุณากรอกรหัสผ่าน",
-			"noPhoneMessage": "กรุณากรอกเบอร์โทรศัพท์",
-			"noPhoneTitle": "กรุณากรอกเบอร์โทรศัพท์",
-			"offlineMessage": "ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้",
-			"offlineTitle": "No Internet Connection",
-			"passwordMismatchMessage": "อีเมล/รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
-			"passwordMismatchTitle": "รหัสผ่าน",
-			"passwordResetMessage": "เราจะส่งอีเมลไปยังที่อยู่ที่เชื่อมโยงกับบัญชีของคุณ พร้อมด้วยลิงก์เพื่อรีเซ็ตรหัสผ่านของคุณ หากคุณเปลี่ยนใจ คุณไม่ต้องสนใจอีเมลนี้และใช้รหัสผ่านปัจจุบันของคุณต่อไป อย่างไรก็ตาม คุณจะต้องตั้งรหัส PIN ใหม่",
-			"passwordResetTitle": "ร้องขอการรีเซ็ตรหัสผ่าน",
-			"pinResetMessage": "เปลี่ยน PIN Code ใหม่สำเร็จ กรุณาล็อคอินด้วย PIN Code ใหม่",
-			"pinResetTitle": "เปลี่ยน PIN Code",
-			"profileUpdatedMessage": "แก้ไขข้อมูลสำเร็จ",
-			"profileUpdatedTitle": "แก้ไขข้อมูลสำเร็จ",
-			"redirectToTermsConditionsMessage": "โปรดอ่านและยืนยันว่าคุณยอมรับข้อกำหนดและเงื่อนไข",
-			"redirectToTermsConditionsTitle": "ข้อกำหนดและเงื่อนไข",
-			"registerIncompleteMessage": "x  x",
-			"registerIncompleteTitle": "x  x",
-			"resetRequestedMessage": "ระบบได้ทำการส่่งลิ้งสำหรับตั้งรหัสผ่านใหม่ไปยังอีเมลของท่าน กรุณาเช็คอีเมลและกดลิ้งเพื่อตั้งรหัสผ่านใหม่",
-			"resetRequestedTitle": "คำขอตั้งรหัสผ่านใหม่",
-			"serverErrorMessage": "เกิดความขัดข้องทางเทคนิค กรุณาติดต่อเจ้าหน้าที่ หรือลองใหม่ในภายหลัง",
-			"serverErrorTitle": "เกิดความขัดข้องทางเทคนิค",
-			"sessionExpiredMessage": "ออกจากระบบอัตโนมัติ กรุณาล็อคอินใหม่อีกครั้ง",
-			"sessionExpiredTitle": "ล็อคอินหมดเวลา",
-			"statusVerifyIdentityMessage": "ในการส่งเงิน คุณต้องกรอกโปรไฟล์และแสดงหลักฐานยืนยันตัวตนของคุณให้เราทราบ",
-			"statusVerifyIdentityTitle": "กรุณายืนยันตัวตนของคุณ",
-			"statusVerifyIdentityButton": "อัพเดตโปรไฟล์",
-			"transferCompleteMessage": "x Your transfer order has been saved. You will receive an email shortly with the next steps. Thank you! x",
-			"transferCompleteTitle": "x Success! x"
+			"title": {
+				"accountInactive": "บัญชีไม่ได้ใช้งาน",
+				"accountRegistered": "สมัครสมาชิก",
+				"badUser": "Email",
+				"beneficiaryDeleted": "ลบเรียบร้อย",
+				"beneficiarySaved": "บันทึกเรียบร้อย",
+				"beneficiaryUpdated": "แก้ไขเรียบร้อย",
+				"blockedUser": "Please contact our staff",
+				"default": "Unknown Error",
+				"idExpired": "ID หมดอายุ!",
+				"invalidReferrer": "รหัสผู้แนะนำไม่ถูกต้อง",
+				"logout": "ออกจากระบบ",
+				"noEmail": "Email Address",
+				"noPasswordConfirm": "รหัสผ่าน",
+				"noPassword": "กรุณากรอกรหัสผ่าน",
+				"noPhone": "กรุณากรอกเบอร์โทรศัพท์",
+				"offline": "No Internet Connection",
+				"passwordMismatch": "รหัสผ่าน",
+				"passwordReset": "ร้องขอการรีเซ็ตรหัสผ่าน",
+				"pinReset": "เปลี่ยน PIN Code",
+				"profileUpdated": "แก้ไขข้อมูลสำเร็จ",
+				"redirectToTermsConditions": "ข้อกำหนดและเงื่อนไข",
+				"registerIncomplete": "x  x",
+				"resetRequested": "คำขอตั้งรหัสผ่านใหม่",
+				"serverError": "เกิดความขัดข้องทางเทคนิค",
+				"sessionExpired": "ล็อคอินหมดเวลา",
+				"statusVerifyIdentity": "กรุณายืนยันตัวตนของคุณ",
+				"transferRequested": "Order Placed!",
+				"transferComplete": "Success!"
+			},
+			"message": {
+				"accountInactive": "บัญชีของคุณไม่ได้ใช้งาน หากคุณเห็นสิ่งนี้ โปรดติดต่อ Own Money Services",
+				"accountRegistered": "กรุณาเช็ค email เพื่อทำการกดลิ้งยืนอีเมล หากไม่เจออีเมลในกล่องข้อความ ให้ลองหาใน junk mail",
+				"badUser": "มีปัญหาบางอย่างเกี่ยวกับอีเมล",
+				"beneficiaryDeleted": "ลบบัญชีปลายทางสำเร็จ",
+				"beneficiarySaved": "เพิ่มบัญชีปลายทางสำเร็จ",
+				"beneficiaryUpdated": "แก้ไขบัญชีปลายทางสำเร็จ",
+				"blockedUser": "Please contact our staff in order to make a transfer. Tel. 0405539999",
+				"default": "Unknown Error กรุณาแคปหน้าจอและแจ้งเจ้าหน้าที่",
+				"idExpired": "ID ของคุณหมดอายุ คุณจะไม่สามารถทำรายการโอนเงินได้ กรุณาติดต่อเจ้าหน้าที่ ที่เบอร์โทร 0421998633 เพื่อทำการอัพเดท ID ใหม่",
+				"invalidReferrer": "รหัสผู้แนะนำไม่ถูกต้อง",
+				"logout": "ออกจากระบบสำเร็จ",
+				"noEmail": "กรุณากรอก Email Address",
+				"noPasswordConfirm": "กรุณากรอกรหัสผ่าน",
+				"noPassword": "กรุณากรอกรหัสผ่าน",
+				"noPhone": "กรุณากรอกเบอร์โทรศัพท์",
+				"offline": "ไม่สามารถเชื่อมต่อเซิฟเวอร์ได้",
+				"passwordMismatch": "อีเมล/รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง",
+				"passwordReset": "เราจะส่งอีเมลไปยังที่อยู่ที่เชื่อมโยงกับบัญชีของคุณ พร้อมด้วยลิงก์เพื่อรีเซ็ตรหัสผ่านของคุณ หากคุณเปลี่ยนใจ คุณไม่ต้องสนใจอีเมลนี้และใช้รหัสผ่านปัจจุบันของคุณต่อไป อย่างไรก็ตาม คุณจะต้องตั้งรหัส PIN ใหม่",
+				"pinReset": "เปลี่ยน PIN Code ใหม่สำเร็จ กรุณาล็อคอินด้วย PIN Code ใหม่",
+				"profileUpdated": "แก้ไขข้อมูลสำเร็จ",
+				"redirectToTermsConditions": "โปรดอ่านและยืนยันว่าคุณยอมรับข้อกำหนดและเงื่อนไข",
+				"registerIncomplete": "x  x",
+				"resetRequested": "ระบบได้ทำการส่่งลิ้งสำหรับตั้งรหัสผ่านใหม่ไปยังอีเมลของท่าน กรุณาเช็คอีเมลและกดลิ้งเพื่อตั้งรหัสผ่านใหม่",
+				"serverError": "เกิดความขัดข้องทางเทคนิค กรุณาติดต่อเจ้าหน้าที่ หรือลองใหม่ในภายหลัง",
+				"sessionExpired": "ออกจากระบบอัตโนมัติ กรุณาล็อคอินใหม่อีกครั้ง",
+				"statusVerifyIdentity": "ในการส่งเงิน คุณต้องกรอกโปรไฟล์และแสดงหลักฐานยืนยันตัวตนของคุณให้เราทราบ",
+				"transferRequested": "Your transfer order has been placed. Thank you!",
+				"transferComplete": ""
+			},
+			"ui": {
+				"statusVerifyIdentityButton": "อัพเดตโปรไฟล์"
+			}
 		},
 		"components": {
 			"exchangeRateCardTitle": "อัตราแลกเปลี่ยน",
@@ -641,6 +664,24 @@
 			"none": "ว่างเปล่า",
 			"aud": "ดอลลาร์ออสเตรเลีย",
 			"thb": "บาท"
+		},
+		"promo": {
+			"labels": {
+				"code": "รหัสโปรโมชั่น",
+				"limitIncrease": "การเพิ่มวงเงินชั่วคราว",
+				"bonusRate": "โบนัสอัตราเพิ่มเติม"
+			},
+			"ui": {
+				"button": "ส่ง"
+			},
+			"messages": {
+				"valid": "ความสำเร็จ! รหัสโปรโมชั่นถูกต้อง"
+			},
+			"errors": {
+				"invalid": "ขออภัย รหัสนั้นไม่ถูกต้อง",
+				"expired": "ขออภัย รหัสนั้นหมดอายุแล้ว",
+				"remoteError": "เราไม่สามารถประมวลผลรหัสส่งเสริมการขายของคุณได้ในขณะนี้ คุณยังคงสามารถทำธุรกรรมนี้ต่อไปได้โดยไม่ต้องใช้รหัสโปรโมชั่น หากคุณต้องการ มิฉะนั้น โปรดลองอีกครั้งในภายหลัง"
+			}
 		}
 	}
 }

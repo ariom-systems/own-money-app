@@ -49,7 +49,7 @@ export const keychainLoad = async (type) => {
 
 
 /**
- * Deletes a fragment of sensitive data to the iOS Keychain/Android Keystore. 
+ * Deletes a fragment of sensitive data from the iOS Keychain/Android Keystore. 
  * 		
  * @category Auth
  * 
@@ -65,6 +65,25 @@ export const keychainReset = async (type) => {
 		}
 	} catch (error) {
 		console.log('keychain reset returned an error: ' + error)
+	}
+}
+
+
+/**
+ * Check for the presense of a particular data value in the iOS Keychain/Android Keystore. 
+ * 		
+ * @category Auth
+ * 
+ * @param {string} key			Identifier. Selects the fragment to be deleted, e.g 'Token', 'Pin'
+ * 
+ * @returns {Boolean}
+ */
+export const keychainCheck = async (key) => {
+	try {
+		const checkResult = await Keychain.hasInternetCredentials(key)
+		return checkResult
+	} catch (error) {
+		console.log('keychain check returned an error: ' + error)
 	}
 }
 
@@ -411,6 +430,7 @@ export function mapSectionDataFromTemplate(template, inputData, labels, headings
 			let headingKey = Object.keys(headings).find(key => key == title.key), obj = {}
 			output.title = headings[headingKey]
 			output.data = mappedSection.filter(mappedItem => mappedItem.value != "0000-00-00 00:00:00")
+			output.raw = inputData
 			if (id) { output.id = id }
 			if (renderItem) { output.renderItem = renderItem }
 			return output
@@ -547,33 +567,32 @@ export function stringifyArray(input) {
  * @returns {string|int}		
  *
  */
-export function modifyTransferVariables(input, ruleset, secondary = null) {
-	let modifiedValue = 0
-	if(secondary != null) { modifiedValue = Number(secondary) }
-	ruleset.filter((element, index) => {
-		let condition = element.conditions, upperLimit = Number.MAX_SAFE_INTEGER, lowerLimit = 0
-		if('max' in condition) { upperLimit = condition.max }
-		if('min' in condition) { lowerLimit = condition.min }
-		if(!input == "" || !Number(input) == 0 || input == "0") {
-			if(Number(input) > lowerLimit && Number(input) < upperLimit) {
-				switch(element.function) {
+export function findMatchingCriteriaAndModify(input, ruleset, secondary = null) {
+	let output = 0
+	
+	if(secondary != null) { output = Number(secondary) }
+	ruleset.find((element, index) => {
+		let { min = 0, max = Number.MAX_SAFE_INTEGER } = element.conditions
+		if (input) {
+			if (Number(input) >= Number(min) && Number(input) <= Number(max)) {
+				switch (element.function) {
 					case 'add':
-						modifiedValue = Number(secondary) + Number(element.value)
-					break;
+						output = (Number(secondary) + Number(element.value)).toFixed(2)
+					break
 					case 'subtract':
-						modifiedValue = Number(secondary) - Number(element.value)
-					break;
+						output = (Number(secondary) - Number(element.value)).toFixed(2)
+					break
 					case 'set':
-						modifiedValue = element.value
-					break;
-					case 'passthrough': 
-						modifiedValue = secondary
-					break;
+						output = Number(element.value).toFixed(2)
+					break
+					default:
+						output = Number(secondary).toFixed(2)
+					break
 				}
 			}
 		}
 	})
-	return modifiedValue
+	return output
 }
 
 
@@ -704,6 +723,7 @@ export function formatCurrency(input, countryCode, currency) {
 	})
 	amountObj.value = amountObj.value.reduce((string, part) => string + part)
 	amountObj.full = amountObj.symbol + amountObj.value
+	amountObj.long = amountObj.symbol + amountObj.value + " " + currency
 	return amountObj
 }
 

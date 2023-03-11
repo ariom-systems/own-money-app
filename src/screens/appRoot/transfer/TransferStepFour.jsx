@@ -3,14 +3,14 @@ import React, { useContext, useEffect, memo } from 'react'
 //components
 import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { ScrollView, Text, VStack} from 'native-base'
+import { Box, ScrollView, Text, VStack} from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import AlertBanner from '../../../components/common/AlertBanner'
 import Toolbar from '../../../components/common/Toolbar'
 import Icon from '../../../components/common/Icon'
 
 //data
-import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { useRecoilValue, useSetRecoilState, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { AuthContext } from '../../../data/Context'
 import { transferStepFourToolbarConfig } from '../../../config'
@@ -29,6 +29,7 @@ const TransferStepFour = () => {
 	const forceUpdate = useForceUpdate()
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
+	const setStep = useResetRecoilState(stepAtom)
 	
 	//temp
 	const resetTransfer = useResetRecoilState(transferAtom)
@@ -37,7 +38,7 @@ const TransferStepFour = () => {
 	const resetStepTwoButton = useResetRecoilState(stepTwoButtonAtom)
 	const resetStepThreeButton = useResetRecoilState(stepThreeButtonAtom)
 	
-	const actions = [() => handleNewTransfer() ]
+	const actions = [() => handleBack() ]
 	let toolbarConfig = mapActionsToConfig(transferStepFourToolbarConfig, actions)
 	
 	useEffect(() => {
@@ -48,14 +49,19 @@ const TransferStepFour = () => {
 		}
 	}, [language, lang])
 
+	const handleBack = () => {
+		setStep(3)
+		navigation.navigate('TransferStepThree')
+	}
+
 	const handleNewTransfer = () => {
-		setStep(0)
-		resetTransfer()
-		resetAUD()
-		resetStepOneButton()
-		resetStepTwoButton()
-		resetStepThreeButton()
-		navigation.navigate('TransferStepOne')
+		//setStep(2)
+		//resetTransfer()
+		//resetAUD()
+		//resetStepOneButton()
+		//resetStepTwoButton()
+		//resetStepThreeButton()
+		//navigation.navigate('TransferStepOne')
 	}
 
 	return (
@@ -64,81 +70,22 @@ const TransferStepFour = () => {
 				<VStack p={"2.5%"} space={"4"}>
 					{notices && <AlertBanner />}
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
+						<Text italic>NOTE: adding transactions to the database is temporarily disabled as to not clutter it up. It will be re-enabled when it's time to go live.</Text>
 						<TransferStepIndicator />
 					</VStack>
 					<VStack space={"4"} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
-						<Text>Under Construction</Text>
+						<Text>Select Payment Method</Text>
+						<Box w={"40%"} p={"4"} bgColor={"amber.100"} borderWidth={"1"} borderColor={"black"}>
+							<Text textAlign={"center"}>Poli Payment button will go here</Text>
+						</Box>
+						<Box w={"40%"} p={"4"} bgColor={"amber.100"} borderWidth={"1"} borderColor={"black"}>
+							<Text textAlign={"center"}>Bank transfer button will go here</Text>
+						</Box>
 					</VStack>
 					<Toolbar config={toolbarConfig} />
 				</VStack>
 			</ScrollView>
 		</AppSafeArea>
-
-
-		// <ScrollView w={"100%"} flex={"1"}>
-		// 	<Box mx={"2.5%"} mt={"5%"} px={"5%"} pt={"5%"}  backgroundColor={"white"} h={"100%"} rounded={"2xl"}>
-		// 		<StepIndicator
-		// 			stepCount={4}
-		// 			currentPosition={transfer.step}
-		// 			labels={labels} />
-		// 		<VStack my={"5%"} borderColor={"primary.600"} borderWidth={"1"} rounded={"lg"} overflow={"hidden"}>
-		// 			<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-		// 				<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
-		// 			</Box>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ summary.get().sender }</Text>
-		// 			</HStack>
-		// 			<Divider />
-		// 			<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-		// 				<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
-		// 			</Box>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ summary.get().receiver }</Text>
-		// 			</HStack>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ summary.get().accountnumber }</Text>
-		// 			</HStack>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ summary.get().branchname }</Text>
-		// 			</HStack>
-		// 			<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-		// 				<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
-		// 			</Box>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ${ summary.get().transfer_amount }</Text>
-		// 			</HStack>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ฿{ summary.get().received_amount }</Text>
-		// 			</HStack>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ${ summary.get().fee_AUD }</Text>
-		// 			</HStack>
-		// 			<Box px={"2"} py={"2"} backgroundColor={"primary.200"}>
-		// 				<Heading size={"sm"}>{ language.transferStepFour.currencyCodeAUD }</Heading>
-		// 			</Box>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } { formatCurrency(summary.get().total_to_pay, "en-AU", "AUD").full }</Text>
-		// 			</HStack>
-		// 			<HStack px={"4"} py={"2"} justifyContent={"space-between"}>
-		// 				<Text fontSize={"md"} color={"coolGray.500"}>{ language.transferStepFour.currencyCodeAUD }</Text>
-		// 				<Text fontSize={"md"}>{ language.transferStepFour.currencyCodeAUD } ฿{ summary.get().received_amount }</Text>
-		// 			</HStack>
-		// 		</VStack>
-		// 		<HStack space={"4"} w={"100%"} justifyContent={"center"}>
-		// 			<Button alignSelf={"center"} w={"50%"} onPress={handleFinishTransfer}>
-		// 				<Text fontSize={"lg"} color={"#FFFFFF"}>{ language.transferStepFour.buttonNewTransfer }</Text>
-		// 			</Button>
-		// 		</HStack>
-		// 	</Box>
-		// </ScrollView>
 	)
 }
 

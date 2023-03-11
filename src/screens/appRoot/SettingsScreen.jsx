@@ -14,7 +14,7 @@ import { deleteUserPinCode } from '@haskkor/react-native-pincode'
 import { atom, useRecoilValue, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
-import { api } from '../../config'
+import { api, keychain } from '../../config'
 import { keychainReset } from '../../data/Actions'
 import { langState } from '../../data/recoil/system'
 
@@ -99,9 +99,9 @@ function SettingsScreen() {
 	}
 
 	const doPinReset = () => {
-		deleteUserPinCode('com.ariom.ownmoney')
-		keychainReset('pin')
-		keychainReset('token')
+		deleteUserPinCode(keychain.pin)
+		keychainReset(keychain.pin)
+		keychainReset(keychain.token)
 		authDispatch({ type: 'RESET_PIN' })
 		authDispatch({ type: 'LOGOUT' })
 	}
