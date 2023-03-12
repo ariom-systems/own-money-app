@@ -205,7 +205,7 @@ const TransferStepThreeInner = () => {
 				ListFooterComponent={() => (
 					<VStack space={Sizes.spacing}>
 						<VStack bgColor={"white"} roundedBottom={"8"}>
-							<Heading fontSize={"md"} p={"4"} textAlign={"center"}>{language.transferStepthree.ui.pleasecomplete}</Heading>
+							<Heading fontSize={"md"} p={"4"} textAlign={"center"}>{language.transferStepthree.ui.pleaseComplete}</Heading>
 							<Forms.SelectInput
 								name={"purpose"}
 								control={control}

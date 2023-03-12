@@ -325,10 +325,6 @@ export const validationRulesTransferStepThree = {
 	termsandconditions: { required: 'transferStepthree.errorMessageAcceptTerms' }
 }
 
-export const validationRulesTermsAndConditions = {
-	accept: { required: 'termsAndConditions.errorMessageAccept' }
-}
-
 export const validationRulesProfileEdit = {
 	firstname: { required: 'profileEdit.errors.firstNameRequired' },
 	middlename: { required: 'profileEdit.errors.middleNamRequired' },
@@ -624,6 +620,18 @@ export const transferStepThreeToolbarConfig = [
 
 export const transferStepFourToolbarConfig = [
 	{ type: 'item', labelObj: 'transferStepthree.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+]
+
+export const transferShowBankDetailsToolbarConfig = [
+	{ type: 'item', labelObj: 'transferShowBankDetails.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+]
+
+export const transferShowPoliPaymentToolbarConfig = [
+	{ type: 'item', labelObj: 'transferShowPoliPayment.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+]
+
+export const transferShowPayIDToolbarConfig = [
+	{ type: 'item', labelObj: 'transferShowPayID.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
 ]
 
 export const transactionsListToolbarConfig = [

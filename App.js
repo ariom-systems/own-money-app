@@ -7,7 +7,7 @@ import { ActivityIndicator, LogBox } from 'react-native'
 import { navigationRef } from './src/data/handlers/Navigation'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-//import { useFlipper } from '@react-navigation/devtools'
+import { useFlipper } from '@react-navigation/devtools'
 
 //screens/navigators
 import AuthStack from './src/components/navigators/AuthStack'
@@ -18,7 +18,7 @@ import SplashScreen from './src/screens/SplashScreen';
 import { NativeBaseProvider, extendTheme, Text } from 'native-base'
 
 //data
-//import RecoilFlipperClient from 'react-recoil-flipper-client'
+import RecoilFlipperClient from 'react-recoil-flipper-client'
 import { RecoilRoot, useRecoilValue } from 'recoil'
 import { useInterval, useForceUpdate } from './src/data/Hooks'
 import { AuthContext, AuthProvider } from './src/data/Context'
@@ -42,7 +42,7 @@ export default function App() {
 	return (
         <GestureHandlerRootView style={{ flex: 1 }}>
             <RecoilRoot>
-                {/* <RecoilFlipperClient /> */}
+                <RecoilFlipperClient />
                 <NativeBaseProvider theme={NativeBaseTheme}>
                     <AuthProvider>
                         <RootNavigator />
@@ -55,7 +55,7 @@ export default function App() {
 
 const RootStack = createNativeStackNavigator()
 const RootNavigator = ({navigation}) => {
-    //useFlipper(navigationRef)
+    useFlipper(navigationRef)
     return (
         <SafeAreaProvider>
             <NavigationContainer fallback={<ActivityIndicator color={"#8B6A27"} size={"large"} />} ref={navigationRef} >

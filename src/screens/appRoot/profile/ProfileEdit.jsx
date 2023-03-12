@@ -269,7 +269,7 @@ function ProfileEditInner() {
 								range={"past"}
 								rules={validationRulesProfileEdit.dateofbirth}
 								label={language.profileEdit.labels.dateofbirth}
-								title={language.profileEdit.ui.dateofbirthtitle}
+								title={language.profileEdit.ui.dateofbirthTitle}
 								errors={formState.errors.dateofbirth}
 								required={true}
 							/>

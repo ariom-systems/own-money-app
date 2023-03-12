@@ -15,7 +15,6 @@ import { audAtom, promoAtom, thbSelector, rateSelector} from '../../data/recoil/
 import { userState } from '../../data/recoil/user'
 import { globalState } from '../../data/recoil/system'
 import { useForceUpdate } from '../../data/Hooks'
-//lang
 
 const CurrencyConverter = () => {
 	const { control, trigger, setValue, formState } = useFormContext()

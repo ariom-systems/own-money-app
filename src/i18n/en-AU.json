@@ -83,9 +83,7 @@
 			"pinPadButtonDelete": "Delete"
 		},
 		"termsAndConditions": {
-			"labelAccept": "I agree to terms and conditions.",
-			"buttonSubmit": "Proceed",
-			"Accept": "You must agree before submitting. Please scroll down."
+			"buttonSubmit": "Proceed"
 		},
 		"loading": {
 			"title": "Welcome",
@@ -337,8 +335,8 @@
 			"ui": {
 				"buttonPrevious": "Previous",
 				"buttonNext": "Next",
-				"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen",
-				"pleasecomplete": "Please Complete"
+				"pleaseComplete": "Please Complete",
+				"titleTop": "Please review the amounts you have entered, and the beneficiary you have chosen"
 			},
 			"headings": {
 				"from": "From",
@@ -375,27 +373,33 @@
 		},
 		"transferStepFour": {
 			"ui": {
-				"buttonProceedToPayment": "Proceed To Payment"
+				"buttonPayWithBank": "Pay via Bank Transfer",
+				"buttonPayWithPoli": "Pay with Poli",
+				"buttonPayWithPoliImageAlt": "Poli Payments logo",
+				"buttonPayWithPayID": "Pay using PayID",
+				"buttonPayWithPayIDImageAlt": "PayID logo"
 			},
 			"headings": {
-				"from": "From",
-				"to": "To",
-				"amounts": "Amounts",
-				"totals": "Totals"
-			},
-			"labels": {
-				"sender": "Sender",
-				"receiver": "Receiver",
-				"accountnumber": "Account Number",
-				"bankname": "Bank Name",
-				"amounttosend": "Amount To Send",
-				"yourrate": "Current Rate",
-				"fees": "Fees",
-				"totaltopay": "Total To Pay",
-				"receivableamount": "Receivable Amount",
-				"purpose": "Purpose of Transfer",
-				"terms": "I agree that the information provided above is correct and I accept the terms and conditions from OWN Money Services. Any mistakes are accounted for my own responsibility."
+				"selectPayment": "Select Payment Method"
 			}
+		},
+		"transferShowBankDetails": {
+			"ui": {
+				"buttonPrevious": "Previous"
+			}
+		},
+		"transferShowPoliPayment": {
+			"ui": {
+				"buttonPrevious": "Previous"
+			}
+		},
+		"transferShowPayID": {
+			"ui": {
+				"buttonPrevious": "Previous"
+			}
+		},
+		"transferStepFive": {
+
 		},
 		"transactionsList": {
 			"labelLoadMore": "Load more"
@@ -669,7 +673,8 @@
 				"bonusRate": "Additional Rate Bonus"
 			},
 			"ui": {
-				"button": "Apply"
+				"button": "Apply",
+				"remove": "remove code"
 			},
 			"messages": {
 				"valid": "Success! Promo code is valid"

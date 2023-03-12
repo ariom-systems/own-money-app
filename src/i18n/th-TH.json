@@ -83,9 +83,7 @@
 			"pinPadButtonDelete": "ลบ"
 		},
 		"termsAndConditions": {
-			"labelAccept": "ฉันยอมรับข้อตกลงและเงื่อนไข",
-			"buttonSubmit": "ดำเนินต่อ",
-			"accept": "คุณต้องยอมรับก่อนที่จะส่ง"
+			"buttonSubmit": "ดำเนินต่อ"
 		},
 		"loading": {
 			"title": "ยินดีต้อนรับ",
@@ -331,13 +329,13 @@
 		"transferSteptwo": {
 			"titleTop": "เลือกผู้รับปลายทาง",
 			"buttonPrevious": "ย้อนกลับ",
-			"buttonNext": "ต่อไป",
-			"pleasecomplete": "กรุณากรอก"
+			"buttonNext": "ต่อไป"
 		},
 		"transferStepthree": {
 			"ui": {
 				"buttonPrevious": "ย้อนกลับ",
 				"buttonNext": "ต่อไป",
+				"pleaseComplete": "กรุณากรอก",
 				"titleTop": "กรุณาเช็ครายละเอียดการโอนให้ถูกต้อง"
 			},
 			"headings": {
@@ -375,28 +373,32 @@
 		},
 		"transferStepFour": {
 			"ui": {
-				"buttonProceedToPayment": "ทำรายการโอน รายการใหม่"
+				"buttonPayWithBank": "ชำระผ่านการโอนเงินผ่านธนาคาร",
+				"buttonPayWithPoli": "ชำระเงินด้วยการชำระเงิน Poli",
+				"buttonPayWithPoliImageAlt": "โลโก้การชำระเงินของ Poli",
+				"buttonPayWithPayID": "ชำระเงินโดยใช้ PayID",
+				"buttonPayWithPayIDImageAlt": "โลโก้ PayID"
 			},
 			"headings": {
-				"from": "จาก",
-				"to": "ไปยัง",
-				"amounts": "ยอดโอน",
-				"totals": "ยอดรวม"
-			},
-			"labels": {
-				"sender": "ผู้ส่ง",
-				"receiver": "ผู้รับ",
-				"accountnumber": "เลขบัญชี",
-				"bankname": "ธนาคาร",
-				"amounttosend": "ยอดโอนเงิน",
-				"yourrate": "อัตราแลกเปลี่ยน",
-				"fees": "ค่าธรรมเนียม",
-				"totaltopay": "ยอดที่ต้องชำระ",
-				"receivableamount": "ยอดเงินที่จะได้รับ",
-				"purpose": "เหตุผลการโอน",
-				"terms": "ข้าพเจ้ายืนยันว่าข้อมูลด้านบนถูกต้องและยอมรับผิดชอบหากมีความเสียหายใดๆเกิดขึ้นกับรายการโอนเงินตามข้อมูลดังกล่าวนี้ และข้าพเจ้ายอมรับเงื่อนไขการโอนเงินของ OWN Money Services ทุกประการ"
+				"selectPayment": "เลือกวิธีการชำระเงิน"
 			}
 		},
+		"transferShowBankDetails": {
+			"ui": {
+				"buttonPrevious": "ย้อนกลับ"
+			}
+		},
+		"transferShowPoliPayment": {
+			"ui": {
+				"buttonPrevious": "ย้อนกลับ"
+			}
+		},
+		"transferShowPayID": {
+			"ui": {
+				"buttonPrevious": "ย้อนกลับ"
+			}
+		},
+		"transferStepFive": {},
 		"transactionsList": {
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
@@ -474,7 +476,7 @@
 				"buttonBack": "ย้อนกลับ",
 				"buttonSave": "บันทึก",
 				"buttonUploadFile": "สแกนเอกสาร",
-				"dateofbirthtitle": "เลือก ว/ด/ป เกิด",
+				"dateofbirthTitle": "เลือก ว/ด/ป เกิด",
 				"identityTitle": "กรุณายืนยันตัวตนของคุณ",
 				"identityDescription": "เลือกประเภทเอกสารด้านล่าง และใช้กล้องของอุปกรณ์เพื่อสแกนหลักฐานยืนยันตัวตนของคุณ"
 				
@@ -672,7 +674,8 @@
 				"bonusRate": "โบนัสอัตราเพิ่มเติม"
 			},
 			"ui": {
-				"button": "ส่ง"
+				"button": "ส่ง",
+				"remove": "ลบรหัส"
 			},
 			"messages": {
 				"valid": "ความสำเร็จ! รหัสโปรโมชั่นถูกต้อง"

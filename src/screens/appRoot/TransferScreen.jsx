@@ -5,6 +5,9 @@ import TransferStepOne from './transfer/TransferStepOne'
 import TransferStepTwo from './transfer/TransferStepTwo'
 import TransferStepThree from './transfer/TransferStepThree'
 import TransferStepFour from './transfer/TransferStepFour'
+import TransferShowBankDetails from './transfer/TransferShowBankDetails'
+import TransferShowPoliPayment from './transfer/TransferShowPoliPayment'
+import TransferShowPayID from './transfer/TransferShowPayID'
 import TransferStepFive from './transfer/TransferStepFive'
 
 //components
@@ -21,6 +24,9 @@ export default TransferScreen = () => {
 				<Stack.Screen options={{ headerShown: false }} name="TransferStepTwo" component={TransferStepTwo} />
 				<Stack.Screen options={{ headerShown: false }} name="TransferStepThree" component={TransferStepThree} />
 				<Stack.Screen options={{ headerShown: false }} name="TransferStepFour" component={TransferStepFour} />
+				<Stack.Screen options={{ headerShown: false }} name="TransferShowBankDetails" component={TransferShowBankDetails} />
+				<Stack.Screen options={{ headerShown: false }} name="TransferShowPoliPayment" component={TransferShowPoliPayment} />
+				<Stack.Screen options={{ headerShown: false }} name="TransferShowPayID" component={TransferShowPayID} />
 				<Stack.Screen options={{ headerShown: false }} name="TransferStepFive" component={TransferStepFive} />
 			</Stack.Navigator>
 		</ImageBackground>

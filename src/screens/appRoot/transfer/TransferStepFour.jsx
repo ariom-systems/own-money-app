@@ -1,21 +1,22 @@
-import React, { useContext, useEffect, memo } from 'react'
+import React, { useEffect, memo } from 'react'
 
 //components
 import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { Box, ScrollView, Text, VStack} from 'native-base'
+import { HStack, ScrollView, Spacer, Text, VStack} from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import AlertBanner from '../../../components/common/AlertBanner'
 import Toolbar from '../../../components/common/Toolbar'
-import Icon from '../../../components/common/Icon'
+import ButtonPayWithPoli from '../../../components/transfers/ButtonPayWithPoli'
+import ButtonBankTransfer from '../../../components/transfers/ButtonBankTransfer'
+import ButtonPayWithPayID from '../../../components/transfers/ButtonPayWithPayID'
 
 //data
-import { useRecoilValue, useSetRecoilState, useResetRecoilState } from 'recoil'
+import { useRecoilValue, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { AuthContext } from '../../../data/Context'
-import { transferStepFourToolbarConfig } from '../../../config'
+import { Sizes, transferStepFourToolbarConfig } from '../../../config'
 import { mapActionsToConfig } from '../../../data/Actions'
-import { stepAtom, transferAtom, audAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom, stepTwoButtonAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { stepAtom, transferAtom, audAtom, stepOneButtonAtom, stepTwoButtonAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
 import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
@@ -75,12 +76,14 @@ const TransferStepFour = () => {
 					</VStack>
 					<VStack space={"4"} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
 						<Text>Select Payment Method</Text>
-						<Box w={"40%"} p={"4"} bgColor={"amber.100"} borderWidth={"1"} borderColor={"black"}>
-							<Text textAlign={"center"}>Poli Payment button will go here</Text>
-						</Box>
-						<Box w={"40%"} p={"4"} bgColor={"amber.100"} borderWidth={"1"} borderColor={"black"}>
-							<Text textAlign={"center"}>Bank transfer button will go here</Text>
-						</Box>
+						<HStack space={ Sizes.spacing } w={"3/4"} alignItems={"stretch"}>
+							<ButtonPayWithPoli />
+							<ButtonBankTransfer />
+						</HStack>
+						<HStack space={Sizes.spacing} w={"3/4"} >
+							<ButtonPayWithPayID />
+							<Spacer/>
+						</HStack>
 					</VStack>
 					<Toolbar config={toolbarConfig} />
 				</VStack>

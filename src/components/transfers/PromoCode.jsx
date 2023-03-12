@@ -4,19 +4,20 @@ import React, { useEffect, useState, useRef, useContext } from 'react'
 import { Box, Button, Input, HStack, Pressable, Spinner, Text, VStack, Heading } from 'native-base'
 import * as Forms from '../common/Forms'
 import AlertModal from '../common/AlertModal'
+import Icon from '../common/Icon'
 
 //data
 import Config from 'react-native-config'
-import { atom, useRecoilState, useResetRecoilState } from 'recoil'
+import { atom, useRecoilValue, useRecoilState, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { useForm } from 'react-hook-form'
+import { api, Sizes } from '../../config'
 import { AuthContext } from '../../data/Context'
 import { promoAtom } from '../../data/recoil/transfer'
-import { api, Sizes } from '../../config'
+import { langState } from '../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
-import Icon from '../common/Icon'
 const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
@@ -32,6 +33,7 @@ const PromoCode = () => {
 	const [change, setChange] = useRecoilState(promoChangeState)
 	const [promo, setPromo] = useRecoilState(promoAtom)
 	const resetPromo = useResetRecoilState(promoAtom)
+	const lang = useRecoilValue(langState)
 	const [show, setShow] = useState(false)
 	const cancelRef = useRef()
 	const onClose = () => setShow(false)
@@ -43,6 +45,13 @@ const PromoCode = () => {
 			code: ""
 		}
 	})
+
+	useEffect(() => {
+		if (language.getLanguage() !== lang) {
+			language.setLanguage(lang)
+			forceUpdate()
+		}
+	}, [language, lang])
 
 	useEffect(() => {
 		if (change == true) {
@@ -123,7 +132,7 @@ const PromoCode = () => {
 				</HStack>)}
 			{promo.name != '' && (
 				<Pressable onPress={handleRemovePromo} _pressed={{ color: "black" }}>
-					<Text color={"danger.600"}>remove code</Text>
+					<Text color={"danger.600"}>{language.promo.ui.remove}</Text>
 				</Pressable>
 			)}
 			<AlertModal

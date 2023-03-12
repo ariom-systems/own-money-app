@@ -6,7 +6,6 @@ import AppSafeArea from '../../components/common/AppSafeArea'
 import { Box, Button, Image, Text, View, VStack } from 'native-base'
 import WebView from 'react-native-webview'
 import image from '../../assets/img/logo.png'
-import * as Forms from '../../components/common/Forms'
 import { AlertItem } from '../../components/common/AlertBanner'
 import Toolbar from '../../components/common/Toolbar'
 
