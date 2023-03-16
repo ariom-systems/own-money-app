@@ -12,11 +12,11 @@ import AppSafeArea from '../../../components/common/AppSafeArea'
 //data
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { transferStepTwoToolbarConfig } from '../../../config'
+import { Sizes, transferStepTwoToolbarConfig } from '../../../config'
 import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 import { noticeState, langState } from '../../../data/recoil/system'
-import { stepAtom, stepTwoButtonAtom } from '../../../data/recoil/transfer'
+import { stepAtom, buttonState } from '../../../data/recoil/transfer'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -29,7 +29,7 @@ const TransferStepTwo = () => {
 	const forceUpdate = useForceUpdate()
 	const setStep = useSetRecoilState(stepAtom)
 	const beneficiaries = useRecoilValue(beneficiaryList)
-	const [ buttonState, setButtonState ] = useRecoilState(stepTwoButtonAtom)
+	const [ button, setButton ] = useRecoilState(buttonState)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
 
@@ -38,7 +38,7 @@ const TransferStepTwo = () => {
 		() => handleNext()
 	]
 
-	const properties = [{}, {}, { isDisabled: buttonState }]
+	const properties = [{}, {}, { isDisabled: button.transferStepTwo }]
 	let toolbarConfig = mapActionsToConfig(transferStepTwoToolbarConfig, actions)
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
@@ -63,7 +63,7 @@ const TransferStepTwo = () => {
 	return (
 		<AppSafeArea>
 			<ScrollView>
-				<VStack p={"2.5%"} space={"4"}>
+				<VStack p={"2.5%"} space={Sizes.spacing}>
 					{ notices && <AlertBanner /> }
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />

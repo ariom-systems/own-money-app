@@ -45,7 +45,12 @@ export const userState = atom({
 		idexpiry: '',
 		idissuer: '',
 		blocked: false,
-		preventTransfer: false
+		preventTransfer: false,
+		accname: '',
+		bsb: '',
+		acc: '',
+		payid: '',
+		payid_name: ''
 	}
 })
 

@@ -14,7 +14,7 @@ import ListHeader from '../../../components/common/ListHeader'
 //data
 import { useRecoilValue, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { BeneficiaryTemplate, beneficiaryDetailToolbarConfig } from '../../../config'
+import { Sizes, BeneficiaryTemplate, beneficiaryDetailToolbarConfig } from '../../../config'
 import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
 import { beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState, noticeState, langState } from '../../../data/recoil/system'
@@ -112,7 +112,7 @@ export default function BeneficiariesDetail() {
 				showsVerticalScrollIndicator={false}
 				ItemSeparatorComponent={() => <Divider />}
 				ListHeaderComponent={() => (
-					<VStack key={beneficiary.id} space={"4"}>
+					<VStack key={beneficiary.id} space={Sizes.spacing}>
 						{notices && <AlertBanner />}
 						<Toolbar config={toolbarConfig} />
 					</VStack>

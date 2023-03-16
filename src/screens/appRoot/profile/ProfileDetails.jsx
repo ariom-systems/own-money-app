@@ -12,7 +12,7 @@ import DetailRowItem from '../../../components/profile/DetailRowItem'
 //data
 import { useRecoilValue, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { ProfileObjFormats, UserTemplate, profileDetailToolbarConfig } from '../../../config'
+import { Sizes, ProfileObjFormats, UserTemplate, profileDetailToolbarConfig } from '../../../config'
 import { mapSectionDataFromTemplate, mapActionsToConfig, localiseObjectData } from '../../../data/Actions'
 import { userState } from '../../../data/recoil/user'
 import { loadingState, noticeState, langState } from '../../../data/recoil/system'
@@ -61,7 +61,7 @@ const ProfileDetails = () => {
 				renderItem={({ item, index, section }) => <DetailRowItem item={item} index={index} section={section} />}
 				renderSectionHeader={({ section }) => <ListHeader title={section.title} id={section.id} index={section.index} styles={{ mt: "4", roundedTop: "8" }}  /> }
 				ListHeaderComponent={() => (
-					<VStack key={Math.random() * 100} space={"4"}>
+					<VStack key={Math.random() * 100} space={Sizes.spacing}>
 						{notices && <AlertBanner />}
 						<Toolbar config={toolbarConfig} />
 					</VStack>

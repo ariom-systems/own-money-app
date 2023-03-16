@@ -3,6 +3,9 @@ import React, { memo } from 'react'
 //components
 import { Box, Heading } from 'native-base'
 
+//data
+import { Sizes } from '../../config'
+
 const ReviewListHeader = (props) => {
 	let { title, style } = props 
 

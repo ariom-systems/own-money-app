@@ -19,13 +19,14 @@ import { NativeBaseProvider, extendTheme, Text } from 'native-base'
 
 //data
 import RecoilFlipperClient from 'react-recoil-flipper-client'
-import { RecoilRoot, useRecoilValue } from 'recoil'
+import { RecoilRoot, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useInterval, useForceUpdate } from './src/data/Hooks'
 import { AuthContext, AuthProvider } from './src/data/Context'
 import { keychain, NativeBaseTheme, ReactNavigationThemeDark, ReactNavigationThemeDefault } from './src/config'
-import { keychainLoad, keychainReset, keychainCheck, parseToken } from './src/data/Actions'
+import { keychainLoad, keychainReset, parseToken } from './src/data/Actions'
+import { getNotice } from './src/data/handlers/Status'
 import { initialCheckConnection, checkConnection } from './src/data/handlers/Connection'
-import { langState } from './src/data/recoil/system'
+import { noticeState, langState, debugState } from './src/data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
@@ -71,7 +72,9 @@ const RootNavigator = ({navigation}) => {
 const AppNavigator = ({navigation}) => {    
     const forceUpdate = useForceUpdate()
     const { auth, authDispatch } = useContext(AuthContext)
+    const setNotices = useSetRecoilState(noticeState)
     const lang = useRecoilValue(langState)
+    const debug = useRecoilValue(debugState)
 
     useEffect(() => {
         //check if we can connect to the API first
@@ -103,7 +106,7 @@ const AppNavigator = ({navigation}) => {
             getKeychainCredentials()
         }
     }, [])
-
+    
     useEffect(() => {
 		if(language.getLanguage() !== lang) {
 			language.setLanguage(lang)

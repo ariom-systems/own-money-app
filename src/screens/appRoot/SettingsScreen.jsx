@@ -14,7 +14,7 @@ import { deleteUserPinCode } from '@haskkor/react-native-pincode'
 import { atom, useRecoilValue, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { AuthContext } from '../../data/Context'
-import { api, keychain } from '../../config'
+import { Sizes, api, keychain } from '../../config'
 import { keychainReset } from '../../data/Actions'
 import { langState } from '../../data/recoil/system'
 

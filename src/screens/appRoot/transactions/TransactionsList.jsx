@@ -13,7 +13,7 @@ import ListHeader from '../../../components/common/ListHeader'
 import { selector, useRecoilValue, useRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { AuthContext } from '../../../data/Context'
-import { api, transactionsListToolbarConfig } from '../../../config'
+import { Sizes, api, transactionsListToolbarConfig } from '../../../config'
 import { buildDataPath, groupTransactionsByDate, mapActionsToConfig, addExtraRecordData, dateFormat } from '../../../data/Actions'
 import { transactionList } from '../../../data/recoil/transactions'
 import { noticeState, loadingState, langState } from '../../../data/recoil/system'
@@ -100,7 +100,7 @@ const TransactionsList = () => {
 				removeClippedSubviews={true}
 				stickySectionHeadersEnabled={false}
 				ListHeaderComponent={() => (
-					<VStack space={"4"}>
+					<VStack space={Sizes.spacing}>
 						{notices && <AlertBanner />}
 					</VStack>
 				)}

@@ -1,6 +1,11 @@
 import React, { memo } from 'react'
-import Icon from './Icon'
+
+//components
 import { useNavigation } from '@react-navigation/native'
+import Icon from './Icon'
+
+//data
+import { Sizes } from '../../config'
 
 const IconSettingsCog = () => {
 	const navigation = useNavigation()

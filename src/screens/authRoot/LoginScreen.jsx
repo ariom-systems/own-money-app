@@ -100,7 +100,7 @@ const LoginScreen = () => {
 			let authErrors = error.data.notices
 			if(authErrors.length == 1) {
 				const notice = getNotice(authErrors[0].reason, lang)
-				setNotices((prev) => ([notice]))
+				setNotices((prev) => ([...prev, notice]))
 				setError(authErrors[0].origin, { type: 'custom', message: notice.message })
 			} else {
 				authErrors.forEach(e => {

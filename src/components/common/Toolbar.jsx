@@ -2,12 +2,12 @@ import React, { useEffect } from "react"
 
 //components
 import {  HStack, Pressable, Spacer, Text } from 'native-base'
-import { PressableStyles, Sizes } from '../../config'
 import Icon from './Icon'
 
 //data
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
+import { PressableStyles, Sizes } from '../../config'
 import { traverseObjectByPath } from '../../data/Actions'
 import { langState } from '../../data/recoil/system'
 

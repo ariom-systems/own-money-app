@@ -16,6 +16,17 @@ export function getNotice(reasonCode, currentLang) {
 		}
 		switch(reasonCode) {
 			//Generic
+			case 'debug':
+				return {
+					id: reasonCode,
+					icon: 'bug-outline',
+					message: language.notices.message.debug,
+					title: language.notices.title.debug,
+					style: 'info',
+					//canClose: true
+					canClose: false
+				}
+			break
 			case 'serverError':
 				return {
 					id: reasonCode,
@@ -302,8 +313,7 @@ export function getNotice(reasonCode, currentLang) {
 					message: language.notices.message.transferRequested,
 					title: language.notices.title.transferRequested,
 					style: 'success',
-					//canClose: true
-					canClose: false
+					canClose: true
 				}
 			break
 			default:

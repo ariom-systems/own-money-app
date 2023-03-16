@@ -5,6 +5,7 @@ import { Heading, HStack } from 'native-base'
 
 //data
 import { useRecoilValue } from 'recoil'
+import { Sizes } from '../../config'
 import { langState } from '../../data/recoil/system'
 
 const ListHeader = (props) => {

@@ -96,7 +96,7 @@ const ForgotPasswordScreen = () => {
 
 	return (
 		<AppSafeArea styles={{ w: "100%", h: "100%", alignItems: "center", justifyContent: "center" }}>
-			<VStack space={"4"} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
+			<VStack space={Sizes.spacing} mx={"2.5%"} py={"4%"} alignItems={"center"} bgColor={"white"} rounded={"10"}>
 				<Image source={image} resizeMode={"contain"} alt={language.forgotPassword.ui.logoAlt} size={"160"} />
 				<Text color={"coolGray.600"} fontWeight={"medium"} fontSize={"md"} px={"4%"}>{language.forgotPassword.ui.underLogo}</Text>
 				<Forms.TextInput

@@ -3,6 +3,9 @@ import React from 'react'
 //components
 import { AlertDialog, Text } from 'native-base'
 
+//data
+import { Sizes } from '../../config'
+
 const AlertModal = (props) => {
 	let { show, ldRef = "", close, header, content = "something", children } = props
 

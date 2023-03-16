@@ -1,47 +1,47 @@
-import React, { useEffect, memo } from 'react'
+import React, { useEffect, useContext, memo } from 'react'
 
 //components
-import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
-import { HStack, ScrollView, Spacer, Text, VStack} from 'native-base'
+import AppSafeArea from '../../../components/common/AppSafeArea'
+import { Pressable, ScrollView, Spacer, Text, VStack} from 'native-base'
 import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
 import AlertBanner from '../../../components/common/AlertBanner'
-import Toolbar from '../../../components/common/Toolbar'
-import ButtonPayWithPoli from '../../../components/transfers/ButtonPayWithPoli'
-import ButtonBankTransfer from '../../../components/transfers/ButtonBankTransfer'
-import ButtonPayWithPayID from '../../../components/transfers/ButtonPayWithPayID'
+import LabelValue from '../../../components/common/LabelValue'
 
 //data
-import { useRecoilValue, useResetRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { Sizes, transferStepFourToolbarConfig } from '../../../config'
-import { mapActionsToConfig } from '../../../data/Actions'
-import { stepAtom, transferAtom, audAtom, stepOneButtonAtom, stepTwoButtonAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { api, Sizes } from '../../../config'
+import { buildDataPath, addExtraRecordData } from '../../../data/Actions'
+import { AuthContext } from '../../../data/Context'
+import { transactionList, transactionObj } from '../../../data/recoil/transactions'
+import { transferAtom, stepAtom, paymentStepAtom, audAtom, promoAtom, buttonState } from '../../../data/recoil/transfer'
 import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
 import LocalizedStrings from 'react-native-localization'
 const auStrings = require('../../../i18n/en-AU.json')
 const thStrings = require('../../../i18n/th-TH.json')
-let language = new LocalizedStrings({...auStrings, ...thStrings})
+let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const TransferStepFour = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
+	const { auth } = useContext(AuthContext)
+	const [ transactions, setTransactions ] = useRecoilState(transactionList)
+	const [ transaction, setTransaction ] = useRecoilState(transactionObj)
+	const setStep = useSetRecoilState(stepAtom)
+	const setPaymentStep = useSetRecoilState(paymentStepAtom)
+	const transfer = useRecoilValue(transferAtom)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
-	const setStep = useResetRecoilState(stepAtom)
-	
-	//temp
 	const resetTransfer = useResetRecoilState(transferAtom)
+	const resetTransaction = useResetRecoilState(transactionObj)
+	const resetStep = useResetRecoilState(stepAtom)
 	const resetAUD = useResetRecoilState(audAtom)
-	const resetStepOneButton = useResetRecoilState(stepOneButtonAtom)
-	const resetStepTwoButton = useResetRecoilState(stepTwoButtonAtom)
-	const resetStepThreeButton = useResetRecoilState(stepThreeButtonAtom)
-	
-	const actions = [() => handleBack() ]
-	let toolbarConfig = mapActionsToConfig(transferStepFourToolbarConfig, actions)
-	
+	const resetPromo = useResetRecoilState(promoAtom)
+	const resetButton = useResetRecoilState(buttonState)
+
 	useEffect(() => {
 		if (language.getLanguage() !== lang) {
 			language.setLanguage(lang)
@@ -49,43 +49,54 @@ const TransferStepFour = () => {
 			forceUpdate()
 		}
 	}, [language, lang])
-
-	const handleBack = () => {
-		setStep(3)
-		navigation.navigate('TransferStepThree')
-	}
+	
+	useEffect(() => {	
+		api.get(buildDataPath('transactions', auth.uid, 'list', { from: 'now' }))
+			.then(response => {
+				let data = response.data, newData
+				newData = addExtraRecordData(data)
+				if (transfer.transaction_DB_id !== 'undefined') {
+					let tmpObj = newData.find(element => Number(element.id) == Number(transfer.transaction_DB_id))
+					if(tmpObj) {
+						setTransaction(tmpObj)
+					}
+				}
+				setTransactions(newData)
+				setStep(3)
+			})
+			.catch(error => console.error('error setting transactions list', error))
+	},[])
 
 	const handleNewTransfer = () => {
-		//setStep(2)
-		//resetTransfer()
-		//resetAUD()
-		//resetStepOneButton()
-		//resetStepTwoButton()
-		//resetStepThreeButton()
-		//navigation.navigate('TransferStepOne')
+		resetTransfer()
+		resetTransaction()
+		resetStep()
+		resetAUD()
+		resetPromo()
+		resetButton()
+		navigation.navigate('TransferStepOne')
 	}
 
 	return (
 		<AppSafeArea>
 			<ScrollView>
-				<VStack p={"2.5%"} space={"4"}>
+				<VStack p={"2.5%"} space={Sizes.spacing}>
 					{notices && <AlertBanner />}
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
-						<Text italic>NOTE: adding transactions to the database is temporarily disabled as to not clutter it up. It will be re-enabled when it's time to go live.</Text>
 						<TransferStepIndicator />
 					</VStack>
-					<VStack space={"4"} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
-						<Text>Select Payment Method</Text>
-						<HStack space={ Sizes.spacing } w={"3/4"} alignItems={"stretch"}>
-							<ButtonPayWithPoli />
-							<ButtonBankTransfer />
-						</HStack>
-						<HStack space={Sizes.spacing} w={"3/4"} >
-							<ButtonPayWithPayID />
-							<Spacer/>
-						</HStack>
+					<VStack space={Sizes.spacingLarge} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
+						<LabelValue label={ language.transferStepFour.headings.orderPlaced } value={transaction.transaction_number || ""}  />
+						<Text alignSelf={"stretch"}>{ language.transferStepFour.ui.instructions1 }</Text>
+						<VStack space={Sizes.spacingLarge} w={"100%"}>
+							<Pressable p={Sizes.padding} bgColor={"primary.600"} rounded={Sizes.rounded} onPress={() => navigation.navigate('PaymentSelect')}>
+								<Text textAlign={"center"} color={"white"} fontSize={"xl"}>{ language.transferStepFour.ui.buttonMakePayment }</Text>
+							</Pressable>
+							<Pressable p={Sizes.padding} borderColor={"primary.600"} borderWidth={"2"} rounded={Sizes.rounded} onPress={handleNewTransfer}>
+								<Text textAlign={"center"} color={"primary.600"} fontSize={"xl"}>{ language.transferStepFour.ui.buttonNewTransfer }</Text>
+							</Pressable>
+						</VStack>
 					</VStack>
-					<Toolbar config={toolbarConfig} />
 				</VStack>
 			</ScrollView>
 		</AppSafeArea>

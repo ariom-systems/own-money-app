@@ -13,7 +13,7 @@ import Toolbar from '../../../components/common/Toolbar'
 import { useNavigation } from '@react-navigation/native'
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { beneficiaryListToolbarConfig } from '../../../config'
+import { Sizes, beneficiaryListToolbarConfig } from '../../../config'
 import { mapActionsToConfig } from '../../../data/Actions'
 import { beneficiaryList } from '../../../data/recoil/beneficiaries'
 import { noticeState, langState } from '../../../data/recoil/system'
@@ -62,7 +62,7 @@ const BeneficiariesList = () => {
 					maxToRenderPerBatch={20}
 					removeClippedSubviews={false}
 					ListHeaderComponent={() =>
-						<VStack space={"4"} mb={"4"}>
+						<VStack space={Sizes.spacing} mb={"4"}>
 							{notices && <AlertBanner />}
 							<Toolbar config={toolbarConfig} />
 						</VStack>

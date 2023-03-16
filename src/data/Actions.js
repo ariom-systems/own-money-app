@@ -422,7 +422,7 @@ export function mapSectionDataFromTemplate(template, inputData, labels, headings
 					item.label = labels[labelKey] ?? ""
 					for (const [key, value] of Object.entries(inputData)) {
 						//match the data property name to the template property name and copy the value.
-						if (key === item.key) { item.value = value }
+						if (key === item.key) { item.value = value }	
 					}
 				}
 				return item

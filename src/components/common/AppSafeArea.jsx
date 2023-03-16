@@ -9,6 +9,7 @@ import LoadingOverlay from './LoadingOverlay'
 
 //data
 import { useRecoilValue } from 'recoil'
+import { Sizes } from '../../config'
 import { loadingState } from '../../data/recoil/system'
 
 //lang

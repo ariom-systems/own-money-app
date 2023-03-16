@@ -4,6 +4,9 @@ import React from 'react'
 import { HStack, Text } from 'native-base'
 import Icon from './Icon'
 
+//data
+import { Sizes } from '../../config'
+
 const AlertLabel = ({icon, label, color, styles = null, iconStyles = null, labelStyles = null}) => {
 	return (
 		<HStack {...styles}>

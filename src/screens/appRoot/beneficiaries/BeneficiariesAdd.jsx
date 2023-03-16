@@ -13,7 +13,7 @@ import AlertBanner from '../../../components/common/AlertBanner'
 import { useRecoilState, useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { getNotice } from '../../../data/handlers/Status'
-import { validationRulesBeneficiaryAdd } from '../../../config'
+import { Sizes, validationRulesBeneficiaryAdd } from '../../../config'
 import { AuthContext } from '../../../data/Context'
 import { buildDataPath, sortByParam, addObjectExtraData, stringifyArray, mapActionsToConfig } from '../../../data/Actions'
 import { api, beneficiaryColumns, beneficiaryAddToolbarConfig } from '../../../config'
@@ -109,12 +109,12 @@ function BeneficiariesAddInner() {
 	return (
 		<AppSafeArea>
 			<ScrollView w={"100%"}>
-				<VStack space={"4"} m={"2.5%"}>
+				<VStack space={Sizes.spacing} m={"2.5%"}>
 					{ notices && <AlertBanner /> }
 					<Toolbar config={toolbarConfig} />
 					<VStack pb={"2.5%"} space={"2"} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.personalDetails }</Forms.HeaderItem>		
-						<VStack space={"4"} px={"2.5%"}>	
+						<VStack space={Sizes.spacing} px={"2.5%"}>	
 							<Forms.TextInput
 								name={ "firstname" }
 								control={ control }
@@ -152,9 +152,9 @@ function BeneficiariesAddInner() {
 							/>
 						</VStack>				
 					</VStack>
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.bankDetails }</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={ "accountnumber" }
 								control={ control }
@@ -209,9 +209,9 @@ function BeneficiariesAddInner() {
 							/>			
 						</VStack>
 					</VStack>
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>					
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>					
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryAdd.headings.addressDetails }</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={ "address" }
 								control={ control }

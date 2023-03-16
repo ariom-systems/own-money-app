@@ -9,6 +9,7 @@ import AlertLabel from '../common/AlertLabel'
 //data
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
+import { Sizes } from '../../config'
 import { userState } from '../../data/recoil/user'
 import { langState } from '../../data/recoil/system'
 
@@ -46,10 +47,10 @@ const IdentitySection = ({section}) => {
 	}, [language, lang])
 
 	return (
-		<VStack space={"4"} px={"4"} py={"2"} bgColor={"white"} mb={"4"} roundedBottom={"8"}>
+		<VStack space={Sizes.spacing} px={"4"} py={"2"} bgColor={"white"} mb={"4"} roundedBottom={"8"}>
 			{ identityStatus }
-			<HStack justifyContent={"space-between"} space={"4"} mt={"2.5%"}>
-				<VStack flex={"1"} space={"4"}>
+			<HStack justifyContent={"space-between"} space={Sizes.spacing} mt={"2.5%"}>
+				<VStack flex={"1"} space={Sizes.spacing}>
 					<VStack>
 						<Text fontSize={"xs"} color={"coolGray.500"}>{ idtype.label  }</Text>
 						<Text fontSize={"md"} color={idtype.value != "" ? "black" : "coolGray.300"}>{idtype.value || none}</Text>

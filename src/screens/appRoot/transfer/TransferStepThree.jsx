@@ -20,7 +20,8 @@ import { AuthContext } from '../../../data/Context'
 import { api, validationRulesTransferStepThree, transferStepThreeToolbarConfig, TransferStepThreeTemplate, TransferObjFormats, Sizes } from '../../../config'
 import { buildDataPath, mapActionsToConfig, mapPropertiesToConfig, localiseObjectData, mapSectionDataFromTemplate } from '../../../data/Actions'
 import { getNotice } from '../../../data/handlers/Status'
-import { stepAtom, transferAtom, promoAtom, stepThreeButtonAtom } from '../../../data/recoil/transfer'
+import { transactionList } from '../../../data/recoil/transactions'
+import { stepAtom, transferAtom, promoAtom, buttonState } from '../../../data/recoil/transfer'
 import { loadingState, noticeState, langState } from '../../../data/recoil/system'
 
 //lang
@@ -74,7 +75,8 @@ const TransferStepThreeInner = () => {
 	const { control, register, handleSubmit, watch, setValue, formState: { errors }} = useFormContext()
 	const { auth } = useContext(AuthContext)
 	const [ loading, setLoading ] = useRecoilState(loadingState)
-	const [ buttonState, setButtonState ] = useRecoilState(stepThreeButtonAtom)
+	const [ button, setButton ] = useRecoilState(buttonState)
+	const [ transactions, setTransactions ] = useRecoilState(transactionList)
 	const [ transfer, setTransfer ] = useRecoilState(transferAtom)
 	const [ fields, setFields ] = useRecoilState(fieldState)
 	const [ notices, setNotice ] = useRecoilState(noticeState)
@@ -97,7 +99,7 @@ const TransferStepThreeInner = () => {
 		}
 	]
 
-	const properties = [{}, {}, { isDisabled: buttonState }]
+	const properties = [{}, {}, { isDisabled: button.transferStepThree }]
 	let toolbarConfig = mapActionsToConfig(transferStepThreeToolbarConfig, actions)
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
@@ -123,11 +125,20 @@ const TransferStepThreeInner = () => {
 			}))
 		})
 		if (errors.purpose || errors.termsandconditions) {
-			setButtonState(true)
+			setButton((prev) => ({
+				...prev,
+				transferStepThree: true
+			}))
 		} else if (fields.purpose == "" || fields.terms == false) {
-			setButtonState(true)
+			setButton((prev) => ({
+				...prev,
+				transferStepThree: true
+			}))
 		} else {
-			setButtonState(false)
+			setButton((prev) => ({
+				...prev,
+				transferStepThree: false
+			}))
 		}
 		return () => purposeState.unsubscribe()
 	}, [watch, fields])
@@ -157,9 +168,17 @@ const TransferStepThreeInner = () => {
 			api.post(buildDataPath('transactions', auth.uid, 'add'), JSON.stringify(data))
 			.then(response => {
 				if (response.ok == true) {
-					if(response.data == true) {
+					//the resulting transaction id (DB row id, not the alphanumeric one)
+					if(Number.isInteger(response.data)) {
 						navigation.navigate('TransferStepFour')
-						setNotice([getNotice('transferRequested', lang)])
+						setTransfer((prev) => ({
+							...prev,
+							transaction_DB_id: response.data
+						}))							
+						setNotice((prev) => ([
+							...prev,
+							getNotice('transferRequested', lang)
+						]))
 						setStep(3)
 						setLoading({ status: false, message: 'none' })
 					}
@@ -172,7 +191,7 @@ const TransferStepThreeInner = () => {
 	}
 
 	const onError = (error) => {
-		console.log(error)
+		console.error(error)
 		setLoading({ status: false, message: 'none' })
 	}
 

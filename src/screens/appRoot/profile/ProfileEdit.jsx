@@ -162,6 +162,7 @@ function ProfileEditInner() {
 		formData.append('idexpiry', data.idexpiry)
 		formData.append('idissuer', data.idissuer)
 
+
 		const url = Config.BASEURL + '/' + Config.APIVERSION + '/' + buildDataPath('users', auth.uid, 'edit')
 		console.log('👤 Sending user data to API: ', url)
 		
@@ -225,11 +226,11 @@ function ProfileEditInner() {
 	return (
 		<AppSafeArea>
 			<ScrollView w={"100%"}>
-				<VStack space={"4"} m={"2.5%"}>
+				<VStack space={Sizes.spacing} m={"2.5%"}>
 					<Toolbar config={toolbarConfig} />
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{ roundedTop: "8" }}>{language.profileEdit.headings.personaldetails}</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>	
+						<VStack space={Sizes.spacing} px={"2.5%"}>	
 							<Forms.TextInput
 								name={"firstname"}
 								control={control}
@@ -284,9 +285,9 @@ function ProfileEditInner() {
 							/>
 						</VStack>
 					</VStack>
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{ roundedTop: "8" }}>{language.profileEdit.headings.contactdetails}</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={"phone"}
 								control={control}
@@ -308,9 +309,9 @@ function ProfileEditInner() {
 							/>
 						</VStack>
 					</VStack>
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{ roundedTop: "8" }}>{language.profileEdit.headings.addressdetails}</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={"address"}
 								control={control}
@@ -350,10 +351,10 @@ function ProfileEditInner() {
 							/>
 						</VStack>
 					</VStack>
-					<VStack pb={"4"} space={"4"} bgColor={"white"} rounded={"8"}>
+					<VStack pb={"4"} space={Sizes.spacing} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{ roundedTop: "8" }}>{language.profileEdit.headings.identityInfo}</Forms.HeaderItem>			
 							{ (user.img_name != "" || image != "") && (
-								<VStack space={"4"} px={"2.5%"}>
+								<VStack space={Sizes.spacing} px={"2.5%"}>
 								{user.img_name != "" && <Text fontSize={"xs"} color={"warmGray.600"}>{language.profileEdit.labels.identityHelper}</Text>}
 									<IdentityPreview />
 									{user.img_name == "" && <ToolbarItem label={"Re-scan Document"} action={() => onScanDocument()} />}									

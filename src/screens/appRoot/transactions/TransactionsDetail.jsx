@@ -12,7 +12,7 @@ import AlertBanner from '../../../components/common/AlertBanner';
 //data
 import { useRecoilValue, useRecoilState, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-import { transactionsDetailToolbarConfig, TransactionTemplate } from '../../../config'
+import { Sizes, transactionsDetailToolbarConfig, TransactionTemplate } from '../../../config'
 import { mapSectionDataFromTemplate, mapActionsToConfig } from '../../../data/Actions'
 import { transactionObj } from '../../../data/recoil/transactions'
 import { noticeState, loadingState, langState } from '../../../data/recoil/system'
@@ -73,7 +73,7 @@ const TransactionsDetail = () => {
 				ItemSeparatorComponent={() => <Divider />}
 				ListHeaderComponentStyle={{ marginTop: "2.5%"}}
 				ListHeaderComponent={() => (
-					<VStack space={"4"} mb={"4"}>
+					<VStack space={Sizes.spacing} mb={"4"}>
 						{notices && <AlertBanner />}
 						<Toolbar config={toolbarConfig} />
 					</VStack>

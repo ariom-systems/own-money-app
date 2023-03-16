@@ -31,3 +31,8 @@ export const langState = atom({
 	key: 'langstate',
 	default: 'en-AU'
 })
+
+export const debugState = atom({
+	key: 'debug',
+	default: true
+})

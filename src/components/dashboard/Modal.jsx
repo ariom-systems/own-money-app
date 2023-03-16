@@ -9,6 +9,7 @@ import LabelValue from '../common/LabelValue'
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { formatCurrency } from '../../data/Actions'
+import { Sizes } from '../../config'
 import { langState } from '../../data/recoil/system'
 
 //lang

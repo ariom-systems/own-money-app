@@ -65,28 +65,21 @@ export const stepAtom = atom({
 	key: 'step',
 	default: 0
 })
+export const paymentStepAtom = atom({
+	key: 'paymentStep',
+	default: 0
+})
 
 export const selectedBeneficiaryAtom = atom({
 	key: 'selectedBeneficiary',
 	default: {}
 })
 
-export const stepOneButtonAtom = atom({
-	key: 'stepOneButton',
-	default: true
-})
-
-export const stepTwoButtonAtom = atom({
-	key: 'stepTwoButton',
-	default: true
-})
-
-export const stepThreeButtonAtom = atom({
-	key: 'stepThreeButton',
-	default: true
-})
-
-export const stepFourButtonAtom = atom({
-	key: 'stepFourButton',
-	default: true
+export const buttonState = atom({
+	key: 'buttonState',
+	default: {
+		transferStepOne: true,
+		transferStepTwo: true,
+		transferStepThree: true
+	}
 })

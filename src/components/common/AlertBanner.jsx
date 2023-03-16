@@ -29,7 +29,7 @@ export const AlertItem = (props) => {
 				setShow(false)
 			}
 		}, timeout)
-	})
+	},[])
 
 	const removeBanner = () => {
 		let newNotices = atomRemoveItemAtIndex(notices, props.index)

@@ -10,6 +10,7 @@ import { ThSVG } from '../../assets/img/ThSVG'
 import { useRecoilValue }  from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { formatCurrency } from '../../data/Actions'
+import { Sizes } from '../../config'
 import { globalState, langState } from '../../data/recoil/system'
 
 //lang

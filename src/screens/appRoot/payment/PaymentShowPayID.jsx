@@ -4,17 +4,16 @@ import React, { useEffect, memo } from 'react'
 import AppSafeArea from '../../../components/common/AppSafeArea'
 import { useNavigation } from '@react-navigation/native'
 import { ScrollView, Text, VStack } from 'native-base'
-import TransferStepIndicator from '../../../components/transfers/TransferStepIndicator'
+import PaymentStepIndicator from '../../../components/payment/PaymentStepIndicator'
 import AlertBanner from '../../../components/common/AlertBanner'
 import Toolbar from '../../../components/common/Toolbar'
 
 //data
-import { useRecoilValue, useRecoilState } from 'recoil'
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
-
-import { transferShowPayIDToolbarConfig } from '../../../config'
-
+import { Sizes, paymentShowPayIDToolbarConfig } from '../../../config'
 import { mapActionsToConfig } from '../../../data/Actions'
+import { transferAtom, paymentStepAtom } from '../../../data/recoil/transfer'
 import { noticeState, langState } from '../../../data/recoil/system'
 
 //lang
@@ -26,11 +25,15 @@ let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 const TransferShowPayID = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
+	const setPaymentStep = useSetRecoilState(paymentStepAtom)
 	const notices = useRecoilValue(noticeState)
 	const lang = useRecoilValue(langState)
 
-	const actions = [() => navigation.navigate('TransferStepFour')]
-	let toolbarConfig = mapActionsToConfig(transferShowPayIDToolbarConfig, actions)
+	const actions = [() => {
+		setPaymentStep(0)
+		navigation.goBack()
+	}]
+	let toolbarConfig = mapActionsToConfig(paymentShowPayIDToolbarConfig, actions)
 
 	useEffect(() => {
 		if (language.getLanguage() !== lang) {
@@ -43,12 +46,12 @@ const TransferShowPayID = () => {
 	return (
 		<AppSafeArea>
 			<ScrollView>
-				<VStack p={"2.5%"} space={"4"}>
+				<VStack p={"2.5%"} space={Sizes.spacing}>
 					{notices && <AlertBanner />}
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
-						<TransferStepIndicator />
+						<PaymentStepIndicator />
 					</VStack>
-					<VStack space={"4"} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
+					<VStack space={Sizes.spacing} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
 						<Text>Pay ID</Text>
 
 					</VStack>

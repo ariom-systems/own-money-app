@@ -12,7 +12,7 @@ import ListHeader from '../../components/common/ListHeader'
 //data
 import { selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
-import { dashboardToolbarConfig } from '../../config'
+import { Sizes, dashboardToolbarConfig } from '../../config'
 import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
 import { transactionList } from '../../data/recoil/transactions'
 import { userState } from '../../data/recoil/user'
@@ -62,9 +62,9 @@ const DashboardScreen = ({ navigation }) => {
 			<SectionList
 				sections={transactions.map((section, index) => ({ ...section, index }))} 
 				ListHeaderComponent={() => 
-					<VStack space={"4"}>
+					<VStack space={Sizes.spacing}>
 						{notices && <AlertBanner />}
-						<VStack p={"4"} bgColor={"white"} space={"4"} rounded={"8"}>
+						<VStack p={"4"} bgColor={"white"} space={Sizes.spacing} rounded={"8"}>
 							<Heading>{language.dashboard.ui.greeting} {user.firstname} {user.lastname}!</Heading>
 							<ExchangeRate size={"lg"}/>
 						</VStack>

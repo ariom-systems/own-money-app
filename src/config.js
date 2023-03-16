@@ -5,6 +5,7 @@ import IdentitySection from './components/profile/IdentitySection'
 import StatusSection from './components/transactions/StatusSection'
 import RateDetailRowItem from './components/transfers/RateDetailRowItem'
 import LimitDetailRowItem from './components/transfers/LimitDetailRowItem'
+import BankDetailsRowItem from './components/profile/BankDetailsRowItem'
 
 //data
 import { extendTheme } from 'native-base'
@@ -197,9 +198,17 @@ export const Sizes = {
 		base: "2",
 		sm: "1"
 	},
+	spacingLarge: {
+		base: "8",
+		sm: "4"
+	},
 	padding: {
 		base: "4",
 		sm: "2"
+	},
+	paddingLarge: {
+		base: "8",
+		sm: "4"
 	},
 	margin: {
 		base: "4",
@@ -340,7 +349,18 @@ export const validationRulesProfileEdit = {
 	address: { required: 'profileEdit.errors.addressRequired' },
 	city: { required: 'profileEdit.errors.suburbRequired' },
 	state: { required: 'profileEdit.errors.stateRequired' },
-	postcode: { required: 'profileEdit.errors.postCodeRequired' }
+	postcode: { required: 'profileEdit.errors.postCodeRequired' },
+	accname: { required: 'profileEdit.errors.accountnameRequired' },
+	bsb: {
+		required: 'profileEdit.errors.accountBsbRequired',
+		pattern: { value: /[0-9-]+/, message: 'profileEdit.errors.accountBsbDigits' },
+		minLength: { value: 6, message: 'profileEdit.errors.accountBsbMin' },
+		maxLength: { value: 6, message: 'profileEdit.errors.accountBsbMax' }
+	},
+	acc: {
+		required: 'profileEdit.errors.accountNumberRequired',
+		pattern: { value: /[0-9-]+/, message: 'profileEdit.errors.accountNumberDigits' },
+	}
 }
 
 export const validationRulesProfileEditIdentity = {
@@ -469,6 +489,7 @@ export const TransactionTemplate = [
 ]
 
 const renderIdentitySection = ({section: {data}}) => <IdentitySection section={data} />
+const renderBankDetailsSection = ({ item, index, section }) => <BankDetailsRowItem item={item} index={index} section={section} />
 export const UserTemplate = [
 	{
 		id: 'personal',
@@ -477,7 +498,7 @@ export const UserTemplate = [
 			{ key: "firstname", label: "", value: "" },
 			{ key: "middlename", label: "", value: "" },
 			{ key: "lastname", label: "", value: "" },
-			{ key: "nickname", label: "", value: "" },
+			{ key: "nickname", label: "", value: "", optional: true},
 			{ key: "dateofbirth", label: "", value: "" },
 			{ key: "occupation", label: "", value: "" }
 		]
@@ -487,7 +508,7 @@ export const UserTemplate = [
 		title: { key: "contactDetails", value: "" },
 		data: [
 			{ key: "phone", label: "", value: "" },
-			{ key: "email", label: "", value: "" }
+			{ key: "email", label: "", value: "", readOnly: true}
 		]
 	},
 	{
@@ -505,10 +526,10 @@ export const UserTemplate = [
 		id: 'account',
 		title: { key: "accountInfo", value: "" },
 		data: [
-			{ key: "memberid", label: "", value: "" },
-			{ key: "date_regis", label: "", value: "" },
-			{ key: "date_regis_completed", label: "", value: "" },
-			{ key: "status", label: "", value: "" }
+			{ key: "memberid", label: "", value: "", readOnly: true },
+			{ key: "date_regis", label: "", value: "", readOnly: true },
+			{ key: "date_regis_completed", label: "", value: "", readOnly: true },
+			{ key: "status", label: "", value: "", readOnly: true }
 		]
 	},
 	{
@@ -518,12 +539,25 @@ export const UserTemplate = [
 		data: [
 			{ key: "identity", data: [
 				{ key: "img_name", label: "", value: "" },
-				{ key: "created_date", label: "", value: "" },
+				{ key: "created_date", label: "", value: "", readOnly: true },
 				{ key: "idtype", label: "", value: "" },
 				{ key: "idnumber", label: "", value: "" },
 				{ key: "idexpiry", label: "", value: "" },
 				{ key: "idissuer", label: "", value: "" }
 			]} 
+		]
+	},
+	{
+		id: 'bank',
+		title: { key: "bankDetails", value: "" },
+		renderItem: renderBankDetailsSection,
+		data: [
+			{ key: "accname", label: "", value: "" },
+			{ key: "bsb", label: "", value: "" },
+			{ key: "acc", label: "", value: "" },
+			{ key: "acc_status", label: "", value: "", readOnly: true, options: ['profileDetails.ui.acc_statusActive', 'profileDetails.ui.acc_statusInactive']},
+			{ key: "payid_name", label: "", value: "", readOnly: true },
+			{ key: "payid", label: "", value: "", readOnly: true },
 		]
 	}
 ]
@@ -622,16 +656,16 @@ export const transferStepFourToolbarConfig = [
 	{ type: 'item', labelObj: 'transferStepthree.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
 ]
 
-export const transferShowBankDetailsToolbarConfig = [
-	{ type: 'item', labelObj: 'transferShowBankDetails.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+export const paymentShowBankDetailsToolbarConfig = [
+	{ type: 'item', labelObj: 'paymentShowBankDetails.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
 ]
 
-export const transferShowPoliPaymentToolbarConfig = [
-	{ type: 'item', labelObj: 'transferShowPoliPayment.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+export const paymentShowPoliPaymentToolbarConfig = [
+	{ type: 'item', labelObj: 'paymentShowPoliPayment.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
 ]
 
-export const transferShowPayIDToolbarConfig = [
-	{ type: 'item', labelObj: 'transferShowPayID.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
+export const paymentShowPayIDToolbarConfig = [
+	{ type: 'item', labelObj: 'paymentShowPayID.ui.buttonPrevious', icon: "chevron-back-outline", flex: "2" }
 ]
 
 export const transactionsListToolbarConfig = [

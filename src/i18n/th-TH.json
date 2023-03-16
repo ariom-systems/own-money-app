@@ -295,8 +295,7 @@
 				"amount": "ยอดโอน",
 				"beneficiary": "ผู้รับปลายทาง",
 				"review": "รีวิว",
-				"payment": "การชำระเงิน",
-				"finish": "เสร็จสิ้น"
+				"payment": "การชำระเงิน"
 			}
 		},
 		"transferStepOne": {
@@ -373,32 +372,49 @@
 		},
 		"transferStepFour": {
 			"ui": {
+				"buttonMakePayment": "Make A Payment",
+				"buttonNewTransfer": "Create A New Transfer",
+				"instructions1": "You transfer order has been placed. To complete the transfer, please press the Make A Payment button to proceed with payment.",
+				"instructions2": "You can also make a new transfer now, and proceed with this payment later. Just select this order and press Pay from the Transactions screen when you are ready."
+			},
+			"headings": {
+				"orderPlaced": "Transfer Order Placed"
+			}
+		},
+		"paymentProgress": {
+			"labels": {
+				"select": "Select",
+				"prompt": "Confirm",
+				"complete": "Complete"
+			}
+		},
+		"paymentSelectPayment": {
+			"ui": {
 				"buttonPayWithBank": "ชำระผ่านการโอนเงินผ่านธนาคาร",
 				"buttonPayWithPoli": "ชำระเงินด้วยการชำระเงิน Poli",
 				"buttonPayWithPoliImageAlt": "โลโก้การชำระเงินของ Poli",
-				"buttonPayWithPayID": "ชำระเงินโดยใช้ PayID",
-				"buttonPayWithPayIDImageAlt": "โลโก้ PayID"
+				"buttonPayWithPayID": "ชำระเงินโดยใช้ PayID"
 			},
 			"headings": {
 				"selectPayment": "เลือกวิธีการชำระเงิน"
 			}
 		},
-		"transferShowBankDetails": {
+		"paymentShowBankDetails": {
 			"ui": {
 				"buttonPrevious": "ย้อนกลับ"
 			}
 		},
-		"transferShowPoliPayment": {
+		"paymentShowPoliPayment": {
 			"ui": {
 				"buttonPrevious": "ย้อนกลับ"
 			}
 		},
-		"transferShowPayID": {
+		"paymentShowPayID": {
 			"ui": {
 				"buttonPrevious": "ย้อนกลับ"
 			}
 		},
-		"transferStepFive": {},
+
 		"transactionsList": {
 			"currencyCodeAUD": "AUD",
 			"currencyCodeTHB": "THB",
@@ -436,14 +452,17 @@
 				"buttonUpdateProfile": "อัพเดทข้อมูลส่วนตัว",
 				"statusVerifyIdentity": "กรุณายืนยันตัวตน",
 				"statusUpdateDetails": "กรุณาอัพเดทข้อมูลส่วนตัว",
-				"statusProvideProofOfIdentity": "Please provide proof of your identity"
+				"statusProvideProofOfIdentity": "โปรดแสดงหลักฐานยืนยันตัวตนของคุณ",
+				"acc_statusActive": "บัญชีที่ใช้งานอยู่",
+				"acc_statusInactive": "บัญชีไม่ได้ใช้งาน"
 			},
 			"headings": {
 				"personalDetails": "ข้อมูลส่วนตัว",
 				"contactDetails": "ข้อมูลการติดต่อ",
 				"addressDetails": "ที่อยู่",
 				"accountInfo": "ข้อมูลบัญชีปลายทาง",
-				"identityInfo": "หลักฐานประจำตัว"
+				"identityInfo": "หลักฐานประจำตัว",
+				"bankDetails": "รายละเอียดบัญชีธนาคาร"
 			},
 			"labels": {
 				"firstname": "ชื่อ",
@@ -453,13 +472,13 @@
 				"dateofbirth": "ว/ด/ป เกิด",
 				"occupation": "อาชีพ",
 				"phone": "เบอร์โทรศัพท์",
-				"email": "Email",
-				"address": "Australian Residential Address",
-				"city": "City/Suburb",
-				"state": "State",
-				"postcode": "Post Code",
-				"country": "Country",
-				"memberid": "Member ID",
+				"email": "อีเมล",
+				"address": "ที่อยู่ที่อยู่อาศัยของออสเตรเลีย",
+				"city": "เมือง/ชานเมือง",
+				"state": "รัฐ / ดินแดน",
+				"postcode": "ไปรษณีย์",
+				"country": "ประเทศ",
+				"memberid": "หมายเลขประจำตัวสมาชิก",
 				"date_regis": "วันที่สมัครสมาชิก",
 				"date_regis_completed": "วันที่ผ่านการอนุมัติ",
 				"status": "สถานะสมาชิก",
@@ -468,7 +487,14 @@
 				"idtype": "ชนิด",
 				"idnumber": "ตัวเลข",
 				"idexpiry": "วันหมดอายุของไอดี",
-				"idissuer": "ผู้ออก"
+				"idissuer": "ผู้ออก",
+				"bankdetailshelper": "หมายเหตุ: รายละเอียดเหล่านี้ใช้สำหรับการชำระเงินให้กับ OWN Money Services เท่านั้น",
+				"accname": "ชื่อบัญชี",
+				"bsb": "บีเอสบีนัมเบอร์",
+				"acc": "หมายเลขบัญชี",
+				"acc_status": "สถานะบัญชี",
+				"payid_name": "ชื่อ PayID",
+				"payid": "PayID"
 			}
 		},
 		"profileEdit": {
@@ -508,7 +534,7 @@
 				"idnumber": "ตัวเลข",
 				"idexpiry": "วันหมดอายุของไอดี",
 				"idissuer": "ผู้ออก",
-				"identityHelper": "หมายเหตุ: หากคุณต้องการเปลี่ยนหรืออัปเดตหลักฐานยืนยันตัวตน โปรดติดต่อฝ่ายสนับสนุนลูกค้า"
+				"identityhelper": "หมายเหตุ: หากคุณต้องการเปลี่ยนหรืออัปเดตหลักฐานยืนยันตัวตน โปรดติดต่อฝ่ายสนับสนุนลูกค้า"
 			},
 			"placeholders": {
 				"firstname": "ชื่อ",
@@ -575,26 +601,28 @@
 			"transfer": "โอนเงิน",
 			"transactions": "รายการโอนเงิน",
 			"profile": "ข้อมูลส่วนตัว",
-			"settings": "ตั้งค่า"
+			"settings": "ตั้งค่า",
+			"payment": "การชำระเงิน"
 		},
 		"notices": {
 			"title": {
 				"accountInactive": "บัญชีไม่ได้ใช้งาน",
 				"accountRegistered": "สมัครสมาชิก",
-				"badUser": "Email",
+				"badUser": "อีเมล",
 				"beneficiaryDeleted": "ลบเรียบร้อย",
 				"beneficiarySaved": "บันทึกเรียบร้อย",
 				"beneficiaryUpdated": "แก้ไขเรียบร้อย",
-				"blockedUser": "Please contact our staff",
-				"default": "Unknown Error",
+				"blockedUser": "โปรดติดต่อเจ้าหน้าที่ของเรา",
+				"debug": "โหมดดีบัก",
+				"default": "ข้อผิดพลาดที่ไม่รู้จัก",
 				"idExpired": "ID หมดอายุ!",
 				"invalidReferrer": "รหัสผู้แนะนำไม่ถูกต้อง",
 				"logout": "ออกจากระบบ",
-				"noEmail": "Email Address",
+				"noEmail": "ที่อยู่อีเมล",
 				"noPasswordConfirm": "รหัสผ่าน",
 				"noPassword": "กรุณากรอกรหัสผ่าน",
 				"noPhone": "กรุณากรอกเบอร์โทรศัพท์",
-				"offline": "No Internet Connection",
+				"offline": "ไม่มีการเชื่อมต่ออินเทอร์เน็ต",
 				"passwordMismatch": "รหัสผ่าน",
 				"passwordReset": "ร้องขอการรีเซ็ตรหัสผ่าน",
 				"pinReset": "เปลี่ยน PIN Code",
@@ -605,8 +633,8 @@
 				"serverError": "เกิดความขัดข้องทางเทคนิค",
 				"sessionExpired": "ล็อคอินหมดเวลา",
 				"statusVerifyIdentity": "กรุณายืนยันตัวตนของคุณ",
-				"transferRequested": "Order Placed!",
-				"transferComplete": "Success!"
+				"transferRequested": "สั่งซื้อเรียบร้อยแล้ว!",
+				"transferComplete": "ความสำเร็จ!"
 			},
 			"message": {
 				"accountInactive": "บัญชีของคุณไม่ได้ใช้งาน หากคุณเห็นสิ่งนี้ โปรดติดต่อ Own Money Services",
@@ -615,7 +643,8 @@
 				"beneficiaryDeleted": "ลบบัญชีปลายทางสำเร็จ",
 				"beneficiarySaved": "เพิ่มบัญชีปลายทางสำเร็จ",
 				"beneficiaryUpdated": "แก้ไขบัญชีปลายทางสำเร็จ",
-				"blockedUser": "Please contact our staff in order to make a transfer. Tel. 0405539999",
+				"blockedUser": "กรุณาติดต่อเจ้าหน้าที่เพื่อทำการโอนเงิน โทร. 0405539999",
+				"debug": "โหมดแก้ไขข้อบกพร่องทำงานอยู่ ขณะนี้การโอนใหม่ถูกปิดใช้งาน",
 				"default": "Unknown Error กรุณาแคปหน้าจอและแจ้งเจ้าหน้าที่",
 				"idExpired": "ID ของคุณหมดอายุ คุณจะไม่สามารถทำรายการโอนเงินได้ กรุณาติดต่อเจ้าหน้าที่ ที่เบอร์โทร 0421998633 เพื่อทำการอัพเดท ID ใหม่",
 				"invalidReferrer": "รหัสผู้แนะนำไม่ถูกต้อง",
@@ -635,7 +664,7 @@
 				"serverError": "เกิดความขัดข้องทางเทคนิค กรุณาติดต่อเจ้าหน้าที่ หรือลองใหม่ในภายหลัง",
 				"sessionExpired": "ออกจากระบบอัตโนมัติ กรุณาล็อคอินใหม่อีกครั้ง",
 				"statusVerifyIdentity": "ในการส่งเงิน คุณต้องกรอกโปรไฟล์และแสดงหลักฐานยืนยันตัวตนของคุณให้เราทราบ",
-				"transferRequested": "Your transfer order has been placed. Thank you!",
+				"transferRequested": "ส่งคำสั่งโอนของคุณแล้ว ขอบคุณ!",
 				"transferComplete": ""
 			},
 			"ui": {

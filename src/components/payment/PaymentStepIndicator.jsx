@@ -7,7 +7,7 @@ import StepIndicator from 'react-native-step-indicator'
 //data
 import { useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
-import { stepAtom } from '../../data/recoil/transfer'
+import { paymentStepAtom } from '../../data/recoil/transfer'
 import { langState } from '../../data/recoil/system'
 
 //lang
@@ -17,9 +17,9 @@ const auStrings = require('../../i18n/en-AU.json')
 const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({...auStrings, ...thStrings})
 
-const TransferStepIndicator = (props) => {
+const PaymentStepIndicator = (props) => {
 	const forceUpdate = useForceUpdate()
-	const step = useRecoilValue(stepAtom)
+	const paymentStep = useRecoilValue(paymentStepAtom)
 	const lang = useRecoilValue(langState)
 	const [xs, base] = useMediaQuery([{
 		maxWidth: 380
@@ -28,10 +28,9 @@ const TransferStepIndicator = (props) => {
 	}])
 
 	let labels = [
-		language.transferProgress.labels.amount,
-		language.transferProgress.labels.beneficiary,
-		language.transferProgress.labels.review,
-		language.transferProgress.labels.payment
+		language.paymentProgress.labels.select,
+		language.paymentProgress.labels.prompt,
+		language.paymentProgress.labels.complete,
 	]
 
 	let customStyles = {}
@@ -50,9 +49,9 @@ const TransferStepIndicator = (props) => {
 
 	return (
 		<Box mt={Sizes.spacingSmall} py={Sizes.spacing} backgroundColor={"white"}>
-			<StepIndicator stepCount={4} currentPosition={step} customStyles={customStyles} labels={labels} />
+			<StepIndicator stepCount={3} currentPosition={paymentStep} customStyles={customStyles} labels={labels} />
 		</Box>
 	)
 }
 
-export default memo(TransferStepIndicator)
+export default memo(PaymentStepIndicator)

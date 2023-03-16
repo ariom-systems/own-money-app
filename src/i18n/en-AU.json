@@ -295,8 +295,7 @@
 				"amount": "Amount",
 				"beneficiary": "Beneficiary",
 				"review": "Review",
-				"payment": "Payment",
-				"finish": "Finish"
+				"payment": "Payment"
 			}
 		},
 		"transferStepOne": {
@@ -373,34 +372,49 @@
 		},
 		"transferStepFour": {
 			"ui": {
+				"buttonMakePayment": "Make A Payment",
+				"buttonNewTransfer": "Create A New Transfer",
+				"instructions1": "You transfer order has been placed. To complete the transfer, please press the Make A Payment button to proceed with payment.",
+				"instructions2": "You can also make a new transfer now, and proceed with this payment later. Just select this order and press Pay from the Transactions screen when you are ready."
+			},
+			"headings": {
+				"orderPlaced": "Transfer Order Placed"
+			}
+		},
+		"paymentProgress": {
+			"labels": {
+				"select": "Select",
+				"prompt": "Confirm",
+				"complete": "Complete"
+			}
+		},
+		"paymentSelectPayment": {
+			"ui": {
 				"buttonPayWithBank": "Pay via Bank Transfer",
 				"buttonPayWithPoli": "Pay with Poli",
 				"buttonPayWithPoliImageAlt": "Poli Payments logo",
-				"buttonPayWithPayID": "Pay using PayID",
-				"buttonPayWithPayIDImageAlt": "PayID logo"
+				"buttonPayWithPayID": "Pay using PayID"
 			},
 			"headings": {
 				"selectPayment": "Select Payment Method"
 			}
 		},
-		"transferShowBankDetails": {
+		"paymentShowBankDetails": {
 			"ui": {
 				"buttonPrevious": "Previous"
 			}
 		},
-		"transferShowPoliPayment": {
+		"paymentShowPoliPayment": {
 			"ui": {
 				"buttonPrevious": "Previous"
 			}
 		},
-		"transferShowPayID": {
+		"paymentShowPayID": {
 			"ui": {
 				"buttonPrevious": "Previous"
 			}
 		},
-		"transferStepFive": {
-
-		},
+		
 		"transactionsList": {
 			"labelLoadMore": "Load more"
 		},
@@ -435,14 +449,17 @@
 				"buttonUpdateProfile": "Update Profile",
 				"statusVerifyIdentity": "Please verify your identity",
 				"statusUpdateDetails": "Please update your details",
-				"statusProvideProofOfIdentity": "Please provide proof of your identity"
+				"statusProvideProofOfIdentity": "Please provide proof of your identity",
+				"acc_statusActive": "Active",
+				"acc_statusInactive": "Inactive"
 			},
 			"headings": {
 				"personalDetails": "Personal Details",
 				"contactDetails": "Contact Details",
 				"addressDetails": "Address Details",
 				"accountInfo": "Account Info",
-				"identityInfo": "Proof of Identity"
+				"identityInfo": "Proof of Identity",
+				"bankDetails": "Bank Account Details"
 			},
 			"labels": {
 				"firstname": "First Name",
@@ -467,7 +484,14 @@
 				"idtype": "Type",
 				"idnumber": "Number",
 				"idexpiry": "Expiry",
-				"idissuer": "Issuer"
+				"idissuer": "Issuer",
+				"bankdetailshelper": "Note: These details are for making payments to OWN Money Services only.",
+				"accname": "Account Name",
+				"bsb": "BSB",
+				"acc": "Account Number",
+				"acc_status": "Account Status",
+				"payid_name": "PayID Name",
+				"payid": "PayID"
 			}
 		},
 		"profileEdit": {
@@ -506,7 +530,7 @@
 				"idnumber": "Number",
 				"idexpiry": "Expiry",
 				"idissuer": "Issuer",
-				"identityHelper": "Note: If you need to change or update your proof of identity, please contact Customer Support."
+				"identityhelper": "Note: If you need to change or update your proof of identity, please contact Customer Support."
 			},
 			"placeholders": {
 				"firstname": "First Name",
@@ -524,7 +548,7 @@
 				"idissuer": "Issuer"
 			},
 			"errors": {
-				"firstNameRequired": "Please provide yout First Name",
+				"firstNameRequired": "Please provide your First Name",
 				"middleNamRequired": "Please provide your Middle Name",
 				"lastNameRequired": "Please provide your Last Name",
 				"dateOfBirthRequired": "Please provide your Date Of Birth",
@@ -573,7 +597,8 @@
 			"transfer": "Transfer",
 			"transactions": "Transactions",
 			"profile": "Your Profile",
-			"settings": "Settings"
+			"settings": "Settings",
+			"payment": "Payment"
 		},
 		"notices": {
 			"title": {
@@ -584,6 +609,7 @@
 				"beneficiarySaved": "Saved",
 				"beneficiaryUpdated": "Updated",
 				"blockedUser": "Please contact our staff",
+				"debug": "Debug Mode",
 				"default": "Unknown Error",
 				"idExpired": "ID Expired",
 				"invalidReferrer": "",
@@ -615,6 +641,7 @@
 				"beneficiarySaved": "Your new beneficiary has been created.",
 				"beneficiaryUpdated": "Details for your selected Beneficiary have been updated.",
 				"blockedUser": "Please contact our staff in order to make a transfer. Tel. 0405539999",
+				"debug": "Debug mode is active. New transfers are currently disabled.",
 				"default": "An unknown error has occurred. If you are seeing this, please report this to Own Money Services.",
 				"idExpired": "Your ID is expired. You cannot transfer at the moment. Please contact our staff to update your ID. Tel. 0421998633",
 				"invalidReferrer": "",

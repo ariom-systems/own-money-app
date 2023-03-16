@@ -5,7 +5,7 @@ export function useInterval(callback, delay, cancel = null) {
 
 	useEffect(() => {
 		savedCallback.current = callback
-	})
+	}) //using [] breaks the cycle
 
 	useEffect(() => {
 		function tick() {

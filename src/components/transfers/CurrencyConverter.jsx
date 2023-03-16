@@ -54,14 +54,10 @@ const CurrencyConverter = () => {
 		setValue('aud', formatCurrency(newAud, "en-AU", "AUD").value, { shouldValidate: true })
 	}, [promo])
 
-	useEffect(()=> {
-		//console.log('CurrencyConvertor.useEffect', rate)
-	}, [rate])
-
 	return (
 		<VStack>
 			<FormControl isInvalid={ (hasErrors) ? true : false} >
-				<VStack space={"4"}>
+				<VStack space={Sizes.spacing}>
 					<InputGroup>
 						<TextInputLeft isDisabled={ user.preventTransfer } value={"$"} hasErrors={hasErrors} styles={{ width: "15%" }} />
 						<Controller

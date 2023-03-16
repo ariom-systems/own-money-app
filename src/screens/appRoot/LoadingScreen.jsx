@@ -128,9 +128,7 @@ const LoadingScreen = () => {
 		})
 
 		const loadTransactions = new Promise((resolve, reject) => {
-			const today = new Date(Date.parse(new Date()))
-			let time = encodeURIComponent(dateFormat('Y-m-d H:i:s', today))
-			api.get(buildDataPath('transactions', auth.uid, 'list', { from: time }))
+			api.get(buildDataPath('transactions', auth.uid, 'list', { from: 'now' }))
 				.then(response => {
 					let data = response.data, newData
 					newData = addExtraRecordData(data)

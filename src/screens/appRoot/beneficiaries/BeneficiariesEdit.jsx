@@ -14,7 +14,7 @@ import { useRecoilState, useRecoilValue } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { AuthContext } from '../../../data/Context'
 import { getNotice } from '../../../data/handlers/Status'
-import { api, beneficiaryEditToolbarConfig, validationRulesBeneficiaryEdit } from '../../../config'
+import { Sizes, api, beneficiaryEditToolbarConfig, validationRulesBeneficiaryEdit } from '../../../config'
 import { buildDataPath, atomReplaceItemAtIndex, addObjectExtraData, mapActionsToConfig } from '../../../data/Actions'
 import { beneficiaryList, beneficiaryObj } from '../../../data/recoil/beneficiaries'
 import { loadingState, noticeState, langState } from '../../../data/recoil/system'
@@ -132,12 +132,12 @@ function BeneficiariesEditInner() {
 	return (
 		<AppSafeArea>
 			<ScrollView w={"100%"}>
-				<VStack space={"4"} m={"2.5%"}>
+				<VStack space={Sizes.spacing} m={"2.5%"}>
 					{ notices && <AlertBanner /> }
 					<Toolbar config={toolbarConfig} />
 					<VStack pb={"2.5%"} space={"2"} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryEdit.headings.personalDetails }</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={ "firstname" }
 								control={ control }
@@ -177,7 +177,7 @@ function BeneficiariesEditInner() {
 					</VStack>
 					<VStack pb={"2.5%"} space={"2"} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryEdit.headings.bankDetails }</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>	
+						<VStack space={Sizes.spacing} px={"2.5%"}>	
 							<Forms.TextInput
 								name={ "accountnumber" }
 								control={ control }
@@ -233,7 +233,7 @@ function BeneficiariesEditInner() {
 					</VStack>
 					<VStack pb={"4"} space={"2"} bgColor={"white"} rounded={"8"}>
 						<Forms.HeaderItem nb={{roundedTop: "8"}}>{ language.beneficiaryEdit.headings.addressDetails }</Forms.HeaderItem>
-						<VStack space={"4"} px={"2.5%"}>
+						<VStack space={Sizes.spacing} px={"2.5%"}>
 							<Forms.TextInput
 								name={ "address" }
 								control={ control }

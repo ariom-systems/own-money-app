@@ -15,9 +15,9 @@ import AlertBanner from '../../../components/common/AlertBanner'
 import { useRecoilState, useRecoilValue, useSetRecoilState, useResetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../../data/Hooks'
 import { FormProvider, useForm, useFormContext } from 'react-hook-form'
-import { transferStepOneToolbarConfig } from '../../../config'
+import { Sizes, transferStepOneToolbarConfig } from '../../../config'
 import { mapActionsToConfig, mapPropertiesToConfig } from '../../../data/Actions'
-import { stepAtom, transferAtom, audAtom, promoAtom, thbSelector, feeSelector, rateSelector, stepOneButtonAtom } from '../../../data/recoil/transfer'
+import { stepAtom, transferAtom, audAtom, promoAtom, thbSelector, feeSelector, rateSelector, buttonState } from '../../../data/recoil/transfer'
 import { userState } from '../../../data/recoil/user'
 import { globalState, noticeState, langState } from '../../../data/recoil/system'
 
@@ -68,7 +68,7 @@ const TransferStepOneInner = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
 	const { handleSubmit, reset, formState } = useFormContext()
-	let [ buttonState, setButtonState] = useRecoilState(stepOneButtonAtom)
+	let [ button, setButton] = useRecoilState(buttonState)
 	let [ aud, setAud ] = useRecoilState(audAtom)
 	let [ thb, setThb ] = useRecoilState(thbSelector)
 	let setStep = useSetRecoilState(stepAtom)
@@ -82,7 +82,7 @@ const TransferStepOneInner = () => {
 	let lang = useRecoilValue(langState)
 	const resetAUD = useResetRecoilState(audAtom)
 	const resetPromo = useResetRecoilState(promoAtom)
-	const resetButton = useResetRecoilState(stepOneButtonAtom)
+	const resetButton = useResetRecoilState(buttonState)
 	const resetTransfer = useResetRecoilState(transferAtom)
 
 	const actions = [
@@ -91,7 +91,7 @@ const TransferStepOneInner = () => {
 			handleSubmit((data) => onSubmit(data), (error) => onError(error))()
 		}
 	]
-	const properties = [ {}, {}, { isDisabled: buttonState } ]
+	const properties = [ {}, {}, { isDisabled: button.transferStepOne } ]
 	let toolbarConfig = mapActionsToConfig(transferStepOneToolbarConfig, actions)
 	toolbarConfig = mapPropertiesToConfig(toolbarConfig, properties)
 
@@ -105,11 +105,22 @@ const TransferStepOneInner = () => {
 
 	useEffect(() => {
 		if(formState.errors.aud || formState.errors.thb || formState.errors.remaining) {
-			setButtonState(true)
+			setButton((prev) => ({
+				...prev,
+				transferStepOne: true
+			}))
 		} else if(aud == "" || thb == "" || aud == 0 || thb == 0) {
-			setButtonState(true)
+			setButton((prev) => ({
+				...prev,
+				transferStepOne: true
+			}))
 		} else {
-			if(aud != "") { setButtonState(false) }
+			if(aud != "") {
+				setButton((prev) => ({
+					...prev,
+					transferStepOne: false
+				}))
+			}
 		}
 	},[formState, aud, thb])
 
@@ -125,7 +136,7 @@ const TransferStepOneInner = () => {
 			bonusrate: promo.rate,
 			fees: Number(fee).toFixed(2),
 			totaltopay: (Number(aud) + Number(fee)).toFixed(2),
-			receivableamount: parseInt(thb.replaceAll(',','')),
+			receivableamount: Number(thb.replaceAll(',', '')).toFixed(2),
 			maxlimit: Number(user.daily_limit_max).toFixed(2),
 			limitbefore: Number(user.daily_limit_remaining),
 			limitbonus: Number(promo.limit),
@@ -150,11 +161,11 @@ const TransferStepOneInner = () => {
 	return (
 		<AppSafeArea>
 			<ScrollView>
-				<VStack p={"2.5%"} space={"4"}>
+				<VStack p={"2.5%"} space={Sizes.spacing}>
 					{notices && <AlertBanner /> }
 					<VStack bgColor={"white"} p={"4"} rounded={"8"}>
 						<TransferStepIndicator />
-						<VStack space={"4"} w={"100%"} alignItems={"center"}>
+						<VStack space={Sizes.spacing} w={"100%"} alignItems={"center"}>
 							<Text textAlign={"center"}>{ language.transferStepOne.ui.instructionTop }</Text>
 							<HStack textAlign={"center"} space={"2"} alignItems={"center"}>
 								<ExchangeRate size={"sm"} />

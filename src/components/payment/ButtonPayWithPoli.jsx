@@ -5,9 +5,10 @@ import { useNavigation } from '@react-navigation/native'
 import { Image, Pressable, Text, VStack } from 'native-base'
 
 //data
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { Sizes } from '../../config'
+import { paymentStepAtom } from '../../data/recoil/transfer'
 import { langState } from '../../data/recoil/system'
 
 //lang
@@ -20,6 +21,7 @@ const ButtonPayWithPoli = () => {
 	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
 	const lang = useRecoilValue(langState)
+	const setPaymentStep = useSetRecoilState(paymentStepAtom)
 
 	useEffect(() => {
 		if (language.getLanguage() !== lang) {
@@ -29,11 +31,16 @@ const ButtonPayWithPoli = () => {
 		}
 	}, [language, lang])
 
+	const handlePress = () => {
+		setPaymentStep(1)
+		navigation.navigate('PaymentShowPoliPayment')
+	}
+
 	return (
-		<Pressable onPress={() => navigation.navigate('TransferShowPoliPayment')} flex={"1"}>
+		<Pressable onPress={handlePress} flex={"1"}>
 			<VStack space={Sizes.spacing} borderWidth={"2"} borderColor={"coolGray.200"} p={Sizes.padding} rounded={Sizes.rounded}>
-				<Image style={{ aspectRatio: 3/2 }} source={{ uri: 'https://resources.apac.paywithpoli.com/poli-logo-46.png' }} alt={language.transferStepFour.ui.buttonPayWithPoliImageAlt} />
-				<Text textAlign={"center"}>{language.transferStepFour.ui.buttonPayWithPoli}</Text>
+				<Image style={{ aspectRatio: 3 / 2 }} source={{ uri: 'https://resources.apac.paywithpoli.com/poli-logo-46.png' }} alt={language.paymentSelectPayment.ui.buttonPayWithPoliImageAlt} />
+				<Text textAlign={"center"}>{language.paymentSelectPayment.ui.buttonPayWithPoli}</Text>
 			</VStack>
 		</Pressable>
 	)

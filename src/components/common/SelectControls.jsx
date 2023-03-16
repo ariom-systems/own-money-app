@@ -4,10 +4,13 @@ import React, { useContext, useState, useEffect } from 'react'
 import { Select } from 'native-base'
 
 //data
-import { buildDataPath } from '../../data/Actions'
-import { AuthContext } from '../../data/Context'
-import { api, Sizes } from '../../config'
+import { useRecoilValue } from 'recoil'
 import { useFormContext } from 'react-hook-form'
+import { buildDataPath } from '../../data/Actions'
+import { api, Sizes } from '../../config'
+import { AuthContext } from '../../data/Context'
+import { debugState } from '../../data/recoil/system'
+
 
 export const Controlled = (props) => {
 	switch(props.component) {
@@ -108,6 +111,7 @@ export const IDIssuer = (props) => {
 export const Purpose = (props) => {
 	const { setValue } = useFormContext()
 	const { auth } = useContext(AuthContext)
+	const debug = useRecoilValue(debugState)
 	const [purpose, setPurpose] = useState({
 		loaded: false,
 		purpose: [],
@@ -120,12 +124,14 @@ export const Purpose = (props) => {
 			.then(response => {
 				let purposes = []
 				if (Array.isArray(response.data)) {
+					if (debug == true) {
+						purposes.push(<Select.Item key={'999'} label={"API Testing"} value={"API Testing"} />)
+						purposes.push(<Select.Item key={'998'} label={"iOS App Testing"} value={"iOS App Testing"} />)
+						purposes.push(<Select.Item key={'997'} label={"Android App Testing"} value={"Android App Testing"} />)
+					}
 					response.data.map((element, index) => {
 						purposes.push(<Select.Item key={index} label={element.purpose} value={element.purpose} />)
 					})
-					if (auth.uid == 16) { //ME!!!
-						purposes.push(<Select.Item key={'999'} label={"API Testing Only"} value={"API Testing Only"} />)
-					}
 					setPurpose({
 						loaded: true,
 						purposes: purposes
