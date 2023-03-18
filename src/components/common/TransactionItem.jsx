@@ -1,16 +1,18 @@
 import React, { useEffect } from 'react'
 
 //components
-import { Avatar, Badge, Button, HStack, Spacer, Text, VStack, useMediaQuery } from 'native-base'
+import { useNavigation } from '@react-navigation/native'
+import { Button, HStack,Text, VStack, useMediaQuery } from 'native-base'
 import { AuSVG } from '../../assets/img/AuSVG'
 import { ThSVG } from '../../assets/img/ThSVG'
 import Icon from './Icon'
-import { CheckCircleIcon, WarningIcon, WarningOutlineIcon } from 'native-base'
+import { CheckCircleIcon, WarningIcon } from 'native-base'
 
 //data
-import { useRecoilValue } from 'recoil'
+import { useRecoilValue, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
 import { Sizes } from '../../config'
+import { transactionObj, transactionList } from '../../data/recoil/transactions'
 import { langState } from '../../data/recoil/system'
 
 //lang
@@ -20,14 +22,22 @@ const thStrings = require('../../i18n/th-TH.json')
 let language = new LocalizedStrings({ ...auStrings, ...thStrings })
 
 const TransactionItem = (props) => {
+	const navigation = useNavigation()
 	const forceUpdate = useForceUpdate()
+	const setTransaction = useSetRecoilState(transactionObj)
+	const transactions = useRecoilValue(transactionList)
 	const lang = useRecoilValue(langState)
 	const [ smallScreen ] = useMediaQuery({
 		maxWidth: 380
 	})
 	let { index, fullname, status, transfer_amount, received_amount, button = null } = props
-	let { label, fn } = button ?? { label: "Test", fn: () => alert('test') }
 	let headerBgColour, colour, bgColour, element, statusText
+
+	let { label, fn } = button ?? { label: language.components.buttonTranscationPayNow, fn: () => {
+		let selected = transactions.find(element => Number(element.id) == Number(props.id))
+		setTransaction(selected)
+		navigation.navigate('Transfer', { screen: 'PaymentSelect'})
+	}}
 
 	switch (status) {
 		case 'Completed':

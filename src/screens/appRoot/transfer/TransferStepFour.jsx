@@ -55,17 +55,23 @@ const TransferStepFour = () => {
 			.then(response => {
 				let data = response.data, newData
 				newData = addExtraRecordData(data)
-				if (transfer.transaction_DB_id !== 'undefined') {
-					let tmpObj = newData.find(element => Number(element.id) == Number(transfer.transaction_DB_id))
-					if(tmpObj) {
-						setTransaction(tmpObj)
-					}
-				}
 				setTransactions(newData)
 				setStep(3)
 			})
 			.catch(error => console.error('error setting transactions list', error))
 	},[])
+
+	const handleProceedToPayment = () => {
+		if (transfer.transaction_DB_id != 'undefined') {
+			let tmpObj = transactions.find(element => Number(element.id) == Number(transfer.transaction_DB_id))
+			if (tmpObj) {
+				console.log('found', tmpObj)
+				setTransaction(tmpObj)
+			}
+		}
+
+		navigation.navigate('PaymentSelect')
+	}
 
 	const handleNewTransfer = () => {
 		resetTransfer()
@@ -87,9 +93,9 @@ const TransferStepFour = () => {
 					</VStack>
 					<VStack space={Sizes.spacingLarge} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
 						<LabelValue label={ language.transferStepFour.headings.orderPlaced } value={transaction.transaction_number || ""}  />
-						<Text alignSelf={"stretch"}>{ language.transferStepFour.ui.instructions1 }</Text>
+						<Text alignSelf={"stretch"}>{ language.transferStepFour.ui.instructions }</Text>
 						<VStack space={Sizes.spacingLarge} w={"100%"}>
-							<Pressable p={Sizes.padding} bgColor={"primary.600"} rounded={Sizes.rounded} onPress={() => navigation.navigate('PaymentSelect')}>
+							<Pressable p={Sizes.padding} bgColor={"primary.600"} rounded={Sizes.rounded} onPress={handleProceedToPayment}>
 								<Text textAlign={"center"} color={"white"} fontSize={"xl"}>{ language.transferStepFour.ui.buttonMakePayment }</Text>
 							</Pressable>
 							<Pressable p={Sizes.padding} borderColor={"primary.600"} borderWidth={"2"} rounded={Sizes.rounded} onPress={handleNewTransfer}>

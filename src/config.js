@@ -607,8 +607,12 @@ export const forgotPasswordToolbarConfig = [
 	{ type: 'item', labelObj: 'forgotPassword.ui.buttonBackToLogin', flex: 1, variant: 'outlineDark' }
 ]
 
-export const dashboardToolbarConfig = [
+export const dashboardToolbarConfigBottom = [
 	{ type: 'item', labelObj: 'dashboard.ui.buttonViewTransactions', flex: "3", id: 'dashboard' }
+]
+
+export const dashboardToolbarConfigTop = [
+	{ type: 'item', labelObj: 'dashboard.ui.buttonNewTransfer', flex: "3", id: 'dashboard' }
 ]
 
 export const beneficiaryListToolbarConfig = [

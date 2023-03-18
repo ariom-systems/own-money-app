@@ -10,6 +10,7 @@ import Toolbar from '../../../components/common/Toolbar'
 import ButtonPayWithPoli from '../../../components/payment/ButtonPayWithPoli'
 import ButtonBankTransfer from '../../../components/payment/ButtonBankTransfer'
 import ButtonPayWithPayID from '../../../components/payment/ButtonPayWithPayID'
+import Notes from '../../../components/payment/Notes'
 
 //data
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil'
@@ -48,7 +49,7 @@ const PaymentSelect = () => {
 
 	const handleBack = () => {
 		setStep(3)
-		navigation.navigate('TransferStepFour')
+		navigation.goBack()
 	}
 
 	return (
@@ -69,6 +70,7 @@ const PaymentSelect = () => {
 							<ButtonPayWithPayID />
 							<Spacer />
 						</HStack>
+						<Notes screen={"PaymentSelect"} />
 					</VStack>
 					<Toolbar config={toolbarConfig} />
 				</VStack>

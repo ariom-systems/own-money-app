@@ -2,7 +2,7 @@ import React, { useEffect, memo } from 'react'
 
 //components
 import { useNavigation } from '@react-navigation/native'
-import { Pressable, Text, VStack } from 'native-base'
+import {  Pressable, Text, VStack } from 'native-base'
 import Icon from '../common/Icon'
 
 //data
@@ -33,7 +33,7 @@ const ButtonBankTransfer = () => {
 	}, [language, lang])
 
 	const handlePress = () => {
-		setPaymentStep(1)
+		setPaymentStep(2)
 		navigation.navigate('PaymentShowBankDetails')
 	}
 

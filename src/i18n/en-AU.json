@@ -95,6 +95,7 @@
 		},
 		"dashboard": {
 			"ui": {
+				"buttonNewTransfer": "Create A New Transfer",
 				"buttonViewTransactions": "View Transactions",
 				"greeting": "Hi",
 				"recentTransfersTitle": "Recent Transfers"
@@ -374,8 +375,7 @@
 			"ui": {
 				"buttonMakePayment": "Make A Payment",
 				"buttonNewTransfer": "Create A New Transfer",
-				"instructions1": "You transfer order has been placed. To complete the transfer, please press the Make A Payment button to proceed with payment.",
-				"instructions2": "You can also make a new transfer now, and proceed with this payment later. Just select this order and press Pay from the Transactions screen when you are ready."
+				"instructions": "You transfer order has been placed. To complete the transfer, please press the Make A Payment button to proceed with payment."
 			},
 			"headings": {
 				"orderPlaced": "Transfer Order Placed"
@@ -397,11 +397,44 @@
 			},
 			"headings": {
 				"selectPayment": "Select Payment Method"
+			},
+			"notes": {
+				"heading": "Notes",
+				"bankPayment": {
+					"subHeading": "Bank Transfer",
+					"point1": "Receive THB within 15 minutes after funds have cleared",
+					"point2": "Osko may take 1-2 business days for funds to be cleared"
+				},
+				"poliPayment": {
+					"subHeading": "Poli Payments",
+					"point1": "Receive THB within 1-2 hours after funds have cleared"
+				},
+				"payid": {
+					"subHeading": "PayID",
+					"point1": "Receive THB within 15 minutes after funds have cleared"
+				},
+				"allPayment": {
+					"subHeading": "All Payment Methods",
+					"point1": "It may take up to 1-2 business days for the first time."
+				}
 			}
 		},
 		"paymentShowBankDetails": {
 			"ui": {
-				"buttonPrevious": "Previous"
+				"buttonPrevious": "Previous",
+				"instructions": "Please make the payment to the account below.",
+				"acc_name": "Account Name",
+				"bsb": "BSB",
+				"acc": "Account Number",
+				"pleasePay": "Please Pay"
+			},
+			"headings": {
+				"bankTransfer": "Bank Transfer"
+			},
+			"notes": {
+				"notice1": "This Account is for making payment to OWN Money Services only.",
+				"notice2": "To comply with the Anti-Money Laundering and Counter Terrorism Financing Act 2006, your payment must be made from your own personal account only.",
+				"notice3": "If your payment comes from a bank account with another persons name, a joint bank account, or a business bank account, your payment will be rejected and refunded."
 			}
 		},
 		"paymentShowPoliPayment": {
@@ -411,7 +444,19 @@
 		},
 		"paymentShowPayID": {
 			"ui": {
-				"buttonPrevious": "Previous"
+				"buttonPrevious": "Previous",
+				"instructions": "Please make the payment to the PayID/Email below.",
+				"acc_name": "Account Name",
+				"payID": "PayID/Email",
+				"pleasePay": "Please Pay"
+			},
+			"headings": {
+				"payID": "PayID Details"
+			},
+			"notes": {
+				"notice1": "This PayID is for making payment to OWN Money Services only.",
+				"notice2": "To comply with the Anti-Money Laundering and Counter Terrorism Financing Act 2006, your payment must be made from your own personal account only.",
+				"notice3": "If your payment comes from a bank account with another persons name, a joint bank account, or a business bank account, your payment will be rejected and refunded."
 			}
 		},
 		
@@ -679,7 +724,8 @@
 			"buttonLabelProcessing": "Processing",
 			"buttonLabelSaving": "Saving",
 			"buttonLabelLoading": "Loading",
-			"buttonLabelDeleting": "Deleting"
+			"buttonLabelDeleting": "Deleting",
+			"buttonTranscationPayNow": "Pay Now"
 		},
 		"loadingOverlay": {
 			"processing": "Processing",

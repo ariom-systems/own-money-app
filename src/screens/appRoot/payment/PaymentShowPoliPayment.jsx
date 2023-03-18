@@ -56,6 +56,7 @@ const TransferShowPoliPayment = () => {
 					</VStack>
 					<VStack space={Sizes.spacing} w={"100%"} alignItems={"center"} bgColor={"white"} rounded={"8"} p={"4"}>
 						<Text>Poli Payment</Text>
+						<Text>(still working on it)</Text>
 					</VStack>
 					<Toolbar config={toolbarConfig} />
 				</VStack>

@@ -95,6 +95,7 @@
 		},
 		"dashboard": {
 			"ui": {
+				"buttonMakePayment": "ทำการชำระเงิน",
 				"buttonViewTransactions": "ดูรายละเอียดรายการ",
 				"greeting": "สวัสดี",
 				"recentTransfersTitle": "รายการโอนล่าสูด"
@@ -372,10 +373,9 @@
 		},
 		"transferStepFour": {
 			"ui": {
-				"buttonMakePayment": "Make A Payment",
-				"buttonNewTransfer": "Create A New Transfer",
-				"instructions1": "You transfer order has been placed. To complete the transfer, please press the Make A Payment button to proceed with payment.",
-				"instructions2": "You can also make a new transfer now, and proceed with this payment later. Just select this order and press Pay from the Transactions screen when you are ready."
+				"buttonMakePayment": "ทำการชำระเงิน",
+				"buttonNewTransfer": "สร้างการโอนใหม่",
+				"instructions": "สั่งโอนเรียบร้อยแล้ว เพื่อทำการโอนให้เสร็จสิ้น กรุณากดปุ่ม ชำระเงิน เพื่อดำเนินการชำระเงิน"
 			},
 			"headings": {
 				"orderPlaced": "Transfer Order Placed"
@@ -397,11 +397,44 @@
 			},
 			"headings": {
 				"selectPayment": "เลือกวิธีการชำระเงิน"
+			},
+			"notes": {
+				"heading": "หมายเหตุ",
+				"bankPayment": {
+					"subHeading": "โอนเงินผ่านธนาคาร",
+					"point1": "ได้รับเงินบาทภายใน 15 นาทีหลังจากเงินเคลียร์",
+					"point2": "สำหรับบัญชีต้นทางของลูกค้า ที่ไม่มีระบบ Osko รายการอาจใช้เวลา 1-2 วันทำการ"
+				},
+				"poliPayment": {
+					"subHeading": "Poli",
+					"point1": "ได้รับเงินบาทภายใน 1-2 ชั่วโมงหลังจากเคลียร์เงินแล้ว"
+				},
+				"payid": {
+					"subHeading": "PayID",
+					"point1": "ได้รับเงินบาทภายใน 15 นาทีหลังจากเงินเคลียร์"
+				},
+				"allPayment": {
+					"subHeading": "วิธีการชำระเงินทั้งหมด",
+					"point1": "อาจใช้เวลาถึง 1-2 วันทำการในครั้งแรก"
+				}
 			}
 		},
 		"paymentShowBankDetails": {
 			"ui": {
-				"buttonPrevious": "ย้อนกลับ"
+				"buttonPrevious": "ย้อนกลับ",
+				"instructions": "กรุณาชำระเงินเข้าบัญชีด้านล่าง",
+				"acc_name": "ชื่อบัญชี",
+				"bsb": "บีเอสบีนัมเบอร์",
+				"acc": "หมายเลขบัญชี",
+				"pleasePay": "กรุณาชำระเงิน"
+			},
+			"headings": {
+				"bankTransfer": "โอนเงินผ่านธนาคาร"
+			},
+			"notes": {
+				"notice1": "บัญชีนี้มีไว้สำหรับชำระเงินให้กับ OWN Money Services เท่านั้น",
+				"notice2": "เพื่อให้เป็นไปตามพระราชบัญญัติต่อต้านการฟอกเงินและต่อต้านการให้เงินสนับสนุนการก่อการร้าย พ.ศ. 2549 การชำระเงินของคุณต้องทำจากบัญชีส่วนตัวของคุณเองเท่านั้น",
+				"notice3": "หากการชำระเงินของคุณมาจากบัญชีธนาคารที่มีชื่อบุคคลอื่น บัญชีธนาคารร่วม หรือบัญชีธนาคารธุรกิจ การชำระเงินของคุณจะถูกปฏิเสธและคืนเงิน"
 			}
 		},
 		"paymentShowPoliPayment": {
@@ -411,14 +444,23 @@
 		},
 		"paymentShowPayID": {
 			"ui": {
-				"buttonPrevious": "ย้อนกลับ"
+				"buttonPrevious": "ย้อนกลับ",
+				"instructions": "กรุณาชำระเงินไปที่ PayID/Email ด้านล่าง",
+				"acc_name": "ชื่อบัญชี",
+				"payID": "PayID / อีเมล",
+				"pleasePay": "กรุณาชำระเงิน"
+			},
+			"headings": {
+				"payID": "รายละเอียด PayID"
+			},
+			"notes": {
+				"notice1": "PayID นี้ใช้สำหรับชำระเงินให้กับ OWN Money Services เท่านั้น",
+				"notice2": "เพื่อให้เป็นไปตามพระราชบัญญัติต่อต้านการฟอกเงินและต่อต้านการให้เงินสนับสนุนการก่อการร้าย พ.ศ. 2549 การชำระเงินของคุณต้องทำจากบัญชีส่วนตัวของคุณเองเท่านั้น",
+				"notice3": "หากการชำระเงินของคุณมาจากบัญชีธนาคารที่มีชื่อบุคคลอื่น บัญชีธนาคารร่วม หรือบัญชีธนาคารธุรกิจ การชำระเงินของคุณจะถูกปฏิเสธและคืนเงิน"
 			}
 		},
 
 		"transactionsList": {
-			"currencyCodeAUD": "AUD",
-			"currencyCodeTHB": "THB",
-			"labelLoading": "กำลังดำเนินการ",
 			"labelLoadMore": "โหลดเพิ่มเติม"
 		},
 		"transactionsDetail": {
@@ -682,7 +724,8 @@
 			"buttonLabelProcessing": "กำลังประมวลผล",
 			"buttonLabelSaving": "ประหยัด",
 			"buttonLabelLoading": "กำลังโหลด",
-			"buttonLabelDeleting": "กำลังลบ"
+			"buttonLabelDeleting": "กำลังลบ",
+			"buttonTranscationPayNow": "จ่ายตอนนี้"
 		},
 		"loadingOverlay": {
 			"processing": "กำลังประมวลผล",

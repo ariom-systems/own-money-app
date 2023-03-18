@@ -12,7 +12,7 @@ import ListHeader from '../../components/common/ListHeader'
 //data
 import { selector, useRecoilValue, useSetRecoilState } from 'recoil'
 import { useForceUpdate } from '../../data/Hooks'
-import { Sizes, dashboardToolbarConfig } from '../../config'
+import { Sizes, dashboardToolbarConfigBottom, dashboardToolbarConfigTop } from '../../config'
 import { groupTransactionsByDate, mapActionsToConfig } from '../../data/Actions'
 import { transactionList } from '../../data/recoil/transactions'
 import { userState } from '../../data/recoil/user'
@@ -54,8 +54,11 @@ const DashboardScreen = ({ navigation }) => {
 	},[])
 	
 
-	const actions = [() => navigation.navigate('Transactions', { screen: 'TransactionsList' })]
-	const toolbarConfig = mapActionsToConfig(dashboardToolbarConfig, actions)
+	const actionsBottom = [() => navigation.navigate('Transactions', { screen: 'TransactionsList' })]
+	const toolbarBottomConfig = mapActionsToConfig(dashboardToolbarConfigBottom, actionsBottom)
+	
+	const actionsTop = [() => navigation.navigate('Transfer', { screen: 'TransferStepOne' })]
+	const toolbarTopConfig = mapActionsToConfig(dashboardToolbarConfigTop, actionsTop)
 	
 	return (
 		<AppSafeArea>
@@ -68,6 +71,7 @@ const DashboardScreen = ({ navigation }) => {
 							<Heading>{language.dashboard.ui.greeting} {user.firstname} {user.lastname}!</Heading>
 							<ExchangeRate size={"lg"}/>
 						</VStack>
+						<Toolbar config={toolbarTopConfig} />
 						<Box bgColor={"white"} roundedTop={"8"}>
 							<Heading p={"4"} fontSize={"xl"}>{language.dashboard.ui.recentTransfersTitle}</Heading>
 						</Box>
@@ -77,7 +81,7 @@ const DashboardScreen = ({ navigation }) => {
 				ItemSeparatorComponent={() => <Divider />}
 				renderItem={({item, index, section}) => <ListItem key={index} data={{...item, index: index, section: { count: transactions.length, sectionIndex: section.index, sectionItemLength: section.data.length }}} /> }
 				renderSectionHeader={({section}) => <ListHeader title={section.header} index={section.index} date={true} />}
-				ListFooterComponent={() => <Toolbar nb={{ mt: "4" }} config={toolbarConfig} />}
+				ListFooterComponent={() => <Toolbar nb={{ mt: "4" }} config={toolbarBottomConfig} />}
 				contentContainerStyle={{ padding: "2.5%", justifyContent: "flex-start"}}
 			/>
 			
